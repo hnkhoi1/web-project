@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi" data-theme="system" data-font="md" data-note-color="yellow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Đăng ký — Hình Sự Tra Cứu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap">
+<!-- Thêm ../ trước các tài nguyên css và js -->
+<link rel="stylesheet" href="../css/app.css">
+<script src="../js/db.js"></script>
+<script src="../js/app.js"></script>
+</head>
+<body class="auth-body" data-page="register">
+<a class="skip" href="#main">Bỏ qua điều hướng</a>
+<div class="auth-shell">
+  <aside class="auth-brand">
+    <a class="brand" href="login.html"><span data-brand-svg="40"></span><span class="brand-text"><strong>Hình Sự Tra Cứu</strong><span>Tra cứu &amp; tư vấn Luật Hình sự VN</span></span></a>
+    <div class="auth-pitch"><h2>Hiểu luật hình sự bằng chính lời bạn hỏi</h2><ul>
+      <li>Mô tả tình huống như đang trò chuyện, nhận ngay điều luật và khoản áp dụng.</li>
+      <li>Biết cả mức xử lý lẫn quyền lợi, khoản bồi thường của người bị hại.</li>
+      <li>Lưu lại ghi chú riêng để xem lại bất cứ lúc nào.</li></ul></div>
+    <p class="auth-foot">Bản demo giao diện tĩnh — không thay thế tư vấn của luật sư.</p>
+  </aside>
+  <main id="main" class="auth-main" tabindex="-1">
+    <div class="auth-card">
+      <h1>Tạo tài khoản</h1>
+      <p class="muted">Chỉ cần email, tên hiển thị và mật khẩu.</p>
+      <div id="flash"></div>
+      <form id="register-form" novalidate data-match="password,password2">
+        <div class="field"><label for="email">Email</label><input id="email" type="email" name="email" autocomplete="email" inputmode="email" maxlength="254" required></div>
+        <div class="field"><label for="displayName">Tên hiển thị</label><input id="displayName" name="displayName" autocomplete="nickname" minlength="2" maxlength="40" required></div>
+        <div class="field"><label for="password">Mật khẩu</label>
+        <div class="pw-wrap"><input id="password" type="password" name="password" autocomplete="new-password" required minlength="8" maxlength="72" data-strength><button type="button" class="pw-toggle" aria-pressed="false" aria-label="Hiện mật khẩu">Hiện</button></div><p class="field-hint">Ít nhất 8 ký tự, gồm cả chữ và số.</p></div><div class="meter" data-for="password" aria-hidden="true"><span></span></div><p class="field-hint meter-label" data-for="password" aria-live="polite"></p>
+        <div class="field"><label for="password2">Nhập lại mật khẩu</label>
+        <div class="pw-wrap"><input id="password2" type="password" name="password2" autocomplete="new-password" required><button type="button" class="pw-toggle" aria-pressed="false" aria-label="Hiện mật khẩu">Hiện</button></div></div>
+        <button class="btn btn-primary btn-block" type="submit">Đăng ký</button>
+      </form>
+      <p class="auth-alt">Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+    </div>
+  </main>
+</div>
+<!-- Thêm ../ trước script js/auth.js -->
+<script src="../js/auth.js"></script>
+</body>
+</html>

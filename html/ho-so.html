@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="vi" data-theme="system" data-font="md" data-note-color="yellow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Hồ sơ cá nhân — Hình Sự Tra Cứu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap">
+<!-- Thêm ../ trước các tài nguyên tĩnh css/ và js/ -->
+<link rel="stylesheet" href="../css/app.css">
+<script src="../js/db.js"></script>
+<script src="../js/app.js"></script>
+</head>
+<body data-page="">
+<div id="app-header"></div>
+<main id="main" tabindex="-1">
+<section class="section"><div class="wrap narrow"><h1>Hồ sơ cá nhân</h1><nav class="tabs" aria-label="Tài khoản"><a href="ho-so.html" aria-current="page">Hồ sơ</a><a href="doi-mat-khau.html">Mật khẩu</a><a href="tuy-chinh.html">Tùy chỉnh</a></nav><div id="demo-lock" class="alert alert-info" role="status" hidden><span><strong>Tài khoản demo là tài khoản cố định trong mã nguồn</strong> nên không thể chỉnh sửa hay xóa. Hãy <a href="register.html">đăng ký một tài khoản mới</a> (đăng xuất trước) để thử đầy đủ chức năng này.</span></div>
+  <form id="profile-form" novalidate>
+    <div class="avatar-row"><div id="avatar-preview-box"></div>
+      <div class="field"><label for="avatar">Ảnh đại diện</label><input id="avatar" type="file" accept="image/jpeg,image/png,image/webp">
+        <p class="field-hint">JPG, PNG hoặc WebP, tối đa 2MB. Ảnh được cắt vuông 256×256.</p><label class="check" id="remove-wrap" hidden><input type="checkbox" id="remove-avatar"> Xóa ảnh, dùng ảnh mặc định</label></div></div>
+    <div class="field"><label for="displayName">Tên hiển thị</label><input id="displayName" name="displayName" minlength="2" maxlength="40" required></div>
+    <div class="field"><label for="email-ro">Email / tên đăng nhập</label><input id="email-ro" readonly><p class="field-hint" id="verify-hint"></p></div>
+    <button class="btn btn-primary" type="submit" id="profile-save">Lưu thay đổi</button></form>
+  <div class="danger-zone"><h3>Xóa tài khoản</h3><p>Xóa vĩnh viễn tài khoản cùng toàn bộ ghi chú của bạn khỏi database demo. Không thể khôi phục.</p>
+    <button class="btn btn-danger" type="button" id="delete-btn">Xóa tài khoản</button></div>
+</div></section>
+<dialog id="delete-dialog" class="dialog dialog-sm" aria-labelledby="del-t"><form id="delete-form" method="dialog" class="dialog-in" novalidate>
+  <h3 id="del-t">Xác nhận xóa tài khoản</h3><p class="muted">Nhập mật khẩu để xác nhận.</p><div class="field"><label for="del-pw">Mật khẩu</label><div class="pw-wrap"><input id="del-pw" type="password" name="del-pw" autocomplete="current-password" required><button type="button" class="pw-toggle" aria-pressed="false" aria-label="Hiện mật khẩu">Hiện</button></div></div>
+  <div class="dialog-actions"><button type="button" class="btn btn-ghost" id="del-cancel">Hủy</button><button type="submit" class="btn btn-danger">Xóa vĩnh viễn</button></div></form></dialog>
+</main>
+<div id="app-footer"></div>
+<script src="../js/account.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi" data-theme="system" data-font="md" data-note-color="yellow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Trang chủ — Hình Sự Tra Cứu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap">
+<!-- Thêm ../ trước các tài nguyên css và js -->
+<link rel="stylesheet" href="../css/app.css">
+<script src="../js/db.js"></script>
+<script src="../js/app.js"></script>
+</head>
+<body data-page="home">
+<div id="app-header"></div>
+<main id="main" tabindex="-1">
+<section class="hero"><div class="wrap hero-in">
+  <div><p class="hero-eyebrow">Trang chủ của bạn</p><h1 id="greet">Xin chào</h1>
+    <p class="lead">Mô tả tình huống bằng lời thường ngày để nhận điều luật, mức xử lý và quyền lợi bồi thường tương ứng. Những gì bạn muốn giữ lại sẽ nằm ở mục ghi chú bên dưới.</p>
+    <form class="search-box" action="tra-cuu.html" method="get" role="search"><label class="sr-only" for="home-q">Tra cứu điều luật</label>
+      <input id="home-q" type="text" name="q" placeholder="VD: trộm cắp, tai nạn giao thông, lừa đảo..."><button type="submit">Tra cứu</button></form></div>
+  <div class="hero-actions"><a class="action-card" href="tu-van.html"><strong>Hỏi chatbot</strong><span>Nhận tư vấn từ tình huống của bạn</span></a>
+    <a class="action-card" href="tra-cuu.html"><strong>Tra cứu điều luật</strong><span>Theo từ khóa, số điều hoặc chương</span></a></div>
+</div></section>
+<section class="section" aria-labelledby="notes-title"><div class="wrap">
+  <div class="section-head"><h2 id="notes-title">Ghi chú của bạn</h2>
+    <div class="notes-tools"><label class="sr-only" for="notes-q">Tìm ghi chú</label><input id="notes-q" type="search" placeholder="Tìm ghi chú..." autocomplete="off">
+      <button id="note-new" class="btn btn-primary" type="button">+ Ghi chú mới</button></div></div>
+  <div id="notes-grid" class="notes-grid" aria-live="polite"></div>
+  <div id="notes-empty" class="empty-state" hidden><p><strong>Chưa có ghi chú nào.</strong></p><p>Tạo ghi chú mới, hoặc bấm "Lưu vào ghi chú" ở câu trả lời của chatbot và trang điều luật.</p></div>
+</div></section>
+<section class="section alt"><div class="wrap"><div class="section-head"><h2>Điều luật được tra cứu nhiều</h2><a href="tra-cuu.html">Xem tất cả &rarr;</a></div>
+  <div id="popular" class="grid-3"></div></div></section>
+<dialog id="note-dialog" class="dialog" aria-labelledby="note-dialog-title"><form id="note-form" method="dialog" class="dialog-in">
+  <h3 id="note-dialog-title">Ghi chú mới</h3><input type="hidden" id="note-id">
+  <div class="field"><label for="note-title">Tiêu đề</label><input id="note-title" maxlength="120" autocomplete="off"></div>
+  <div class="field"><label for="note-content">Nội dung</label><textarea id="note-content" rows="7" maxlength="5000"></textarea></div>
+  <fieldset class="swatches"><legend>Màu ghi chú</legend><label class="swatch sw-auto"><input type="radio" name="note-color" value="auto" checked><span>Mặc định</span></label><label class="swatch sw-yellow"><input type="radio" name="note-color" value="yellow"><span>Vàng</span></label><label class="swatch sw-green"><input type="radio" name="note-color" value="green"><span>Xanh lá</span></label><label class="swatch sw-blue"><input type="radio" name="note-color" value="blue"><span>Xanh dương</span></label><label class="swatch sw-rose"><input type="radio" name="note-color" value="rose"><span>Hồng</span></label><label class="swatch sw-violet"><input type="radio" name="note-color" value="violet"><span>Tím</span></label><label class="swatch sw-gray"><input type="radio" name="note-color" value="gray"><span>Xám</span></label></fieldset>
+  <label class="check"><input type="checkbox" id="note-pinned"> Ghim lên đầu</label>
+  <p id="note-err" class="field-err" role="alert" hidden></p>
+  <div class="dialog-actions"><button type="button" class="btn btn-ghost" id="note-cancel">Hủy</button><button type="submit" class="btn btn-primary" id="note-save">Lưu</button></div>
+</form></dialog>
+<dialog id="confirm-dialog" class="dialog dialog-sm" aria-labelledby="confirm-title"><div class="dialog-in"><h3 id="confirm-title">Xóa ghi chú?</h3>
+  <p class="muted">Ghi chú sẽ bị xóa vĩnh viễn, không thể khôi phục.</p>
+  <div class="dialog-actions"><button type="button" class="btn btn-ghost" id="confirm-no">Giữ lại</button><button type="button" class="btn btn-danger" id="confirm-yes">Xóa</button></div></div></dialog>
+</main>
+<div id="app-footer"></div>
+<!-- Thêm ../ trước các script js/data.js và js/notes.js -->
+<script src="../js/data.js"></script>
+<script src="../js/notes.js"></script>
+</body>
+</html>
