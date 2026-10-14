@@ -3,10 +3,14 @@
   const form = $('#search-form'), q = $('#q'), sel = $('#chuong'), box = $('#results'), count = $('#count');
   sel.replaceChildren(new Option('Tất cả chương', ''), ...Law.chuongList().map((c) => new Option(c, c)));
   const params = new URLSearchParams(location.search); q.value = (params.get('q') || '').slice(0, 200);
+  if (params.get('chuong')) sel.value = params.get('chuong');
+
+  let debounceTimer;
 
   function run() {
     const rows = Law.search(q.value, sel.value);
-    count.textContent = `${rows.length} kết quả` + (q.value.trim() ? ` cho "${q.value.trim()}"` : '');
+    const qTrim = q.value.trim();
+    count.textContent = `${rows.length} kết quả` + (qTrim ? ` cho "${qTrim}"` : '');
     if (!rows.length) {
       const d = el('div', 'empty-state'); d.appendChild(el('p')).appendChild(el('strong', '', 'Không tìm thấy điều luật phù hợp.'));
       const p = el('p', '', 'Thử từ khóa khác, hoặc mô tả tình huống ở trang '); const a = el('a', '', 'Tư vấn'); a.href = 'tu-van.html'; p.append(a, '.'); d.appendChild(p);
@@ -21,7 +25,21 @@
       return art;
     }));
   }
-  form.addEventListener('submit', (e) => { e.preventDefault(); run(); });
-  sel.addEventListener('change', run);
+
+  function updateURL() {
+    const p = new URLSearchParams();
+    if (q.value.trim()) p.set('q', q.value.trim());
+    if (sel.value) p.set('chuong', sel.value);
+    const newUrl = location.pathname + (p.toString() ? '?' + p.toString() : '');
+    history.replaceState(null, '', newUrl);
+  }
+
+  form.addEventListener('submit', (e) => { e.preventDefault(); updateURL(); run(); });
+  sel.addEventListener('change', () => { updateURL(); run(); });
+  q.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => { updateURL(); run(); }, 300);
+  });
   run();
 })();
+

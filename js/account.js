@@ -87,7 +87,12 @@
   const body = $('#users-body');
   if (body) {
     const draw = () => {
-      const s = DB.stats(); $('#stats').textContent = `${s.users} tài khoản (gồm 1 tài khoản demo cố định) · ${s.notes} ghi chú · ${s.contacts} câu hỏi liên hệ.`;
+      const s = DB.stats();
+      const engine = DB.getEngine();
+      const stEl = $('#stats');
+      if (stEl) {
+        stEl.innerHTML = `<strong>Cơ sở dữ liệu đang dùng:</strong> <span class="badge ${DB.isMySQL() ? 'badge-ok' : ''}">${esc(engine)}</span><br>${s.users} tài khoản (gồm 1 tài khoản demo cố định) · ${s.notes} ghi chú · ${s.contacts} câu hỏi liên hệ.`;
+      }
       body.replaceChildren(...DB.users().map((u) => {
         const tr = el('tr'); const td = (t) => { const c = el('td', '', t); tr.appendChild(c); return c; };
         td(u.id); td(u.builtIn ? u.username : u.email); td(u.displayName); td(u.verified ? 'Đã xác thực' : 'Chưa xác thực');

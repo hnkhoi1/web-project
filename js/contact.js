@@ -9,7 +9,7 @@
     if (v.sdt && !/^\+?[0-9 .\-]{8,15}$/.test(v.sdt)) err(f.sdt, 'Số điện thoại không hợp lệ.');
     if (v.noi_dung.length < 10 || v.noi_dung.length > 2000) err(f.noi_dung, 'Nội dung từ 10 đến 2000 ký tự.');
     if (bad) return;
-    if (!DB.addContact(user.id, v)) return err(f.noi_dung, 'Không lưu được (bộ nhớ trình duyệt đầy).');
+    if (!DB.addContact(user.id, v)) return fieldErr(f.noi_dung, 'Không lưu được (bộ nhớ trình duyệt đầy hoặc bị chặn).');
     flash('ok', 'Đã gửi câu hỏi. Chúng tôi sẽ phản hồi qua email sớm nhất có thể.'); location.reload();
   });
 })();

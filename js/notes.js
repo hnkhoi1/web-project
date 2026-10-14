@@ -33,7 +33,12 @@
     const notes = DB.listNotes(user.id, search.value);
     grid.replaceChildren(...notes.map(card));
     empty.hidden = notes.length > 0;
-    empty.querySelector('p').textContent = !notes.length && search.value ? `Không có ghi chú nào khớp "${search.value}".` : 'Chưa có ghi chú nào.';
+    const isSearching = !!search.value.trim();
+    empty.querySelector('p:first-child').textContent = isSearching
+      ? `Không có ghi chú nào khớp "${search.value}".`
+      : 'Chưa có ghi chú nào.';
+    const hint = empty.querySelector('p:last-child');
+    if (hint && hint !== empty.querySelector('p:first-child')) hint.hidden = isSearching;
   }
   function edit(n) {
     $('#note-dialog-title').textContent = n ? 'Sửa ghi chú' : 'Ghi chú mới';

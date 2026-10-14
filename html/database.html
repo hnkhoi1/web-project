@@ -11,11 +11,11 @@
 <script src="../js/db.js"></script>
 <script src="../js/app.js"></script>
 </head>
-<body data-page="">
+<body data-page="database">
 <div id="app-header"></div>
 <main id="main" tabindex="-1">
 <section class="section"><div class="wrap"><h1>Dữ liệu demo (database giả lập)</h1>
-  <p class="muted">Bản demo lưu dữ liệu trong localStorage của trình duyệt. Tài khoản <b>demo</b> nằm cố định trong mã nguồn nên luôn có mặt, không sửa/xóa được.</p>
+  <p class="muted">Hệ thống hỗ trợ lưu trữ vào <b>MySQL (kết nối phpMyAdmin / XAMPP)</b> khi chạy qua máy chủ web, và tự động chuyển sang <b>LocalStorage trình duyệt</b> khi chạy offline. Tài khoản <b>demo</b> nằm cố định trong mã nguồn nên luôn có mặt, không sửa/xóa được.</p>
   <p id="stats" class="muted"></p><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Tên đăng nhập / email</th><th>Tên hiển thị</th><th>Trạng thái</th><th>Nguồn</th></tr></thead><tbody id="users-body"></tbody></table></div>
   <p><button class="btn btn-ghost" type="button" id="reset-db">Xóa các tài khoản đã thêm (giữ nguyên tài khoản demo)</button></p>
 </div></section>

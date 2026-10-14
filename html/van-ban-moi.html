@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi" data-theme="system" data-font="md" data-note-color="yellow">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Văn bản pháp luật mới — Hình Sự Tra Cứu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap">
+<link rel="stylesheet" href="../css/app.css">
+<script src="../js/db.js"></script>
+<script src="../js/app.js"></script>
+</head>
+<body data-page="news">
+<div id="app-header"></div>
+<main id="main" tabindex="-1">
+<section class="hero hero-plain"><div class="wrap">
+  <p class="hero-eyebrow">Cập nhật pháp lý</p>
+  <h1>Văn bản pháp luật mới</h1>
+  <p class="lead">Các luật, nghị định, thông tư và hướng dẫn tư pháp mới được ban hành liên quan đến lĩnh vực hình sự. Thông tin mang tính tham khảo — hãy đối chiếu với văn bản gốc tại Công Báo.</p>
+</div></section>
+<section class="section"><div class="wrap">
+  <div class="filter-bar" role="search" aria-label="Lọc văn bản pháp luật">
+    <label class="sr-only" for="news-q">Tìm kiếm</label>
+    <input id="news-q" type="search" placeholder="Tìm theo tên, số hiệu, nội dung..." autocomplete="off">
+    <label class="sr-only" for="news-type">Loại văn bản</label>
+    <select id="news-type"></select>
+    <label class="sr-only" for="news-year">Năm ban hành</label>
+    <select id="news-year"></select>
+  </div>
+  <p id="news-count" class="muted"></p>
+  <div id="news-grid" class="news-grid" aria-live="polite"></div>
+  <div id="news-empty" class="empty-state" hidden>
+    <p><strong>Không tìm thấy văn bản phù hợp.</strong></p>
+    <p>Thử thay đổi từ khóa hoặc bộ lọc. Nếu bạn biết văn bản cần tìm, hãy <a href="lien-he.html">liên hệ với chúng tôi</a>.</p>
+  </div>
+  <div class="news-disclaimer">
+    <p>⚠️ <strong>Lưu ý:</strong> Các văn bản trên đây là dữ liệu minh họa dành cho bản demo. Để tra cứu văn bản pháp luật chính thức, vui lòng truy cập <a href="https://vanban.chinhphu.vn" target="_blank" rel="noopener">vanban.chinhphu.vn</a> hoặc <a href="https://thuvienphapluat.vn" target="_blank" rel="noopener">thuvienphapluat.vn</a>.</p>
+  </div>
+</div></section>
+</main>
+<div id="app-footer"></div>
+<script src="../js/data.js"></script>
+<script src="../js/news-data.js"></script>
+<script src="../js/van-ban-moi.js"></script>
+</body>
+</html>

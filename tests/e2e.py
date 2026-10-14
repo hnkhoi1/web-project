@@ -1,6 +1,6 @@
 import asyncio, os, sys
 from playwright.async_api import async_playwright
-BASE = 'file://' + os.getcwd() + '/'
+BASE = 'file://' + os.path.join(os.getcwd(), 'html') + '/'
 res = []
 def ok(c, m): res.append(('PASS ' if c else 'FAIL ') + m)
 async def main():

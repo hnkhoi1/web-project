@@ -73,7 +73,7 @@
   // ---------- header / banner / footer ----------
   function renderChrome() {
     const nav = [['home', 'index.html', 'Trang chủ'], ['search', 'tra-cuu.html', 'Tra cứu điều luật'], ['chat', 'tu-van.html', 'Tư vấn (Chatbot)'],
-                 ['about', 'gioi-thieu.html', 'Giới thiệu'], ['contact', 'lien-he.html', 'Liên hệ']];
+                 ['news', 'van-ban-moi.html', 'Văn bản mới'], ['about', 'gioi-thieu.html', 'Giới thiệu'], ['contact', 'lien-he.html', 'Liên hệ']];
     const cur = document.body.dataset.page;
     const hdr = $('#app-header');
     if (hdr) {
@@ -101,7 +101,7 @@
     const ft = $('#app-footer');
     if (ft) ft.innerHTML = `<footer class="site-footer"><div class="wrap foot">
       <div class="legal-note"><strong>Hình Sự Tra Cứu</strong><p>Bản demo giao diện tĩnh. Dữ liệu điều luật được biên soạn rút gọn cho mục đích học tập, không thay thế văn bản pháp luật chính thức hoặc tư vấn của luật sư.</p></div>
-      <div class="foot-cols"><div><h5>Điều hướng</h5><ul><li><a href="tra-cuu.html">Tra cứu</a></li><li><a href="tu-van.html">Tư vấn</a></li><li><a href="gioi-thieu.html">Giới thiệu</a></li></ul></div>
+      <div class="foot-cols"><div><h5>Điều hướng</h5><ul><li><a href="tra-cuu.html">Tra cứu</a></li><li><a href="tu-van.html">Tư vấn</a></li><li><a href="van-ban-moi.html">Văn bản mới</a></li><li><a href="gioi-thieu.html">Giới thiệu</a></li></ul></div>
       <div><h5>Tài khoản</h5><ul><li><a href="ho-so.html">Hồ sơ</a></li><li><a href="tuy-chinh.html">Tùy chỉnh</a></li><li><a href="lien-he.html">Liên hệ</a></li></ul></div></div></div></footer>`;
 
     const toggle = $('.nav-toggle'), navEl = $('#site-nav');
@@ -113,7 +113,7 @@
     ub?.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden = !pop.hidden; ub.setAttribute('aria-expanded', String(!pop.hidden)); });
     document.addEventListener('click', (e) => { if (pop && !pop.contains(e.target)) closePop(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closePop(); ub?.focus(); } });
-    $('#logout-btn')?.addEventListener('click', () => { Session.clear(); flash('ok', 'Bạn đã đăng xuất.'); location.href = 'login.html'; });
+    $('#logout-btn')?.addEventListener('click', () => { Session.clear(); flash('ok', 'Bạn đã đăng xuất.'); location.replace('login.html'); });
     $('#activate-btn')?.addEventListener('click', showActivationMail);
   }
 
