@@ -146,6 +146,27 @@ img{max-width:100%} button,input,select,textarea{font:inherit;color:inherit}
 .note-actions{display:flex;gap:4px;flex-wrap:wrap;margin:0 -6px -6px}
 .note-actions button{background:transparent;border:0;border-radius:6px;min-height:44px;padding:0 10px;cursor:pointer;color:inherit;font-size:.85rem}
 .note-actions button:hover{background:rgba(0,0,0,.09)} .note-pin{font-size:.75rem;font-weight:700}
+/* Nút chuyển grid / list */
+.view-toggle{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.view-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 12px;border:0;background:transparent;color:var(--soft);font:600 .88rem var(--sans);cursor:pointer;transition:background .15s,color .15s}
+.view-btn+.view-btn{border-left:1px solid var(--line)}
+.view-btn svg{width:18px;height:18px;fill:currentColor}
+.view-btn:hover{background:var(--surface-2);color:var(--text)}
+.view-btn[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+@media(max-width:899px){.view-btn span{display:none}.view-btn{padding:0 14px}}
+@media(max-width:639px){.section-head .notes-tools{flex-basis:100%}.view-toggle{width:100%}.view-btn{flex:1;white-space:nowrap}.view-btn span{display:inline}}
+/* Dạng danh sách: mỗi ghi chú một hàng, nút thao tác bên phải */
+.notes-grid.is-list{grid-template-columns:1fr;gap:10px}
+.notes-grid.is-list .note{min-height:0;padding:12px 16px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"title actions" "body actions" "meta actions";column-gap:16px;row-gap:4px;align-items:start}
+.notes-grid.is-list .note h3{grid-area:title}
+.notes-grid.is-list .note-body{grid-area:body;-webkit-line-clamp:2}
+.notes-grid.is-list .note-body.open{-webkit-line-clamp:unset;display:block}
+.notes-grid.is-list .note-meta{grid-area:meta;justify-content:flex-start;gap:16px}
+.notes-grid.is-list .note-actions{grid-area:actions;align-self:center;margin:0;flex-wrap:nowrap}
+@media(max-width:639px){
+  .notes-grid.is-list .note{grid-template-columns:1fr;grid-template-areas:"title" "body" "meta" "actions"}
+  .notes-grid.is-list .note-actions{margin:0 -6px -6px;flex-wrap:wrap}
+}
 .note.skeleton{animation:pulse 1.2s infinite;background:var(--surface-2);box-shadow:none}
 @keyframes pulse{50%{opacity:.55}}
 :root[data-note-color="yellow"] .note[data-color="auto"],.note[data-color="yellow"]{--nbg:var(--n-yellow)}

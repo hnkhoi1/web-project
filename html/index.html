@@ -26,6 +26,10 @@
 <section class="section" aria-labelledby="notes-title"><div class="wrap">
   <div class="section-head"><h2 id="notes-title">Ghi chú của bạn</h2>
     <div class="notes-tools"><label class="sr-only" for="notes-q">Tìm ghi chú</label><input id="notes-q" type="search" placeholder="Tìm ghi chú..." autocomplete="off">
+      <div class="view-toggle" role="group" aria-label="Kiểu hiển thị ghi chú">
+        <button type="button" class="view-btn" data-view="grid" aria-pressed="true" title="Xem dạng lưới"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><span>Lưới</span></button>
+        <button type="button" class="view-btn" data-view="list" aria-pressed="false" title="Xem dạng danh sách"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v3H4zM4 10.5h16v3H4zM4 16h16v3H4z"/></svg><span>Danh sách</span></button>
+      </div>
       <button id="note-new" class="btn btn-primary" type="button">+ Ghi chú mới</button></div></div>
   <div id="notes-grid" class="notes-grid" aria-live="polite"></div>
   <div id="notes-empty" class="empty-state" hidden><p><strong>Chưa có ghi chú nào.</strong></p><p>Tạo ghi chú mới, hoặc bấm "Lưu vào ghi chú" ở câu trả lời của chatbot và trang điều luật.</p></div>

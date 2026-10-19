@@ -60,5 +60,24 @@
   $('#confirm-no').addEventListener('click', () => close(cdlg));
   $('#confirm-yes').addEventListener('click', () => { close(cdlg); DB.deleteNote(user.id, pendingDelete); toast('Đã xóa ghi chú.'); render(); });
   search.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(render, 200); });
+
+  // Chuyển đổi hiển thị lưới (mặc định) / danh sách, nhớ lựa chọn riêng cho từng người dùng
+  const VIEW_KEY = 'hs-notes-view-' + user.id;
+  const viewBtns = document.querySelectorAll('.view-btn');
+  function readView() {
+    try { return localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'grid'; } catch { return 'grid'; }
+  }
+  function applyView(view, save) {
+    grid.classList.toggle('is-list', view === 'list');
+    viewBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+    if (save) { try { localStorage.setItem(VIEW_KEY, view); } catch { /* chế độ riêng tư: bỏ qua */ } }
+  }
+  viewBtns.forEach((b) => b.addEventListener('click', () => {
+    if (b.getAttribute('aria-pressed') === 'true') return;
+    applyView(b.dataset.view, true);
+    toast(b.dataset.view === 'list' ? 'Đã chuyển sang dạng danh sách.' : 'Đã chuyển sang dạng lưới.');
+  }));
+  applyView(readView(), false);
+
   render();
 })();
