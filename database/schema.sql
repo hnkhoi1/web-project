@@ -3,6 +3,11 @@
 -- Hệ quản trị CSDL: MySQL 8.0+ / MariaDB 10.4+ (XAMPP / phpMyAdmin)
 -- Bảng mã: utf8mb4 / Đối chiếu: utf8mb4_unicode_ci
 -- Engine: InnoDB (Hỗ trợ khóa ngoại và giao dịch ACID)
+--
+-- ⚠ CHỈ CHẠY FILE NÀY KHI CÀI MỚI: file bắt đầu bằng DROP TABLE nên chạy lại
+--   sẽ XÓA TOÀN BỘ DỮ LIỆU. CSDL đã có dữ liệu thì chỉ chạy các file mới
+--   trong database/migrations/.
+-- Thứ tự import khi cài mới: schema.sql -> seed.sql -> seed_law.sql
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS `hinh_su_db`
@@ -132,6 +137,8 @@ CREATE TABLE `password_resets` (
 -- ------------------------------------------------------------
 -- 7. BẢNG CHƯƠNG BỘ LUẬT HÌNH SỰ (chuong)
 -- Danh mục các chương luật trong Bộ luật Hình sự
+-- Dữ liệu do database/seed_law.sql (sinh từ data/dieu_luat_data.php) nạp vào;
+-- ten_chuong phải trùng khớp chính xác với trường `chuong` trong dữ liệu gốc.
 -- ------------------------------------------------------------
 CREATE TABLE `chuong` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -148,7 +155,7 @@ CREATE TABLE `chuong` (
 -- ------------------------------------------------------------
 CREATE TABLE `dieu_luat` (
   `id` INT PRIMARY KEY COMMENT 'Số điều luật (ví dụ: 123, 134, 174...)',
-  `chuong_id` INT NULL COMMENT 'Khóa ngoại liên kết tới bảng chuong',
+  `chuong_id` INT NOT NULL COMMENT 'Khóa ngoại liên kết tới bảng chuong (mỗi điều luật bắt buộc thuộc 1 chương)',
   `tieu_de` VARCHAR(255) NOT NULL COMMENT 'Tên tội danh / điều luật',
   `tom_tat` TEXT NOT NULL COMMENT 'Tóm tắt nội dung hành vi phạm tội',
   `tu_khoa` TEXT NOT NULL COMMENT 'Từ khóa phục vụ tìm kiếm và NLU',
@@ -157,7 +164,7 @@ CREATE TABLE `dieu_luat` (
   `ghi_chu_quyen_loi` TEXT NULL COMMENT 'Quyền lợi chung của người bị hại',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT `fk_dieu_luat_chuong` FOREIGN KEY (`chuong_id`) REFERENCES `chuong` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_dieu_luat_chuong` FOREIGN KEY (`chuong_id`) REFERENCES `chuong` (`id`) ON DELETE RESTRICT,
   INDEX `idx_dieu_luat_chuong` (`chuong_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -176,8 +183,8 @@ CREATE TABLE `khoan` (
   `tu_khoa` TEXT NULL COMMENT 'Từ khóa đặc thù nhận diện khoản trong chatbot NLU',
   `ti_le_ton_thuong_min` DECIMAL(5,2) NULL COMMENT 'Tỉ lệ tổn thương cơ thể tối thiểu (%)',
   `ti_le_ton_thuong_max` DECIMAL(5,2) NULL COMMENT 'Tỉ lệ tổn thương cơ thể tối đa (%)',
-  `gia_tri_tai_san_min` BIGINT NULL COMMENT 'Giá trị tài sản thiệt hại tối thiểu (VND)',
-  `gia_tri_tai_san_max` BIGINT NULL COMMENT 'Giá trị tài sản thiệt hại tối đa (VND)',
+  `gia_tri_tai_san_min` DECIMAL(12,2) NULL COMMENT 'Giá trị tài sản tối thiểu, ĐƠN VỊ TRIỆU ĐỒNG (giống data/dieu_luat_data.php và js/law.js)',
+  `gia_tri_tai_san_max` DECIMAL(12,2) NULL COMMENT 'Giá trị tài sản tối đa, ĐƠN VỊ TRIỆU ĐỒNG',
   `so_nguoi_chet_min` INT NULL COMMENT 'Số người chết tối thiểu',
   CONSTRAINT `fk_khoan_dieu_luat` FOREIGN KEY (`dieu_luat_id`) REFERENCES `dieu_luat` (`id`) ON DELETE CASCADE,
   UNIQUE KEY `uq_dieu_khoan` (`dieu_luat_id`, `so_khoan`),

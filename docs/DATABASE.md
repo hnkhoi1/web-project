@@ -40,7 +40,7 @@ erDiagram
     users ||--o{ contacts : "gửi (1:N, SET NULL)"
     users ||--o{ lich_su_hoi_dap : "hỏi (1:N, SET NULL)"
 
-    chuong ||--o{ dieu_luat : "chứa (1:N, SET NULL)"
+    chuong ||--|{ dieu_luat : "chứa (1:N, RESTRICT)"
     dieu_luat ||--o{ khoan : "gồm các khoản (1:N, CASCADE)"
     dieu_luat ||--o{ lich_su_hoi_dap : "khớp kết quả (1:N, SET NULL)"
 
@@ -139,8 +139,8 @@ erDiagram
         text tu_khoa
         decimal ti_le_ton_thuong_min
         decimal ti_le_ton_thuong_max
-        bigint gia_tri_tai_san_min
-        bigint gia_tri_tai_san_max
+        decimal gia_tri_tai_san_min
+        decimal gia_tri_tai_san_max
         int so_nguoi_chet_min
     }
 
@@ -257,6 +257,8 @@ Quản lý mã OTP đặt lại mật khẩu với thời hạn 15 phút và t�
 ### 3.7. Bảng `chuong` (Chương Bộ luật Hình sự)
 Danh mục các chương của Bộ luật Hình sự số 100/2015/QH13.
 
+> **Nguồn dữ liệu:** bảng này được nạp bởi `database/seed_law.sql`, sinh tự động từ `data/dieu_luat_data.php` (Khôi phụ trách). `ten_chuong` phải trùng khớp chính xác với trường `chuong` trong dữ liệu gốc. `seed.sql` không chứa dữ liệu chương.
+
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mặc định | Mô tả nghiệp vụ |
 |---|---|---|---|---|
 | `id` | `INT` | PK, AUTO_INCREMENT | — | Mã định danh chương |
@@ -272,7 +274,7 @@ Thông tin chính của từng điều luật (tội danh).
 | Tên cột | Kiểu dữ liệu | Ràng buộc | Mặc định | Mô tả nghiệp vụ |
 |---|---|---|---|---|
 | `id` | `INT` | PK | — | **Số hiệu điều luật** (ví dụ: 123, 134, 174...) |
-| `chuong_id` | `INT` | FK -> `chuong(id)`, NULL | `NULL` | Chương trực thuộc, **ON DELETE SET NULL** |
+| `chuong_id` | `INT` | FK -> `chuong(id)`, NOT NULL | — | Chương trực thuộc (bắt buộc), **ON DELETE RESTRICT**: không xóa được chương còn điều luật |
 | `tieu_de` | `VARCHAR(255)` | NOT NULL | — | Tiêu đề tội danh (Ví dụ: "Tội giết người") |
 | `tom_tat` | `TEXT` | NOT NULL | — | Tóm tắt hành vi cấu thành tội phạm |
 | `tu_khoa` | `TEXT` | NOT NULL | — | Chuỗi từ khóa phục vụ tra cứu và tìm kiếm toàn văn |
@@ -298,11 +300,13 @@ Các khoản quy định khung tăng nặng/giảm nhẹ và tiêu chí định 
 | `tu_khoa` | `TEXT` | NULL | `NULL` | Từ khóa nhận diện riêng cho khoản (NLU) |
 | `ti_le_ton_thuong_min` | `DECIMAL(5,2)` | NULL | `NULL` | Tỉ lệ thương tật cơ thể tối thiểu (%) |
 | `ti_le_ton_thuong_max` | `DECIMAL(5,2)` | NULL | `NULL` | Tỉ lệ thương tật cơ thể tối đa (%) |
-| `gia_tri_tai_san_min` | `BIGINT` | NULL | `NULL` | Giá trị tài sản thiệt hại tối thiểu (VNĐ) |
-| `gia_tri_tai_san_max` | `BIGINT` | NULL | `NULL` | Giá trị tài sản thiệt hại tối đa (VNĐ) |
+| `gia_tri_tai_san_min` | `DECIMAL(12,2)` | NULL | `NULL` | Giá trị tài sản tối thiểu, **đơn vị triệu đồng** (vd. `2.00` = 2 triệu) |
+| `gia_tri_tai_san_max` | `DECIMAL(12,2)` | NULL | `NULL` | Giá trị tài sản tối đa, **đơn vị triệu đồng** |
 | `so_nguoi_chet_min` | `INT` | NULL | `NULL` | Số người chết tối thiểu |
 
 > **Ràng buộc:** `UNIQUE KEY uq_dieu_khoan (dieu_luat_id, so_khoan)`.
+>
+> **Đơn vị:** giá trị tài sản dùng triệu đồng để khớp nguyên vẹn với `data/dieu_luat_data.php` và hàm `extractSoLieu()` trong `js/law.js` (đổi "tỷ" ×1000 sang triệu). Script export không được nhân/chia đơn vị.
 
 ---
 
@@ -354,20 +358,24 @@ assert(password_verify('Admin@123', '$2y$10$Xk4q2ryw0QcrmS1BQmJU3e3nuTX.PIBsAYuw
 
 ## 5. Hướng dẫn import và kiểm tra tính toàn vẹn (Verification)
 
-### 5.1. Import vào MySQL / phpMyAdmin
+### 5.1. Import vào MySQL / phpMyAdmin (CÀI MỚI)
+> ⚠ `schema.sql` bắt đầu bằng `DROP TABLE` — **chỉ chạy khi cài mới**, chạy lại sẽ xóa toàn bộ dữ liệu. CSDL đã có dữ liệu thì xem §5.4.
+
 ```bash
-# Cách 1: Sử dụng MySQL Command Line
+# Cách 1: Sử dụng MySQL Command Line (theo đúng thứ tự)
 mysql -u root -p < database/schema.sql
 mysql -u root -p < database/seed.sql
+mysql -u root -p < database/seed_law.sql   # có sau khi F05 xong
 
 # Cách 2: Sử dụng phpMyAdmin
 # 1. Truy cập http://localhost/phpmyadmin
-# 2. Chọn tab "Import" -> Chọn file database/schema.sql -> Nhấn "Go"
-# 3. Chọn tab "Import" -> Chọn file database/seed.sql -> Nhấn "Go"
+# 2. Tab "Import" -> database/schema.sql -> "Go"
+# 3. Tab "Import" -> database/seed.sql -> "Go"
+# 4. Tab "Import" -> database/seed_law.sql -> "Go"
 ```
 
 ### 5.2. Kiểm tra tính Idempotent (Chạy nhiều lần không lỗi)
-Khi import lại `schema.sql` và `seed.sql` lần thứ 2:
+Trên CSDL thử nghiệm, khi import lại `schema.sql` và `seed.sql` lần thứ 2:
 - Toàn bộ bảng được làm sạch và thiết lập lại an toàn nhờ cấu trúc `SET FOREIGN_KEY_CHECKS = 0; DROP TABLE IF EXISTS ...; SET FOREIGN_KEY_CHECKS = 1;`.
 - Không phát sinh lỗi xung đột khóa ngoại hay trùng lặp bản ghi duy nhất.
 
@@ -380,3 +388,18 @@ DELETE FROM `users` WHERE `id` = 1;
 - Toàn bộ ghi chú trong bảng `notes` có `user_id = 1` sẽ tự động bị xóa theo.
 - Các yêu cầu đặt lại mật khẩu trong `password_resets` có `user_id = 1` sẽ tự động bị xóa theo.
 - Các phản hồi liên hệ trong `contacts` và câu hỏi trong `lich_su_hoi_dap` sẽ tự động chuyển `user_id` thành `NULL`, bảo toàn lịch sử dữ liệu cho ban quản trị.
+
+### 5.4. Cập nhật CSDL đã có dữ liệu (migrations)
+Chạy lần lượt các file **chưa chạy** trong `database/migrations/` theo số thứ tự:
+
+```bash
+mysql -u root -p < database/migrations/002_fix_law_tables.sql
+```
+
+| File | Nội dung | Ai cần chạy |
+|---|---|---|
+| `001_initial_schema.sql` | Mốc schema ban đầu (không thay đổi gì) | — |
+| `002_fix_law_tables.sql` | Giá trị tài sản BIGINT VNĐ → DECIMAL(12,2) triệu đồng; `dieu_luat.chuong_id` NOT NULL + RESTRICT; xóa 3 chương mẫu cũ | Người đã import `schema.sql` + `seed.sql` của commit `e4c45fd` |
+
+### 5.5. Nạp lại dữ liệu luật (`seed_law.sql`)
+`seed_law.sql` phải dùng `INSERT … ON DUPLICATE KEY UPDATE` (upsert), **không** `DELETE` rồi chèn lại: xóa `dieu_luat` sẽ làm `lich_su_hoi_dap.dieu_luat_id` bị đặt về `NULL` và mất liên kết của log cũ; xóa `chuong` còn điều luật sẽ bị chặn bởi `RESTRICT`.

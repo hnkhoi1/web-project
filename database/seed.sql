@@ -12,7 +12,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 DELETE FROM `user_prefs` WHERE `user_id` IN (1, 2);
 DELETE FROM `notes` WHERE `user_id` IN (1, 2);
 DELETE FROM `users` WHERE `id` IN (1, 2) OR `email` IN ('demo@demo.local', 'admin@hinhsutracuu.vn') OR `username` IN ('demo', 'admin');
-DELETE FROM `chuong` WHERE `id` IN (1, 2, 3);
 DELETE FROM `contacts` WHERE `id` IN (1, 2);
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -86,32 +85,12 @@ VALUES
   NOW()
 );
 
--- ------------------------------------------------------------
--- 4. DANH MỤC CHƯƠNG LUẬT MẪU (chuong)
--- ------------------------------------------------------------
-INSERT INTO `chuong` (`id`, `ten_chuong`, `so_thu_tu`, `mo_ta`)
-VALUES
-(
-  1,
-  'Các tội xâm phạm tính mạng, sức khỏe, nhân phẩm, danh dự của con người',
-  14,
-  'Quy định về tội giết người, cố ý gây thương tích, đe dọa giết người, làm nhục người khác...'
-),
-(
-  2,
-  'Các tội xâm phạm quyền tự do của con người, quyền tự do, dân chủ của công dân',
-  15,
-  'Quy định về tội bắt giữ người trái pháp luật, xâm phạm chỗ ở, quyền khiếu nại tố cáo...'
-),
-(
-  3,
-  'Các tội xâm phạm sở hữu',
-  16,
-  'Quy định về tội cướp tài sản, trộm cắp tài sản, lừa đảo chiếm đoạt tài sản, lạm dụng tín nhiệm...'
-);
+-- Ghi chú: dữ liệu chương / điều luật / khoản KHÔNG nằm ở file này.
+-- Chúng được nạp bởi database/seed_law.sql (Khôi phụ trách, sinh tự động
+-- từ data/dieu_luat_data.php bằng tools/export_law.php).
 
 -- ------------------------------------------------------------
--- 5. TIN LIÊN HỆ GÓP Ý MẪU (contacts)
+-- 4. TIN LIÊN HỆ GÓP Ý MẪU (contacts)
 -- ------------------------------------------------------------
 INSERT INTO `contacts` (`id`, `user_id`, `ho_ten`, `sdt`, `email`, `noi_dung`, `trang_thai`, `created_at`)
 VALUES
