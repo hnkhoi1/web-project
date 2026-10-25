@@ -31,7 +31,7 @@ Mỗi người chỉ sửa file thuộc phần mình (xem FILE_OWNERSHIP.md). B�
 | F03 | Thiếu `.gitignore`; thư mục gốc không có trang vào (B6, B8) | Khôi | S | ⬜ |
 | F04 | Chatbot trả sai điều luật với tình huống ngoài dữ liệu (B5) + chạy test không cần Node | Khôi | M | ⬜ |
 | F05 | Dữ liệu điều luật nằm ở 2 nơi JS/PHP (B3) | Khôi | M | ⬜ |
-| F06 | `data/DataStore.php` không được dùng (B4) | kajima | gộp vào T13 | ⬜ |
+| F06 | `data/DataStore.php` không được dùng (B4) | kajima | gộp vào T13 | ✅ |
 | — | Đăng nhập/khóa có thể vượt qua bằng DevTools (B7) | kajima | sửa trong T11 | ⬜ |
 
 ### F01 — README đúng thực tế (caychay0512-dev, M, P0)
@@ -76,7 +76,7 @@ Mỗi người chỉ sửa file thuộc phần mình (xem FILE_OWNERSHIP.md). B�
 |---|---|---|---|---|---|---|
 | T00 | Đưa đề bài gốc vào repo, chốt D2–D5 | Cả nhóm (kajima ghi biên bản) | P0 | — | — | 🟡 D1 xong |
 | T10 | Facade `DB` bất đồng bộ (adapter local) | kajima | P0 | L | F02 | ⬜ |
-| T13 | CSDL MySQL: schema, seed, migrations, PDF thiết kế CSDL | kajima | P0 | M | — | ⬜ |
+| T13 | CSDL MySQL: schema, seed, migrations, PDF thiết kế CSDL | kajima | P0 | M | — | ✅ |
 | T11 | BackEnd lõi: `lib/*`, session, CSRF, `auth.php` | kajima | P0 | L | T10, T13 | ⬜ |
 | T12 | `notes.php`, `contacts.php`, `prefs.php` + adapter api | kajima | P1 | M | T11 | ⬜ |
 | T14 | `admin.php` + vai trò admin | kajima | P1 | M | T11 | ⬜ |
