@@ -21,7 +21,7 @@
  * -----------------------------------------------------------------
  */
 
-return [
+$data = [
     [
         'id' => 123,
         'chuong' => 'Các tội xâm phạm tính mạng, sức khỏe',
@@ -374,3 +374,85 @@ return [
         'ghi_chu_quyen_loi' => 'Đây là tội phạm không có người bị hại (những người tham gia đều tự nguyện), nên không phát sinh quyền yêu cầu bồi thường dân sự giữa các bên; tiền/hiện vật dùng đánh bạc có thể bị tịch thu sung công quỹ Nhà nước.',
     ],
 ];
+
+// Các điều bổ sung cho T21. Các khoản được tách riêng để Scorer và chatbot
+// chọn đúng ngưỡng; cau_hoi_lam_ro là câu hỏi tiếp theo khi thiếu dữ kiện.
+$makeLaw = static function (array $row): array {
+    [$id, $chapter, $title, $summary, $keywords, $penalty, $rights, $clauses] = $row;
+    $khoan = array_map(static function (array $c) use ($rights): array {
+        [$number, $key, $condition, $content, $percent, $asset, $deaths, $question] = $c;
+        return [
+            'so_khoan' => $number, 'tu_khoa' => $key, 'dieu_kien' => $condition, 'noi_dung' => $content,
+            'ti_le_ton_thuong_min' => $percent[0] ?? null, 'ti_le_ton_thuong_max' => $percent[1] ?? null,
+            'gia_tri_tai_san_min' => $asset[0] ?? null, 'gia_tri_tai_san_max' => $asset[1] ?? null,
+            'so_nguoi_chet_min' => is_array($deaths) ? $deaths[0] : $deaths,
+            'so_nguoi_chet_max' => is_array($deaths) ? $deaths[1] : null,
+            'quyen_loi' => $rights, 'cau_hoi_lam_ro' => $question,
+        ];
+    }, $clauses);
+    return [
+        'id' => $id, 'chuong' => $chapter, 'tieu_de' => $title, 'tom_tat' => $summary,
+        'tu_khoa' => $keywords, 'khung_hinh_phat' => $penalty,
+        'can_cu_boi_thuong' => $rights ? 'Điều 584 và Điều 585 Bộ luật Dân sự 2015 (tùy thiệt hại thực tế)' : null,
+        'khoan' => $khoan,
+        'ghi_chu_quyen_loi' => $rights ? 'Người bị hại có thể yêu cầu bồi thường thiệt hại thực tế theo quy định dân sự.' : 'Tội danh không có người bị hại trực tiếp trong dữ liệu demo.',
+    ];
+};
+
+return array_merge($data, array_map($makeLaw, [
+    [128, 'Các tội xâm phạm tính mạng, sức khỏe', 'Tội vô ý làm chết người', 'Vô ý làm chết người do cẩu thả hoặc quá tự tin.', 'vô ý làm chết người sơ suất cẩu thả chết người', 'Cải tạo không giam giữ đến 3 năm hoặc tù đến 10 năm', 'Thân nhân có thể yêu cầu chi phí mai táng, cấp dưỡng và tổn thất tinh thần.', [
+        [1, 'vô ý làm chết một người', 'Vô ý làm chết một người.', 'Cải tạo không giam giữ đến 3 năm hoặc tù từ 1 đến 5 năm.', null, null, [1, 1], 'Có bao nhiêu người tử vong? Hành vi là sơ suất hay đã vi phạm quy tắc nghề nghiệp/an toàn nào?'],
+        [2, 'vô ý làm chết nhiều người', 'Làm chết từ 2 người trở lên.', 'Phạt tù từ 3 đến 10 năm.', null, null, 2, 'Có từ 2 người tử vong trở lên không? Có tài liệu xác nhận quan hệ nhân quả giữa hành vi và hậu quả không?'],
+    ]],
+    [133, 'Các tội xâm phạm tính mạng, sức khỏe', 'Tội đe dọa giết người', 'Đe dọa tước đoạt tính mạng, có căn cứ khiến người bị đe dọa lo sợ việc đó sẽ được thực hiện.', 'đe dọa giết người dọa giết uy hiếp tính mạng', 'Cải tạo không giam giữ hoặc tù từ 6 tháng đến 7 năm', 'Người bị đe dọa có thể trình báo cơ quan chức năng và đề nghị biện pháp bảo vệ phù hợp.', [
+        [1, 'đe dọa giết người có căn cứ lo sợ', 'Có căn cứ làm người bị đe dọa lo sợ việc đe dọa sẽ được thực hiện.', 'Cải tạo không giam giữ đến 3 năm hoặc tù từ 6 tháng đến 3 năm.', null, null, null, 'Nội dung đe dọa cụ thể là gì, được gửi khi nào và có căn cứ nào khiến người nhận lo sợ việc đó sẽ xảy ra?'],
+        [2, 'đe dọa giết nhiều người chức vụ công vụ người dưới 16 tuổi', 'Có một trong các tình tiết tăng nặng được quy định tại khoản 2.', 'Phạt tù từ 2 đến 7 năm.', null, null, null, 'Có từ 2 người bị đe dọa, người dưới 16 tuổi, người đang thi hành công vụ hoặc tình tiết tăng nặng nào khác không?'],
+    ]],
+    [135, 'Các tội xâm phạm tính mạng, sức khỏe', 'Tội cố ý gây thương tích trong trạng thái tinh thần bị kích động mạnh', 'Cố ý gây thương tích trong trạng thái kích động mạnh do hành vi trái pháp luật nghiêm trọng của nạn nhân.', 'kích động mạnh gây thương tích cố ý thương tích', 'Phạt tiền, cải tạo không giam giữ hoặc tù đến 3 năm', 'Người bị hại có thể yêu cầu chi phí điều trị, thu nhập bị mất và tổn thất tinh thần.', [
+        [1, 'kích động mạnh thương tích 31 60 phần trăm', 'Tỷ lệ tổn thương cơ thể từ 31% đến 60% trong trạng thái kích động mạnh.', 'Phạt tiền từ 10 đến 50 triệu đồng hoặc cải tạo không giam giữ đến 3 năm.', [31, 60], null, null, 'Tỷ lệ tổn thương cơ thể theo kết luận giám định là bao nhiêu phần trăm? Có căn cứ về hành vi trái pháp luật nghiêm trọng gây trạng thái kích động không?'],
+        [2, 'kích động mạnh nhiều người 61 phần trăm chết người', 'Có từ 2 người bị thương ở mức 31–60%, hoặc tỷ lệ từ 61% trở lên, hoặc dẫn đến chết người.', 'Phạt tù từ 6 tháng đến 3 năm.', [61, null], null, 1, 'Tỷ lệ tổn thương của từng người là bao nhiêu? Có bao nhiêu người bị thương hoặc có người tử vong không?'],
+    ]],
+    [138, 'Các tội xâm phạm tính mạng, sức khỏe', 'Tội vô ý gây thương tích hoặc gây tổn hại cho sức khỏe của người khác', 'Vô ý gây thương tích hoặc tổn hại sức khỏe cho người khác.', 'vô ý gây thương tích sơ suất tai nạn làm bị thương', 'Cảnh cáo, phạt tiền, cải tạo không giam giữ hoặc tù đến 3 năm', 'Người bị hại có thể yêu cầu bồi thường chi phí điều trị và thiệt hại thực tế.', [
+        [1, 'vô ý thương tích 31 60 phần trăm', 'Tỷ lệ tổn thương cơ thể từ 31% đến 60%.', 'Cảnh cáo, phạt tiền từ 5 đến 20 triệu đồng hoặc cải tạo không giam giữ đến 3 năm.', [31, 60], null, null, 'Kết luận giám định xác định tỷ lệ tổn thương cơ thể là bao nhiêu phần trăm?'],
+        [2, 'vô ý thương tích nhiều người 61 phần trăm', 'Nhiều người, mỗi người bị tổn thương 31–60%, hoặc một người từ 61% trở lên.', 'Phạt tù từ 3 tháng đến 2 năm.', [61, null], null, null, 'Có bao nhiêu người bị thương và tỷ lệ tổn thương của từng người là bao nhiêu phần trăm?'],
+        [3, 'vô ý nhiều người mỗi người 61 phần trăm', 'Từ 2 người trở lên, mỗi người có tỷ lệ tổn thương cơ thể từ 61%.', 'Phạt tù từ 1 đến 3 năm.', [61, null], null, null, 'Có từ 2 người bị thương trở lên không, và tỷ lệ của từng người có từ 61% không?'],
+    ]],
+    [155, 'Các tội xâm phạm danh dự, nhân phẩm', 'Tội làm nhục người khác', 'Xúc phạm nghiêm trọng nhân phẩm, danh dự của người khác.', 'làm nhục chửi bới xúc phạm danh dự nhân phẩm facebook mạng xã hội', 'Cảnh cáo, phạt tiền, cải tạo không giam giữ hoặc tù đến 5 năm', 'Người bị hại có thể yêu cầu gỡ bỏ/cải chính nội dung và yêu cầu bồi thường thiệt hại theo quy định dân sự.', [
+        [1, 'xúc phạm nghiêm trọng danh dự nhân phẩm', 'Xúc phạm nghiêm trọng nhân phẩm, danh dự.', 'Cảnh cáo, phạt tiền từ 10 đến 30 triệu đồng hoặc cải tạo không giam giữ đến 3 năm.', null, null, null, 'Nội dung xúc phạm là gì, được đăng/gửi ở đâu và có lưu được tin nhắn, bài đăng hoặc nhân chứng không?'],
+        [2, 'làm nhục nhiều lần nhiều người qua mạng 31 60 phần trăm', 'Có tình tiết tăng nặng tại khoản 2, gồm sử dụng mạng hoặc gây tổn thương cơ thể 31–60%.', 'Phạt tù từ 3 tháng đến 2 năm.', [31, 60], null, null, 'Hành vi xảy ra bao nhiêu lần, có bao nhiêu người bị hại, có sử dụng mạng không và tỷ lệ tổn thương cơ thể là bao nhiêu?'],
+        [3, 'làm nhục 61 phần trăm tự sát', 'Gây tổn thương cơ thể từ 61% trở lên hoặc làm nạn nhân tự sát.', 'Phạt tù từ 2 đến 5 năm.', [61, null], null, null, 'Tỷ lệ tổn thương cơ thể là bao nhiêu phần trăm? Có hậu quả nạn nhân tự sát không?'],
+        [4, 'cấm đảm nhiệm chức vụ hành nghề', 'Hình phạt bổ sung có thể áp dụng.', 'Có thể bị cấm đảm nhiệm chức vụ, hành nghề hoặc làm công việc nhất định từ 1 đến 5 năm.', null, null, null, 'Người bị buộc tội có chức vụ hoặc nghề nghiệp liên quan đến hành vi không?'],
+    ]],
+    [156, 'Các tội xâm phạm danh dự, nhân phẩm', 'Tội vu khống', 'Bịa đặt hoặc loan truyền điều biết rõ là sai sự thật nhằm xúc phạm hoặc gây thiệt hại quyền, lợi ích hợp pháp.', 'vu khống bịa đặt nói sai sự thật loan tin tố cáo sai', 'Phạt tiền, cải tạo không giam giữ hoặc tù đến 7 năm', 'Người bị hại có thể yêu cầu cải chính/gỡ bỏ thông tin và yêu cầu bồi thường thiệt hại thực tế.', [
+        [1, 'bịa đặt loan truyền sai sự thật tố cáo sai', 'Bịa đặt/loan truyền điều biết rõ là sai sự thật hoặc bịa đặt người khác phạm tội và tố cáo.', 'Phạt tiền từ 10 đến 50 triệu đồng, cải tạo không giam giữ đến 2 năm hoặc tù từ 3 tháng đến 1 năm.', null, null, null, 'Thông tin nào bị cho là sai sự thật, ai đăng/tố cáo, và có bằng chứng về việc biết rõ thông tin đó sai không?'],
+        [2, 'vu khống có tổ chức qua mạng nhiều người 31 60', 'Có tình tiết tăng nặng tại khoản 2, gồm sử dụng mạng hoặc gây tổn thương cơ thể 31–60%.', 'Phạt tù từ 1 đến 3 năm.', [31, 60], null, null, 'Thông tin có được phát tán qua mạng không, có bao nhiêu người bị hại và tỷ lệ tổn thương cơ thể là bao nhiêu?'],
+        [3, 'vu khống động cơ đê hèn 61 phần trăm tự sát', 'Có động cơ đê hèn, gây tổn thương cơ thể từ 61% trở lên hoặc làm nạn nhân tự sát.', 'Phạt tù từ 3 đến 7 năm.', [61, null], null, null, 'Có tình tiết về động cơ, tỷ lệ tổn thương cơ thể từ 61% hoặc hậu quả nạn nhân tự sát không?'],
+        [4, 'vu khống phạt tiền cấm chức vụ hành nghề', 'Hình phạt bổ sung có thể áp dụng.', 'Có thể bị phạt tiền từ 10 đến 50 triệu đồng, cấm đảm nhiệm chức vụ/hành nghề từ 1 đến 5 năm.', null, null, null, 'Có yêu cầu xem xét hình phạt bổ sung hoặc chức vụ/nghề nghiệp liên quan không?'],
+    ]],
+    [171, 'Các tội xâm phạm quyền sở hữu', 'Tội cướp giật tài sản', 'Nhanh chóng, công khai chiếm đoạt tài sản của người khác.', 'cướp giật giật túi giật điện thoại giật dây chuyền', 'Phạt tù từ 1 năm đến 20 năm hoặc tù chung thân', 'Người bị hại có thể yêu cầu hoàn trả tài sản hoặc bồi thường giá trị tài sản và thiệt hại thực tế.', [
+        [1, 'cướp giật tài sản', 'Công khai giật lấy tài sản của người khác.', 'Phạt tù từ 1 đến 5 năm.', null, null, null, 'Tài sản bị chiếm đoạt trị giá bao nhiêu triệu đồng? Có dùng thủ đoạn nguy hiểm, hành hung hoặc gây thương tích không?'],
+        [2, 'cướp giật 50 triệu 200 triệu thương tích 11 30', 'Có tình tiết khoản 2; gồm tài sản 50–dưới 200 triệu hoặc tổn thương 11–30%.', 'Phạt tù từ 3 đến 10 năm.', [11, 30], [50, 199.999], null, 'Giá trị tài sản là bao nhiêu triệu đồng? Nếu có người bị thương, tỷ lệ tổn thương là bao nhiêu phần trăm?'],
+        [3, 'cướp giật 200 triệu 500 triệu thương tích 31 60', 'Tài sản 200–dưới 500 triệu, tỷ lệ tổn thương 31–60% hoặc tình tiết khoản 3.', 'Phạt tù từ 7 đến 15 năm.', [31, 60], [200, 499.999], null, 'Tài sản trị giá bao nhiêu triệu đồng và tỷ lệ tổn thương cơ thể là bao nhiêu phần trăm?'],
+        [4, 'cướp giật 500 triệu 61 phần trăm chết người', 'Tài sản từ 500 triệu, tổn thương từ 61%, làm chết người hoặc tình tiết khoản 4.', 'Phạt tù từ 12 đến 20 năm hoặc tù chung thân.', [61, null], [500, null], 1, 'Tài sản có trị giá từ 500 triệu đồng không? Có tỷ lệ tổn thương từ 61%, nhiều người bị thương nặng hoặc người tử vong không?'],
+        [5, 'cướp giật phạt tiền bổ sung', 'Hình phạt bổ sung có thể áp dụng.', 'Có thể bị phạt tiền từ 10 đến 100 triệu đồng.', null, null, null, 'Bạn đang hỏi về giá trị tài sản bị chiếm đoạt hay hình phạt bổ sung?'],
+    ]],
+    [173, 'Các tội xâm phạm quyền sở hữu', 'Tội trộm cắp tài sản', 'Lén lút chiếm đoạt tài sản của người khác.', 'trộm cắp ăn trộm mất xe máy lấy cắp tài sản', 'Cải tạo không giam giữ hoặc phạt tù đến 20 năm', 'Người bị hại có thể yêu cầu nhận lại tài sản hoặc bồi thường giá trị và thiệt hại phát sinh.', [
+        [1, 'trộm cắp tài sản 2 triệu 50 triệu', 'Tài sản 2–dưới 50 triệu, hoặc dưới 2 triệu nhưng thuộc trường hợp luật định.', 'Cải tạo không giam giữ đến 3 năm hoặc tù từ 6 tháng đến 3 năm.', null, [2, 49.999], null, 'Tài sản bị trộm trị giá bao nhiêu triệu đồng? Nếu dưới 2 triệu, có tiền sự/án tích hoặc tình tiết đặc biệt nào không?'],
+        [2, 'trộm cắp 50 triệu 200 triệu có tổ chức', 'Tài sản 50–dưới 200 triệu hoặc thuộc tình tiết khoản 2.', 'Phạt tù từ 2 đến 7 năm.', null, [50, 199.999], null, 'Giá trị tài sản là bao nhiêu triệu đồng? Có tổ chức, chuyên nghiệp, thủ đoạn nguy hiểm hoặc hành hung để tẩu thoát không?'],
+        [3, 'trộm cắp 200 triệu 500 triệu', 'Tài sản 200–dưới 500 triệu hoặc thuộc tình tiết khoản 3.', 'Phạt tù từ 7 đến 15 năm.', null, [200, 499.999], null, 'Tài sản trị giá bao nhiêu triệu đồng? Có lợi dụng thiên tai, dịch bệnh hoặc thuộc tình tiết khoản 1 không?'],
+        [4, 'trộm cắp 500 triệu trở lên', 'Tài sản từ 500 triệu hoặc thuộc tình tiết khoản 4.', 'Phạt tù từ 12 đến 20 năm.', null, [500, null], null, 'Tài sản có trị giá từ 500 triệu đồng không? Có tình tiết chiến tranh hoặc khẩn cấp không?'],
+        [5, 'trộm cắp phạt tiền bổ sung', 'Hình phạt bổ sung có thể áp dụng.', 'Có thể bị phạt tiền từ 5 đến 50 triệu đồng.', null, null, null, 'Bạn đang hỏi giá trị tài sản hay hình phạt bổ sung?'],
+    ]],
+    [175, 'Các tội xâm phạm quyền sở hữu', 'Tội lạm dụng tín nhiệm chiếm đoạt tài sản', 'Nhận tài sản theo hợp đồng rồi dùng thủ đoạn chiếm đoạt hoặc cố tình không trả dù có khả năng.', 'vay tiền không trả mượn không trả quỵt nợ lạm dụng tín nhiệm', 'Cải tạo không giam giữ hoặc phạt tù đến 20 năm', 'Người bị hại có thể yêu cầu hoàn trả khoản vay và bồi thường thiệt hại theo quy định dân sự.', [
+        [1, 'vay mượn thuê chiếm đoạt 4 triệu 50 triệu', 'Tài sản 4–dưới 50 triệu, hoặc dưới 4 triệu thuộc trường hợp luật định; có hành vi chiếm đoạt theo điểm a/b.', 'Cải tạo không giam giữ đến 3 năm hoặc tù từ 6 tháng đến 3 năm.', null, [4, 49.999], null, 'Khoản vay/tài sản trị giá bao nhiêu triệu đồng? Người nhận có điều kiện trả nhưng cố tình không trả, bỏ trốn hay dùng vào mục đích bất hợp pháp?'],
+        [2, 'lạm dụng tín nhiệm 50 triệu 200 triệu', 'Tài sản 50–dưới 200 triệu hoặc thuộc tình tiết khoản 2.', 'Phạt tù từ 2 đến 7 năm.', null, [50, 199.999], null, 'Giá trị tài sản là bao nhiêu triệu đồng? Có tổ chức, chuyên nghiệp, lợi dụng chức vụ hoặc thủ đoạn xảo quyệt không?'],
+        [3, 'lạm dụng tín nhiệm 200 triệu 500 triệu', 'Tài sản 200–dưới 500 triệu hoặc gây ảnh hưởng xấu đến an ninh, trật tự.', 'Phạt tù từ 5 đến 12 năm.', null, [200, 499.999], null, 'Tài sản bị chiếm đoạt trị giá bao nhiêu triệu đồng?'],
+        [4, 'lạm dụng tín nhiệm 500 triệu trở lên', 'Tài sản bị chiếm đoạt từ 500 triệu đồng trở lên.', 'Phạt tù từ 12 đến 20 năm.', null, [500, null], null, 'Giá trị tài sản có từ 500 triệu đồng trở lên không?'],
+        [5, 'lạm dụng tín nhiệm phạt tiền cấm hành nghề tịch thu', 'Hình phạt bổ sung có thể áp dụng.', 'Có thể bị phạt tiền 10–100 triệu đồng, cấm chức vụ/hành nghề hoặc tịch thu tài sản.', null, null, null, 'Bạn đang hỏi giá trị tài sản hay hình phạt bổ sung?'],
+    ]],
+    [322, 'Các tội xâm phạm trật tự công cộng', 'Tội tổ chức đánh bạc hoặc gá bạc', 'Tổ chức hoặc tạo điều kiện cho đánh bạc trái phép thuộc trường hợp luật định.', 'tổ chức đánh bạc gá bạc mở sới cá độ', 'Phạt tiền hoặc phạt tù từ 1 đến 10 năm', null, [
+        [1, 'tổ chức đánh bạc 10 người 2 chiếu bạc 20 triệu', 'Đạt ngưỡng người/chiếu bạc, tổng tiền đánh bạc 20 triệu, hoặc thuộc trường hợp khác tại khoản 1.', 'Phạt tiền từ 50 đến 300 triệu đồng hoặc tù từ 1 đến 5 năm.', null, [20, null], null, 'Có bao nhiêu người/chiếu bạc và tổng tiền hoặc hiện vật dùng đánh bạc trong một lần là bao nhiêu?'],
+        [2, 'tổ chức đánh bạc chuyên nghiệp thu lợi 50 triệu', 'Có tính chất chuyên nghiệp, thu lợi bất chính từ 50 triệu đồng hoặc tái phạm nguy hiểm.', 'Phạt tù từ 5 đến 10 năm.', null, [50, null], null, 'Thu lợi bất chính là bao nhiêu triệu đồng? Việc tổ chức có tính chất chuyên nghiệp hoặc tái phạm nguy hiểm không?'],
+        [3, 'tổ chức đánh bạc phạt tiền tịch thu', 'Hình phạt bổ sung có thể áp dụng.', 'Có thể bị phạt tiền từ 20 đến 100 triệu đồng hoặc tịch thu một phần/toàn bộ tài sản.', null, null, null, 'Bạn đang hỏi quy mô tổ chức đánh bạc hay hình phạt bổ sung?'],
+    ]],
+]));

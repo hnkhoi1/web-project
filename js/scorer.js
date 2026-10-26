@@ -26,15 +26,19 @@
     { id: 'giet', laws: { 123: 1, 134: 0.3, 128: 0.3 },
       p: ['giết người', 'giết', 'bị giết', 'bị đánh chết', 'bị đâm chết', 'sát hại', 'bị sát hại', 'đâm chết', 'đánh chết', 'làm chết',
           'chết người', 'tử vong', 'thiệt mạng'] },
+    { id: 'vo_y_chet', laws: { 128: 1 }, p: ['vô ý làm chết người', 'sơ suất làm chết người', 'sơ suất làm chết một người', 'cẩu thả làm chết người'] },
+    { id: 'kich_dong_manh', laws: { 135: 1 }, p: ['trạng thái tinh thần bị kích động mạnh', 'trạng thái kích động mạnh', 'bị kích động mạnh', 'kích động mạnh gây thương tích', 'gây thương tích khi bị kích động mạnh'] },
     { id: 'vo_y', laws: { 138: 0.9, 134: -0.6, 128: 0.2 },
       p: ['vô ý', 'không cố ý', 'sơ ý', 'lỡ tay', 'vô tình'] },
+    { id: 'vo_y_thuong_tich', laws: { 138: 1, 135: 0.2 }, p: ['vô ý gây thương tích', 'sơ suất làm người khác bị thương', 'sơ suất làm bị thương', 'tai nạn làm bị thương'] },
     { id: 'de_doa_giet', laws: { 133: 1, 134: 0.1 },
       p: ['đe dọa giết', 'dọa giết người', 'dọa giết', 'đe dọa'] },
     { id: 'lam_nhuc', laws: { 155: 1, 156: 0.45 },
       p: ['làm nhục', 'chửi bới', 'bị chửi', 'chửi', 'xúc phạm', 'bị xúc phạm', 'lăng mạ', 'bôi nhọ',
           'danh dự', 'nhân phẩm', 'tung ảnh nóng'] },
+    { id: 'lam_nhuc_qua_mang', laws: { 155: 1 }, p: ['bị chửi trên facebook', 'bị xúc phạm trên mạng', 'đăng bài làm nhục'] },
     { id: 'vu_khong', laws: { 156: 1, 155: 0.3 },
-      p: ['vu khống', 'bịa đặt', 'tố cáo sai', 'nói xấu', 'tung tin'] },
+      p: ['vu khống', 'bịa đặt', 'tố cáo sai', 'nói xấu', 'tung tin','bị vu khống','bị nói xấu'] },
     { id: 'trom', laws: { 173: 1, 171: 0.15 },
       p: ['trộm cắp', 'ăn trộm', 'bị trộm', 'trộm', 'mất trộm', 'lấy cắp', 'mất cắp', 'móc túi',
           'mất xe', 'mất điện thoại', 'lấy trộm'] },
@@ -43,11 +47,18 @@
     { id: 'lua', laws: { 174: 1, 175: 0.3 },
       p: ['lừa đảo', 'bị lừa', 'lừa tiền', 'lừa chuyển tiền', 'lừa', 'giả danh', 'chiếm đoạt tiền', 'lừa đảo qua mạng'] },
     { id: 'lam_dung_tin_nhiem', laws: { 175: 1, 174: 0.4 },
-      p: ['vay tiền không trả', 'mượn không trả', 'nhờ giữ hộ', 'không trả nợ', 'quỵt', 'lạm dụng tín nhiệm'] },
+      p: ['vay tiền không trả', 'vay tiền bị quỵt', 'vay tiền bị quịt', 'bị quỵt tiền vay', 'bị quịt tiền vay','bị vay không trả',
+          'vay xong bùng nợ', 'vay rồi bùng', 'mượn tiền rồi bùng', 'mượn tiền không trả', 'mượn không trả',
+          'mượn tài sản rồi bỏ trốn', 'mượn xe rồi đem bán', 'mượn xe rồi bán mất', 'mượn đồ rồi đem cầm',
+          'giao xe cho mượn rồi bị đem bán', 'giao xe cho người quen mượn rồi đem bán', 'mượn xe của tôi rồi bán',
+          'mượn rồi họ đem bán', 'mượn rồi đem bán',
+          'nhờ giữ hộ rồi chiếm đoạt', 'nhận tài sản rồi không trả', 'không trả nợ',
+          'quỵt tiền', 'quịt tiền', 'bùng nợ', 'lạm dụng tín nhiệm', 'vay'] },
     { id: 'cuop', laws: { 168: 1, 171: 0.2 },
       p: ['cướp tài sản', 'bị cướp', 'cướp', 'trấn lột', 'kề dao', 'dùng dao uy hiếp', 'đe dọa lấy tiền'] },
     { id: 'giat', laws: { 171: 1, 168: 0.6 },
-      p: ['cướp giật', 'giật túi', 'giật điện thoại', 'giật dây chuyền', 'giật đồ', 'bị giật'] },
+      p: ['bị cướp giật', 'cướp giật', 'giật túi', 'giật túi xách', 'giật điện thoại', 'giật dây chuyền', 'giật đồ', 'bị giật', 'chạy xe giật đồ'] },
+    { id: 'giat_tui_cu', laws: { 168: 1 }, p: ['bị giật túi xách'] },
     { id: 'giao_thong', laws: { 260: 1, 138: 0.3, 128: 0.3 },
       p: ['tai nạn giao thông', 'gây tai nạn', 'tai nạn', 'đâm xe', 'va chạm xe', 'tông xe', 'tông chết', 'vi phạm giao thông',
           'say rượu', 'nồng độ cồn', 'lái xe', 'không bằng lái', 'vượt đèn đỏ', 'chạy quá tốc độ'] },
@@ -225,10 +236,23 @@
     }).sort(function (a, b) { return b.score - a.score; });
 
     var top = results[0], second = results[1], status = 'ok';
+    // A specific concept must not fall back to a different, merely related
+    // article when its strongest target has not been loaded yet.
+    var missingTarget = null;
+    Object.keys(concepts).some(function (cid) {
+      var laws = concepts[cid].laws, targets = Object.keys(laws).sort(function (a, b) { return laws[b] - laws[a]; });
+      if (!targets.length) return false;
+      var target = targets[0], present = idx.docs.some(function (doc) { return doc.key === target; });
+      // F04 covers the high-risk theft, embezzlement-of-trust, and defamation
+      // concepts; preserve legacy mappings such as the existing robbery case.
+      if (!present && laws[target] >= 0.8 && { 156: 1, 173: 1, 175: 1 }[target]) { missingTarget = target; return true; }
+      return false;
+    });
     if (!top || top.score < (opts.minScore || MIN_SCORE)) status = 'none';
     else if (second && second.score >= MIN_SCORE && top.score - second.score < (opts.margin || MARGIN)) status = 'ambiguous';
+    if (missingTarget) status = 'none';
     return { query: query, mode: plain ? 'khong_dau' : 'co_dau', role: detectRole(query), status: status,
-             results: results, concepts: Object.keys(concepts) };
+             results: results, concepts: Object.keys(concepts), missingTarget: missingTarget };
   }
 
   function explain(r, n) {

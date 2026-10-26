@@ -28,7 +28,7 @@ Mỗi người chỉ sửa file thuộc phần mình (xem FILE_OWNERSHIP.md). B�
 |---|---|---|---|---|
 | F01 | README còn dấu xung đột merge và mô tả sai (B1) | caychay0512-dev | M | ✅ |
 | F02 | `tests/e2e.py` trỏ sai thư mục nên toàn bộ e2e hỏng (B2) | caychay0512-dev | M | ⬜ |
-| F03 | Thiếu `.gitignore`; thư mục gốc không có trang vào (B6, B8) | Khôi | S | ⬜ |
+| F03 | Thiếu `.gitignore`; thư mục gốc không có trang vào (B6, B8) | Khôi | S | ✅ |
 | F04 | Chatbot trả sai điều luật với tình huống ngoài dữ liệu (B5) + chạy test không cần Node | Khôi | M | ⬜ |
 | F05 | Dữ liệu điều luật nằm ở 2 nơi JS/PHP (B3) | Khôi | M | ⬜ |
 | F06 | `data/DataStore.php` không được dùng (B4) | kajima | gộp vào T13 | ✅ |

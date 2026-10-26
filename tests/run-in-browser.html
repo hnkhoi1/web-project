@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kiểm thử trình duyệt — Hình Sự Tra Cứu</title>
+  <style>
+    body{font:16px/1.5 system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#18212f}
+    #summary{font-weight:700;padding:.75rem;background:#eef2f7;border-radius:.5rem}
+    .pass{color:#087443}.fail{color:#b42318}pre{white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <h1>Kiểm thử không cần Node.js</h1>
+  <p>Bộ kiểm tra chạy trực tiếp trên trình duyệt với dữ liệu và mã nguồn của dự án.</p>
+  <p id="summary" role="status">Đang chạy…</p>
+  <pre id="results" aria-live="polite"></pre>
+  <script src="../js/db.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/scorer.js"></script>
+  <script src="../js/law.js"></script>
+  <script src="db-test.js"></script>
+  <script src="scorer-test.js"></script>
+  <script>
+    (async function () {
+      var out = document.getElementById('results');
+      window.HS_TEST_REPORT = function (text) {
+        var line = document.createElement('span');
+        line.className = text.startsWith('FAIL') ? 'fail' : text.startsWith('PASS') ? 'pass' : '';
+        line.textContent = text + '\n'; out.appendChild(line);
+      };
+      try {
+        var suites = [await window.HS_TEST_SUITES.db(), window.HS_TEST_SUITES.scorer()];
+        var passed = suites.reduce(function (n, r) { return n + r.passed; }, 0);
+        var failed = suites.reduce(function (n, r) { return n + r.failed; }, 0);
+        document.getElementById('summary').textContent = 'Tổng kết: ' + passed + ' PASS / ' + failed + ' FAIL';
+        document.getElementById('summary').className = failed ? 'fail' : 'pass';
+      } catch (error) {
+        window.HS_TEST_REPORT('FAIL Lỗi chạy test: ' + error.message);
+        document.getElementById('summary').textContent = 'Không thể hoàn thành bộ test.';
+        document.getElementById('summary').className = 'fail';
+      }
+    }());
+  </script>
+</body>
+</html>
