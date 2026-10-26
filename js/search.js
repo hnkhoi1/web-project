@@ -2,7 +2,19 @@
   const { user, $, el } = HS; if (!user) return;
   const form = $('#search-form'), q = $('#q'), sel = $('#chuong'), box = $('#results'), count = $('#count');
   sel.replaceChildren(new Option('Tất cả chương', ''), ...Law.chuongList().map((c) => new Option(c, c)));
-  const params = new URLSearchParams(location.search); q.value = (params.get('q') || '').slice(0, 200);
+  function restoreFilters() {
+    const params = new URLSearchParams(location.search);
+    q.value = (params.get('q') || '').slice(0, 200);
+    const chapter = params.get('chuong') || '';
+    sel.value = [...sel.options].some((o) => o.value === chapter) ? chapter : '';
+  }
+  function syncFilters() {
+    const params = new URLSearchParams(location.search), query = q.value.trim().slice(0, 200);
+    query ? params.set('q', query) : params.delete('q');
+    sel.value ? params.set('chuong', sel.value) : params.delete('chuong');
+    const search = params.toString();
+    history.replaceState(null, '', location.pathname + (search ? '?' + search : '') + location.hash);
+  }
 
   function run() {
     const rows = Law.search(q.value, sel.value);
@@ -21,7 +33,9 @@
       return art;
     }));
   }
-  form.addEventListener('submit', (e) => { e.preventDefault(); run(); });
-  sel.addEventListener('change', run);
+  form.addEventListener('submit', (e) => { e.preventDefault(); syncFilters(); run(); });
+  sel.addEventListener('change', () => { syncFilters(); run(); });
+  window.addEventListener('popstate', () => { restoreFilters(); run(); });
+  restoreFilters();
   run();
 })();

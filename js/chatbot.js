@@ -1,11 +1,16 @@
 (() => {
   const { user, $, el, toast } = HS; if (!user) return;
   const log = $('#chat-log'), form = $('#chat-form'), input = $('#chat-input');
+  let pendingQuestion = null, pendingUnit = null, pendingArticleId = null;
   const SUG = ['Tôi bị đánh gây thương tích 20% thì được bồi thường gì?', 'Bị lừa chuyển khoản mất 80 triệu đồng, tôi đòi lại bằng cách nào?',
     'Lái xe say rượu gây tai nạn làm chết 1 người thì bị phạt bao nhiêu năm tù?', 'Nhân viên nhà nước lấy 300 triệu tiền công quỹ thì phạm tội gì?', 'Tàng trữ ma túy trong người bị xử lý ra sao?'];
   const scroll = () => { log.scrollTop = log.scrollHeight; };
   const addMsg = (cls, text) => { const m = el('div', 'msg ' + cls, text); log.appendChild(m); return m; };
   const para = (parent, label, text) => { const p = el('p'); if (label) p.appendChild(el('b', '', label + ' ')); p.append(text); parent.appendChild(p); };
+  async function saveLawNote(note) {
+    if (typeof DB.ready === 'function') { await DB.ready(); return DB.saveNote(note); }
+    return DB.saveNote(user.id, note); // TODO(T10): compatibility with the current local adapter
+  }
 
   function showAnswer(a) {
     const m = addMsg('bot');
@@ -29,19 +34,63 @@
     if (a.alt) { const p = el('p'); p.append('Có thể bạn muốn hỏi: '); const l2 = el('a', '', `Điều ${a.alt.id}. ${a.alt.tieu_de}`); l2.href = 'dieu-luat-chi-tiet.html?id=' + a.alt.id; p.appendChild(l2); m.appendChild(p); }
     const cite = el('div', 'cite'), l = el('a', '', `Xem chi tiết Điều ${a.article.id}`); l.href = 'dieu-luat-chi-tiet.html?id=' + a.article.id; cite.appendChild(l);
     const save = el('button', 'btn btn-ghost btn-sm', '+ Lưu vào ghi chú'); save.type = 'button';
-    save.addEventListener('click', () => {
-      try { DB.saveNote(user.id, { title: a.note_title, content: a.note_text, source: { type: 'chat', ref: a.article.id } }); }
+    save.addEventListener('click', async () => {
+      try { await saveLawNote({ title: a.note_title, content: a.note_text, source: { type: 'chat', ref: a.article.id } }); }
       catch (e) { return toast(e.message, 'err'); }
       save.disabled = true; save.textContent = '✓ Đã lưu'; toast('Đã lưu vào ghi chú.');
     });
     cite.appendChild(save); m.appendChild(cite);
   }
 
+  function continueQuestion(q) {
+    if (!pendingQuestion) return q;
+    const number = q.match(/^\s*(\d+(?:[.,]\d+)?)\s*(%|tri[eệ]u|t(?:ỷ|ỉ|y))?\s*(?:đồng)?\s*$/i);
+    if (number) {
+      const unit = number[2] || pendingUnit;
+      return `${pendingQuestion} ${number[1]}${unit === '%' ? '%' : unit ? ` ${unit} đồng` : ''}`;
+    }
+    const current = Scorer.rank(q, LAW_DATA);
+    if (current.status !== 'none' && current.results[0].score >= 0.25 && String(current.results[0].key) !== String(pendingArticleId)) {
+      pendingQuestion = null; pendingUnit = null; pendingArticleId = null;
+      return q; // Một câu hỏi mới về điều khác phải bỏ ngữ cảnh đang chờ.
+    }
+    return `${pendingQuestion}. Thông tin bổ sung: ${q}`;
+  }
+
+  async function saveAskHistory(question, answer) {
+    if (window.location.protocol === 'file:') {
+      throw new Error('Bạn đang mở trang bằng file://. Hãy bật Apache trong XAMPP và mở http://localhost/web-project/html/tu-van.html để gọi API.');
+    }
+    const url = '../backend/api/law.php';
+    const csrfResponse = await fetch(`${url}?action=csrf`, { credentials: 'same-origin' });
+    if (!csrfResponse.ok) throw new Error('Không lấy được mã bảo vệ để lưu lịch sử.');
+    const csrfPayload = await csrfResponse.json();
+    const response = await fetch(`${url}?action=ask`, {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfPayload.data.csrf },
+      body: JSON.stringify({ question, answer: { article_id: answer.article?.id || null,
+        khoan_so: answer.khoan?.so_khoan || null, score: answer.score ?? null } }),
+    });
+    if (!response.ok) throw new Error('API chưa lưu được lịch sử hỏi đáp.');
+  }
+
   function ask(q) {
     q = q.trim().slice(0, 500); if (!q) return;
     addMsg('user', q); input.value = ''; input.disabled = true;
     const t = el('div', 'typing', 'Đang phân tích tình huống...'); log.appendChild(t); scroll();
-    setTimeout(() => { t.remove(); showAnswer(Law.answer(q)); input.disabled = false; scroll(); input.focus(); }, 450);
+    const fullQuestion = continueQuestion(q);
+    setTimeout(async () => {
+      t.remove();
+      const answer = Law.answer(fullQuestion);
+      showAnswer(answer);
+      if (answer.found && answer.mode === 'overview' && answer.ask) {
+        pendingQuestion = fullQuestion;
+        pendingArticleId = answer.article.id;
+        pendingUnit = /tỉ lệ|phần trăm|%/i.test(answer.ask) ? '%' : /triệu|giá trị tài sản/i.test(answer.ask) ? 'triệu' : null;
+      } else { pendingQuestion = null; pendingUnit = null; pendingArticleId = null; }
+      if (answer.found) saveAskHistory(fullQuestion, answer).catch((error) => console.warn('Không lưu được lịch sử chatbot:', error));
+      input.disabled = false; scroll(); input.focus();
+    }, 450);
   }
   form.addEventListener('submit', (e) => { e.preventDefault(); ask(input.value); });
   $('#chips').replaceChildren(...SUG.map((s) => { const b = el('button', 'suggestion', s); b.type = 'button'; b.addEventListener('click', () => ask(s)); return b; }));

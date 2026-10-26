@@ -10,13 +10,18 @@
   a.khoan.forEach((k) => { noteText += `\n\nKhoản ${k.so_khoan} (${k.dieu_kien}): ${k.noi_dung}`; if (k.quyen_loi) noteText += `\nQuyền lợi: ${k.quyen_loi}`; });
   if (a.can_cu_boi_thuong) noteText += `\n\nCăn cứ bồi thường: ${a.can_cu_boi_thuong}`;
 
+  async function saveLawNote(note) {
+    if (typeof DB.ready === 'function') { await DB.ready(); return DB.saveNote(note); }
+    return DB.saveNote(user.id, note); // TODO(T10): compatibility with the current local adapter
+  }
+
   const head = el('div', 'article-head'), bc = el('p', 'breadcrumb'), back = el('a', '', 'Tra cứu'); back.href = 'tra-cuu.html';
   bc.append(back, ' › ' + a.chuong); head.appendChild(bc);
   head.appendChild(el('h1', '', `Điều ${a.id}. ${a.tieu_de}`));
   const meta = el('div', 'article-meta'); meta.append(el('span', 'pill', a.chuong), el('span', 'penalty', a.khung_hinh_phat)); head.appendChild(meta);
   const save = el('button', 'btn btn-ghost btn-sm', '+ Lưu vào ghi chú'); save.type = 'button';
-  save.addEventListener('click', () => {
-    try { DB.saveNote(user.id, { title: `Điều ${a.id}. ${a.tieu_de}`, content: noteText.slice(0, 5000), source: { type: 'article', ref: a.id } }); }
+  save.addEventListener('click', async () => {
+    try { await saveLawNote({ title: `Điều ${a.id}. ${a.tieu_de}`, content: noteText.slice(0, 5000), source: { type: 'article', ref: a.id } }); }
     catch (e) { return toast(e.message, 'err'); }
     save.disabled = true; save.textContent = '✓ Đã lưu vào ghi chú'; toast('Đã lưu vào ghi chú.');
   });
