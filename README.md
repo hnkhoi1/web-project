@@ -1,133 +1,103 @@
-<<<<<<< HEAD
-# Hình Sự Tra Cứu — demo giao diện tĩnh (HTML + CSS + JavaScript)
+# Hình Sự Tra Cứu
 
-Không cần PHP, không cần cài đặt: **mở `login.html` bằng trình duyệt** (hoặc `python3 -m http.server` rồi vào http://localhost:8000/login.html).
+Ứng dụng web tra cứu và tư vấn **Luật Hình sự Việt Nam** bằng ngôn ngữ đời thường: người dùng mô tả tình huống, hệ thống trả về điều luật, mức xử lý và quyền lợi bồi thường của người bị hại. Có thêm quản lý ghi chú cá nhân, tài khoản và tùy chỉnh giao diện.
 
-## Tài khoản demo (nằm cứng trong mã nguồn)
+> **Trạng thái hiện tại:** bản chạy được là **bản tĩnh** (HTML + CSS + JavaScript, dữ liệu lưu ở `localStorage` của trình duyệt). Nhóm đang chuyển sang **PHP + MySQL** (XAMPP). CSDL đã thiết kế xong (`database/`), phần BackEnd PHP đang được làm. Tiến độ xem [docs/TASK_BOARD.md](docs/TASK_BOARD.md).
+
+## 1. Chạy bản tĩnh
+
+Không cần cài PHP, MySQL hay Node. Dùng một trong ba cách:
+
+| Cách | Làm thế nào |
+|---|---|
+| **Python** (khuyên dùng) | Mở terminal tại thư mục gốc của repo, chạy `python3 -m http.server 8000` (Windows: `python -m http.server 8000`), rồi vào http://localhost:8000/html/login.html |
+| **VS Code** | Cài extension **Live Server**, chuột phải `html/login.html` → *Open with Live Server* |
+| **Mở trực tiếp** | Mở file `html/login.html` bằng trình duyệt (đường dẫn dạng `file://`) |
+
+> Thư mục gốc chưa có `index.html`, nên luôn bắt đầu từ `html/login.html`. (Task F03 sẽ thêm trang chuyển hướng.)
+
+### Tài khoản demo
 | Tên đăng nhập | Mật khẩu |
 |---|---|
 | `demo` | `12345` |
 
-Khai báo ở đầu `js/db.js` (`DEMO_USER`). Quy tắc theo yêu cầu:
-- Tài khoản demo **không nằm trong database**, được `Object.freeze`, và mọi thao tác sửa tên/ảnh, đổi mật khẩu, xóa tài khoản đều bị từ chối (giao diện cũng khóa các nút này).
-- **Đăng ký / xóa tài khoản chỉ thêm / bớt bản ghi trong database** (localStorage của trình duyệt). Xóa mọi tài khoản đã thêm bằng nút ở trang *Dữ liệu demo* cũng không ảnh hưởng tài khoản demo.
-- Ghi chú và tùy chỉnh giao diện được lưu riêng theo từng người dùng, kể cả demo (đây là dữ liệu, không phải bản ghi tài khoản).
+Tài khoản demo nằm cứng trong `js/db.js` (`DEMO_USER`), bị khóa: không sửa tên/ảnh, không đổi mật khẩu, không xóa được. Tài khoản tự đăng ký thì dùng đầy đủ chức năng; dữ liệu lưu trong `localStorage` của trình duyệt đó. Xóa dữ liệu đã tạo: trang **Dữ liệu demo** (`html/database.html`) hoặc DevTools → Application → Clear storage.
 
-## Màn hình
-| Trang | File |
-|---|---|
-| Đăng nhập / Đăng ký / Quên mật khẩu (email + OTP giả lập ngay trên màn hình) | `login.html`, `register.html`, `forgot-password.html` |
-| Trang chủ cá nhân + ghi chú (thêm/sửa/xóa/ghim/tìm) | `index.html`, `js/notes.js` |
-| Tra cứu, chi tiết điều luật, chatbot tư vấn | `tra-cuu.html`, `dieu-luat-chi-tiet.html`, `tu-van.html` |
-| Giới thiệu, Liên hệ | `gioi-thieu.html`, `lien-he.html` |
-| Hồ sơ (tên + avatar, xóa tài khoản), đổi mật khẩu, tùy chỉnh (sáng/tối, cỡ chữ, màu ghi chú) | `ho-so.html`, `doi-mat-khau.html`, `tuy-chinh.html` |
-| Xem "database" giả lập | `database.html` |
+## 2. Các trang
 
-Chưa đăng nhập mở bất kỳ trang nào ngoài 3 trang xác thực đều bị chuyển về `login.html`. Đăng ký xong tự đăng nhập; tài khoản mới chưa kích hoạt vẫn dùng đủ chức năng nhưng có thanh vàng nổi bật ("Mở email kích hoạt" → hộp thư giả lập).
+Chưa đăng nhập mà mở bất kỳ trang nào ngoài ba trang xác thực thì bị chuyển về `login.html`.
 
-## File JavaScript
-`db.js` database + tài khoản demo · `app.js` kiểm tra đăng nhập, header/footer, tiện ích form · `auth.js` đăng nhập/đăng ký/quên mật khẩu · `law.js` + `data.js` + `scorer.js` (chấm điểm khái niệm + BM25 + gần đúng) + `nlu.js` (TF-IDF, chỉ còn dùng chọn khoản dự phòng) tra cứu & chatbot · `notes.js`, `search.js`, `detail.js`, `chatbot.js`, `contact.js`, `account.js` theo từng trang.
-
-## Lưu ý trung thực về bảo mật
-Đây là demo giao diện: kiểm tra đăng nhập chạy ở trình duyệt nên **không an toàn thật** (ai mở DevTools cũng đọc được mật khẩu demo và dữ liệu localStorage). Mật khẩu tài khoản thêm vào được băm SHA-256 + salt chỉ để minh họa. Phiên bản có máy chủ thật (bcrypt, CSRF, email thật) nằm ở bản PHP riêng.
-=======
-# Hình Sự Tra Cứu — Demo web tra cứu & tư vấn Luật Hình sự Việt Nam
-
-Đồ án minh họa: hệ thống tra cứu điều luật hình sự theo hướng **chatbot**, hiểu câu hỏi
-bằng ngôn ngữ tự nhiên (không cần gõ đúng số điều/thuật ngữ pháp lý), BackEnd &
-cơ sở dữ liệu dùng **PHP thuần + MySQL** (không dùng Streamlit).
-
-## Cấu trúc thư mục
-
-```
-legal-demo/
-├── frontend/                 # FrontEnd tĩnh — mở trực tiếp được, không cần server
-│   ├── index.html            # 1. Trang chủ
-│   ├── tra-cuu.html          # 2. Tra cứu điều luật (tìm kiếm ngữ nghĩa)
-│   ├── dieu-luat-chi-tiet.html # 3. Chi tiết 1 điều luật
-│   ├── tu-van.html           # 4. Tư vấn / chatbot
-│   ├── gioi-thieu.html       # 5. Giới thiệu hệ thống
-│   ├── lien-he.html          # 6. Liên hệ / gửi câu hỏi
-│   ├── css/style.css
-│   └── js/
-│       ├── data.js           # dữ liệu mẫu dùng khi chạy demo tĩnh (không có PHP)
-│       ├── nlu.js            # TF-IDF + cosine similarity — bản JS (fallback)
-│       ├── search.js / chatbot.js / main.js
-├── backend/                  # BackEnd PHP — các API JSON + màn hình quản trị (menu chức năng)
-│   ├── config.php            # kết nối MySQL (PDO)
-│   ├── nlu/TfidfMatcher.php  # TF-IDF + cosine similarity — bản PHP (dùng thật khi có server)
-│   └── api/
-│       ├── search.php        # GET  ?q=&chuong=   -> tra cứu
-│       ├── chatbot.php       # POST {question}     -> hỏi đáp chatbot
-│       ├── dieu_luat.php     # GET  ?id=            -> chi tiết điều luật
-│       └── lien_he.php       # POST {...}           -> lưu câu hỏi liên hệ
-└── database/
-    └── schema.sql            # thiết kế CSDL + dữ liệu mẫu (chạy để tạo DB luat_hinh_su)
-```
-
-## Cách chạy demo
-
-**Cách 1 — chỉ xem giao diện (không cần PHP):** mở thẳng `frontend/index.html` bằng
-trình duyệt. Trang Tra cứu và Tư vấn tự phát hiện không có server PHP và chuyển sang xử
-lý NLU (TF-IDF + cosine similarity) ngay trên trình duyệt bằng `frontend/js/nlu.js` +
-`frontend/js/data.js`, nên vẫn hoạt động đầy đủ.
-
-**Cách 2 — chạy đủ FrontEnd + BackEnd PHP + MySQL (khuyến nghị để nộp bài):**
-1. Cài XAMPP/LAMPP (PHP 8 + MySQL/MariaDB), copy cả thư mục `legal-demo` vào `htdocs/`.
-2. Tạo CSDL: mở phpMyAdmin hoặc `mysql -u root -p < database/schema.sql`.
-3. Sửa `backend/config.php` nếu tài khoản MySQL khác mặc định.
-4. Truy cập `http://localhost/legal-demo/frontend/index.html` — lúc này Tra cứu và
-   Tư vấn sẽ gọi thật `backend/api/search.php` và `backend/api/chatbot.php`.
-
-## Thiết kế cơ sở dữ liệu (sơ bộ)
-
-`chuong (1‑n) dieu_luat (1‑n) khoan`, cùng `lich_su_hoi_dap` (log câu hỏi chatbot +
-điều luật khớp + điểm tương đồng, phục vụ đánh giá/cải thiện NLU sau này), `lien_he`
-(câu hỏi gửi từ trang Liên hệ) và `quan_tri_vien` (tài khoản cho màn hình quản trị).
-Chi tiết cột xem `database/schema.sql`.
-
-## Menu chức năng BackEnd
-
-| Chức năng | Endpoint | Mô tả |
+| Nhóm | Trang (trong `html/`) | Chức năng |
 |---|---|---|
-| Tra cứu điều luật | `GET /backend/api/search.php` | Lọc theo chương + xếp hạng theo độ khớp ngữ nghĩa |
-| Chi tiết điều luật | `GET /backend/api/dieu_luat.php` | Trả về 1 điều luật kèm các khoản |
-| Tư vấn chatbot | `POST /backend/api/chatbot.php` | Nhận câu hỏi, trả lời tư vấn + trích dẫn điều luật, có ghi log |
-| Liên hệ | `POST /backend/api/lien_he.php` | Lưu câu hỏi người dùng gửi vào CSDL |
+| Xác thực | `login.html`, `register.html`, `forgot-password.html` | Đăng nhập (tên đăng nhập hoặc email, khóa tạm sau 5 lần sai), đăng ký (tự đăng nhập, có thanh nhắc kích hoạt email), quên mật khẩu bằng OTP giả lập trên màn hình |
+| Trang chủ | `index.html` | Ghi chú cá nhân: thêm, sửa, xóa có xác nhận, ghim, tìm theo thời gian thực, chọn màu |
+| Luật | `tra-cuu.html`, `dieu-luat-chi-tiet.html`, `tu-van.html` | Tra cứu điều luật, chi tiết từng điều (các khoản, quyền lợi người bị hại), chatbot tư vấn |
+| Tài khoản | `ho-so.html`, `doi-mat-khau.html`, `tuy-chinh.html` | Hồ sơ và ảnh đại diện, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
+| Khác | `gioi-thieu.html`, `lien-he.html`, `database.html` | Giới thiệu, gửi liên hệ, xem dữ liệu demo trong `localStorage` |
 
-Có thể mở rộng thêm màn hình quản trị CRUD điều luật (thêm/sửa/xoá `dieu_luat`,
-`khoan`) dùng chung `config.php` — đã có bảng `quan_tri_vien` sẵn cho việc đăng nhập.
+## 3. Cấu trúc thư mục
 
-## Về phần "tự hiểu câu hỏi" (NLU)
+```
+web-project/
+├── html/        13 trang. Header/footer do js/app.js chèn vào
+├── css/app.css  giao diện dùng chung (có chế độ sáng/tối, responsive)
+├── js/
+│   ├── db.js        lớp dữ liệu, tài khoản demo, localStorage
+│   ├── app.js       khung chung: chặn chưa đăng nhập, header/footer, tiện ích HS.*
+│   ├── auth.js      đăng nhập / đăng ký / quên mật khẩu
+│   ├── notes.js, account.js, contact.js      logic từng trang
+│   ├── search.js, detail.js, chatbot.js      tra cứu, chi tiết, chatbot
+│   └── data.js, nlu.js, scorer.js, law.js    dữ liệu điều luật + chấm điểm câu hỏi
+├── data/        dieu_luat_data.php  (dữ liệu điều luật phía PHP)
+├── database/    schema.sql, seed.sql, migrations/   (MySQL, xem mục 5)
+├── tests/       db-test.js, scorer-test.js, e2e.py
+└── docs/        tài liệu thiết kế và kế hoạch (mục 6)
+```
 
-Yêu cầu là hệ thống hiểu câu hỏi qua **sentence-transformers hoặc mô hình nhẹ hơn**.
-Vì BackEnd chính dùng PHP (không có sentence-transformers gốc), bản demo cài **TF-IDF +
-cosine similarity** — nhẹ, chạy thuần PHP/JS, không cần mô hình tải về hay GPU, và đã đủ
-để so khớp câu hỏi tiếng Việt với điều luật gần nghĩa nhất trong tập dữ liệu nhỏ.
+**Thứ tự nạp script trong mỗi trang:** `db.js` → `app.js` (trong `<head>`) → `data.js` → `nlu.js` → `scorer.js` → `law.js` (chỉ trang luật) → script của trang (cuối `<body>`).
 
-### Hướng nâng cấp lên sentence-transformers thật
+## 4. Chạy test
 
-Khi cần độ chính xác ngữ nghĩa cao hơn (đồng nghĩa xa, câu hỏi phức tạp), có thể thêm
-một dịch vụ Python nhỏ chạy song song với PHP:
+| Lệnh | Cần | Kết quả hiện tại |
+|---|---|---|
+| `node tests/db-test.js` | Node.js | 13 mục đạt |
+| `node tests/scorer-test.js` | Node.js | 19/19 đạt |
+| `python tests/e2e.py` | Python 3 + Playwright | **Đang hỏng** vì trỏ sai thư mục (lỗi đã biết, sửa trong F02) |
 
-1. Dịch vụ Python (FastAPI/Flask) dùng mô hình embedding đa ngôn ngữ **nhẹ**, ví dụ
-   `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (~470MB) hoặc các
-   biến thể nhỏ hơn nếu cần tốc độ/tài nguyên thấp hơn nữa.
-2. Precompute: tính sẵn vector embedding cho từng `dieu_luat` (offline), lưu vào cột
-   `embedding` (JSON) trong bảng `dieu_luat` hoặc một bảng riêng.
-3. `backend/api/chatbot.php` gọi `POST http://localhost:8000/embed` (dịch vụ Python)
-   để lấy vector câu hỏi, sau đó vẫn dùng `TfidfMatcher::cosine()` (đổi tên thành
-   `cosine()` dùng chung) để so khớp — chỉ thay bước *vectorize*, giữ nguyên phần còn lại.
-4. Có thể cache embedding câu hỏi thường gặp trong `lich_su_hoi_dap` để giảm độ trễ.
+Cài Playwright cho e2e: `pip install playwright` rồi `playwright install chromium`.
 
-Kiến trúc lai này giữ được yêu cầu "database dùng PHP" trong khi vẫn dùng được mô hình
-ngữ nghĩa thật khi cần, và bản TF-IDF hiện tại đã là "mô hình tương đương nhưng nhẹ hơn"
-để nộp trước trong giai đoạn demo.
+Danh sách kiểm tay trước mỗi lần push: [docs/TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md) (mục 1, "Smoke test").
 
-## Lưu ý
+## 5. Cơ sở dữ liệu MySQL
 
-Toàn bộ nội dung điều luật trong bản demo là **dữ liệu biên soạn rút gọn cho mục đích
-học tập**, không phải trích dẫn nguyên văn Bộ luật Hình sự và không thay thế tư vấn
-pháp lý chính thức. Khi triển khai thật, cần đối chiếu và cập nhật theo văn bản pháp
-luật hiện hành.
->>>>>>> 43bf1fe6352d41f89ff06dcb2b9a0dbbed023e03
+CSDL `hinh_su_db` gồm 10 bảng (người dùng, ghi chú, liên hệ, điều luật…). Mô tả cột và sơ đồ ERD: [docs/DATABASE.md](docs/DATABASE.md).
+
+**Cài mới** (cần XAMPP hoặc MySQL 8 / MariaDB 10.4 trở lên), chạy tại thư mục gốc của repo:
+
+```
+mysql -u root -p < database/schema.sql
+mysql -u root -p < database/seed.sql
+```
+
+Hoặc import hai file trên theo thứ tự trong phpMyAdmin. Sau này sẽ có thêm `database/seed_law.sql` (sinh tự động từ dữ liệu điều luật), import sau `seed.sql`.
+
+> ⚠ `schema.sql` bắt đầu bằng `DROP TABLE`, chạy lại sẽ **xóa toàn bộ dữ liệu**. CSDL đã có dữ liệu thì chỉ chạy các file mới trong `database/migrations/`.
+
+Hiện giao diện **chưa** đọc ghi MySQL; việc nối BackEnd PHP nằm ở các task T10–T14.
+
+## 6. Tài liệu trong `docs/`
+
+| File | Nội dung |
+|---|---|
+| `TASK_BOARD.md` | Phân công, trạng thái và tiêu chí hoàn thành từng task, quy tắc làm việc trên `main` |
+| `TIMELINE.md` | Lịch 14 ngày (26/10 – 08/11/2026) cho từng người |
+| `FILE_OWNERSHIP.md` | File nào của ai, cách sửa file dùng chung |
+| `ARCHITECTURE.md`, `API_CONTRACT.md` | Kiến trúc hiện tại và kiến trúc đích, hợp đồng API |
+| `DATABASE.md`, `DATABASE.pdf` | Thiết kế CSDL |
+| `TESTING_CHECKLIST.md`, `PROJECT_AUDIT.md` | Danh sách kiểm thử, báo cáo rà soát lỗi |
+
+## 7. Lưu ý
+
+**Bảo mật của bản tĩnh:** việc kiểm tra đăng nhập chạy ngay trong trình duyệt nên **không an toàn thật**. Ai mở DevTools cũng đọc được dữ liệu `localStorage`, và mật khẩu của tài khoản tự đăng ký chỉ được băm SHA-256 + salt để minh họa. Bản PHP sẽ băm bcrypt, có phiên đăng nhập và CSRF ở máy chủ.
+
+**Nội dung pháp luật:** điều luật trong ứng dụng là dữ liệu biên soạn rút gọn cho mục đích học tập, không phải trích dẫn nguyên văn Bộ luật Hình sự và không thay thế tư vấn pháp lý chính thức.
