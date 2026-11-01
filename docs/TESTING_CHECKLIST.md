@@ -22,7 +22,7 @@
 |---|---|---|
 | `node tests/db-test.js` | TV-A | 13/13 PASS (chưa chạy được trên máy audit vì thiếu Node) |
 | `node tests/scorer-test.js` | TV-B | 19/19 PASS (đã kiểm tương đương trong trình duyệt: 18/18 + ngoài phạm vi) |
-| `python tests/e2e.py` → sau F02: `python tests/e2e/run_all.py` | caychay0512-dev | ❌ đang hỏng đường dẫn (B2) — sửa trong F02 |
+| `python tests/e2e/run_all.py` (`HS_BASE=file\|http\|<url>`) | caychay0512-dev | 67/67 PASS, cả `file://` và `http` |
 | `php -l` mọi file `.php` | TV-A/B | Không lỗi cú pháp |
 | `php tests/api_smoke.php` (sau T11) | TV-A | Toàn bộ PASS |
 
@@ -79,3 +79,4 @@
 | Ngày | Người | Commit | Phạm vi | Kết quả | Ghi chú |
 |---|---|---|---|---|---|
 | 25/10/2026 | coordinator (audit) | a665b13 | Tải 13 trang, DB.* cơ bản, 18 câu scorer trong trình duyệt | PASS | Không có Node/Playwright; e2e chưa chạy; nhánh PHP chưa chạy (MySQL tắt) |
+| 02/11/2026 | caychay0512-dev | b3ee6f9 + F02/T32 (chưa commit) | e2e 5 module (auth, notes, law, account, admin) | 67/67 PASS | Bản e2e cũ sửa đường dẫn đạt 26/26. Lỗi đã thấy (TV-B): chatbot đang chờ bổ sung thì câu hỏi không liên quan bị ghép vào ngữ cảnh cũ |
