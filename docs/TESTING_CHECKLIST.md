@@ -79,4 +79,4 @@
 | Ngày | Người | Commit | Phạm vi | Kết quả | Ghi chú |
 |---|---|---|---|---|---|
 | 25/10/2026 | coordinator (audit) | a665b13 | Tải 13 trang, DB.* cơ bản, 18 câu scorer trong trình duyệt | PASS | Không có Node/Playwright; e2e chưa chạy; nhánh PHP chưa chạy (MySQL tắt) |
-| 02/11/2026 | caychay0512-dev | b3ee6f9 + F02/T32 (chưa commit) | e2e 5 module (auth, notes, law, account, admin) | 67/67 PASS | Bản e2e cũ sửa đường dẫn đạt 26/26. Lỗi đã thấy (TV-B): chatbot đang chờ bổ sung thì câu hỏi không liên quan bị ghép vào ngữ cảnh cũ |
+| 02/11/2026 | caychay0512-dev | cd4ef2c | e2e 5 module (auth, notes, law, account, admin) | 67/67 PASS | Bản e2e cũ sửa đường dẫn đạt 26/26. Lỗi đã thấy (TV-B): chatbot đang chờ bổ sung thì câu hỏi không liên quan bị ghép vào ngữ cảnh cũ |

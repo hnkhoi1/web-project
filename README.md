@@ -14,7 +14,7 @@ Không cần cài PHP, MySQL hay Node. Dùng một trong ba cách:
 | **VS Code** | Cài extension **Live Server**, chuột phải `html/login.html` → *Open with Live Server* |
 | **Mở trực tiếp** | Mở file `html/login.html` bằng trình duyệt (đường dẫn dạng `file://`) |
 
-> Thư mục gốc chưa có `index.html`, nên luôn bắt đầu từ `html/login.html`. (Task F03 sẽ thêm trang chuyển hướng.)
+> `index.html` ở thư mục gốc tự chuyển sang `html/login.html`, nên vào http://localhost:8000/ cũng được.
 
 ### Tài khoản demo
 | Tên đăng nhập | Mật khẩu |
@@ -34,23 +34,25 @@ Chưa đăng nhập mà mở bất kỳ trang nào ngoài ba trang xác thực t
 | Luật | `tra-cuu.html`, `dieu-luat-chi-tiet.html`, `tu-van.html` | Tra cứu điều luật, chi tiết từng điều (các khoản, quyền lợi người bị hại), chatbot tư vấn |
 | Tài khoản | `ho-so.html`, `doi-mat-khau.html`, `tuy-chinh.html` | Hồ sơ và ảnh đại diện, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
 | Khác | `gioi-thieu.html`, `lien-he.html`, `database.html` | Giới thiệu, gửi liên hệ, xem dữ liệu demo trong `localStorage` |
+| Quản trị | `admin.html`, `admin-nguoi-dung.html`, `admin-lien-he.html`, `admin-lich-su.html` | Menu BackEnd: tổng quan, quản lý người dùng, xử lý liên hệ, lịch sử hỏi đáp chatbot. Chỉ admin vào được; bản tĩnh chưa có vai trò nên tạm cho tài khoản `demo` đóng vai admin (vào từ trang **Dữ liệu demo**) |
 
 ## 3. Cấu trúc thư mục
 
 ```
 web-project/
-├── html/        13 trang. Header/footer do js/app.js chèn vào
+├── html/        17 trang. Header/footer do js/app.js chèn vào
 ├── css/app.css  giao diện dùng chung (có chế độ sáng/tối, responsive)
 ├── js/
 │   ├── db.js        lớp dữ liệu, tài khoản demo, localStorage
 │   ├── app.js       khung chung: chặn chưa đăng nhập, header/footer, tiện ích HS.*
 │   ├── auth.js      đăng nhập / đăng ký / quên mật khẩu
 │   ├── notes.js, account.js, contact.js      logic từng trang
+│   ├── admin.js     trang quản trị (đang dùng stub, chờ API admin.php)
 │   ├── search.js, detail.js, chatbot.js      tra cứu, chi tiết, chatbot
 │   └── data.js, nlu.js, scorer.js, law.js    dữ liệu điều luật + chấm điểm câu hỏi
 ├── data/        dieu_luat_data.php  (dữ liệu điều luật phía PHP)
 ├── database/    schema.sql, seed.sql, migrations/   (MySQL, xem mục 5)
-├── tests/       db-test.js, scorer-test.js, e2e.py
+├── tests/       db-test.js, scorer-test.js, run-in-browser.html, e2e/ (Playwright)
 └── docs/        tài liệu thiết kế và kế hoạch (mục 6)
 ```
 
@@ -62,9 +64,16 @@ web-project/
 |---|---|---|
 | `node tests/db-test.js` | Node.js | 13 mục đạt |
 | `node tests/scorer-test.js` | Node.js | 19/19 đạt |
-| `python tests/e2e.py` | Python 3 + Playwright | **Đang hỏng** vì trỏ sai thư mục (lỗi đã biết, sửa trong F02) |
+| `python tests/e2e/run_all.py` | Python 3 + Playwright | 67/67 đạt (5 module) |
 
-Cài Playwright cho e2e: `pip install playwright` rồi `playwright install chromium`.
+Không có Node thì mở `tests/run-in-browser.html` để chạy hai test JS ngay trong trình duyệt.
+
+**E2E:** cài một lần bằng `pip install playwright` rồi `python -m playwright install chromium`. Chạy tại thư mục gốc repo:
+
+- Toàn bộ: `python tests/e2e/run_all.py`. Một module: `python tests/e2e/test_notes.py` (gồm `test_auth`, `test_notes`, `test_law`, `test_account`, `test_admin`).
+- Biến `HS_BASE` chọn nơi chạy: bỏ trống hoặc `file` = mở thẳng `file://` (mặc định); `http` = tự bật server tĩnh của Python; hoặc một địa chỉ cụ thể, ví dụ `HS_BASE=http://localhost/web-project/html/` khi chạy qua XAMPP. PowerShell: `$env:HS_BASE='http'; python tests/e2e/run_all.py`.
+- Mỗi module chạy trong trình duyệt sạch (localStorage trống). Lệnh trả mã thoát 1 nếu có case FAIL; đặt `HS_DEBUG=1` để in traceback khi một module dừng giữa chừng.
+- Thêm case: mỗi người viết vào file module của mình, dùng các hàm `t.login()`, `t.logout()`, `t.register()`, `t.ok()` trong `tests/e2e/common.py`.
 
 Danh sách kiểm tay trước mỗi lần push: [docs/TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md) (mục 1, "Smoke test").
 
