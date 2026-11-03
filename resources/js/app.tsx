@@ -1,3 +1,6 @@
+import '@fontsource-variable/inter/latin.css';
+import '@fontsource-variable/inter/latin-ext.css';
+import '@fontsource-variable/inter/vietnamese.css';
 import { createInertiaApp } from '@inertiajs/react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';

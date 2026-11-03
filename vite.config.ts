@@ -4,7 +4,6 @@ import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
 export default defineConfig({
@@ -12,11 +11,6 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
             refresh: true,
-            fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
-                }),
-            ],
         }),
         inertia(),
         react(),
@@ -47,6 +41,11 @@ export default defineConfig({
     },
     lint: {
         ignorePatterns: [
+            // Legacy static site, kept untouched until it is retired.
+            'html/**',
+            'js/**',
+            'tests/*.js',
+            'tests/*.html',
             'vendor/**',
             'node_modules/**',
             'public/**',
@@ -61,6 +60,9 @@ export default defineConfig({
             denyWarnings: true,
             typeAware: true,
         },
+        rules: {
+            'typescript/no-explicit-any': 'error',
+        },
     },
     fmt: {
         printWidth: 80,
@@ -70,6 +72,16 @@ export default defineConfig({
         singleAttributePerLine: false,
         htmlWhitespaceSensitivity: 'css',
         ignorePatterns: [
+            // Legacy static site, kept untouched until it is retired.
+            'css/**',
+            'docs/**',
+            'html/**',
+            'index.html',
+            'js/**',
+            'README.md',
+            'compose*.yaml',
+            'tests/*.js',
+            'tests/*.html',
             '.github/**',
             'composer.json',
             'resources/js/components/ui/*',
