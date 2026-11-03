@@ -11,6 +11,9 @@ class EvalSetTest extends TestCase
 
     private const FIXTURES = __DIR__.'/../../fixtures';
 
+    /** The set is frozen: the lexical baseline was measured against exactly this file. */
+    private const EVAL_SHA256 = '6cd31b99ede5fcc2927567c2960d24d51b7836692a3dbe6209f93f152ce4bfa3';
+
     public function test_has_at_least_150_cases_with_the_expected_fields(): void
     {
         $cases = $this->cases();
@@ -144,6 +147,25 @@ class EvalSetTest extends TestCase
     public function test_comparison_catches_trivial_variants(): void
     {
         $this->assertSame('toi bi danh do', $this->normalize("  Tôi   BỊ\tđánh  Đỏ "));
+    }
+
+    public function test_the_set_has_not_changed_since_the_baseline_was_measured(): void
+    {
+        $this->assertSame(self::EVAL_SHA256, hash_file('sha256', self::FIXTURES.'/search-eval.json'));
+    }
+
+    public function test_the_baseline_records_lexical_holdout_scores_for_this_set(): void
+    {
+        $baseline = json_decode((string) file_get_contents(self::FIXTURES.'/search-baseline.json'), true);
+        $holdout = array_filter($this->cases(), fn (array $case) => $case['split'] === 'holdout');
+
+        $this->assertIsArray($baseline, 'search-baseline.json must exist');
+        $this->assertSame('lexical', $baseline['engine']);
+        $this->assertSame('holdout', $baseline['split']);
+        $this->assertSame(count($holdout), $baseline['total']);
+        $this->assertIsFloat($baseline['top1']);
+        $this->assertIsFloat($baseline['top3']);
+        $this->assertSame(self::EVAL_SHA256, $baseline['eval_sha256']);
     }
 
     /**

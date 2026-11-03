@@ -1,0 +1,8 @@
+{
+  "engine": "lexical",
+  "split": "holdout",
+  "total": 71,
+  "top1": 0.352112676056338,
+  "top3": 0.5352112676056338,
+  "eval_sha256": "6cd31b99ede5fcc2927567c2960d24d51b7836692a3dbe6209f93f152ce4bfa3"
+}
