@@ -1,0 +1,106 @@
+(() => {
+  const { user, $, el, toast } = HS; if (!user) return;
+  const log = $('#chat-log'), form = $('#chat-form'), input = $('#chat-input');
+  let pendingQuestion = null, pendingUnit = null, pendingArticleId = null;
+  const SUG = ['Tôi bị đánh gây thương tích 20% thì được bồi thường gì?', 'Bị lừa chuyển khoản mất 80 triệu đồng, tôi đòi lại bằng cách nào?',
+    'Lái xe say rượu gây tai nạn làm chết 1 người thì bị phạt bao nhiêu năm tù?', 'Nhân viên nhà nước lấy 300 triệu tiền công quỹ thì phạm tội gì?', 'Tàng trữ ma túy trong người bị xử lý ra sao?'];
+  const scroll = () => { log.scrollTop = log.scrollHeight; };
+  const addMsg = (cls, text) => { const m = el('div', 'msg ' + cls, text); log.appendChild(m); return m; };
+  const para = (parent, label, text) => { const p = el('p'); if (label) p.appendChild(el('b', '', label + ' ')); p.append(text); parent.appendChild(p); };
+  async function saveLawNote(note) {
+    if (typeof DB.ready === 'function') { await DB.ready(); return DB.saveNote(note); }
+    return DB.saveNote(user.id, note); // TODO(T10): compatibility with the current local adapter
+  }
+
+  function showAnswer(a) {
+    const m = addMsg('bot');
+    if (!a.found) {
+      para(m, '', 'Câu hỏi không có trong dữ liệu.'); return;
+    }
+    if (a.mode === 'overview') {
+      para(m, '', `Tình huống của bạn có thể liên quan đến Điều ${a.article.id}. ${a.article.tieu_de} (${a.article.chuong}). Mức xử lý phụ thuộc mức độ hậu quả:`);
+      a.khoan_all.forEach((k) => para(m, `Khoản ${k.so_khoan} (${k.dieu_kien}):`, k.noi_dung));
+      para(m, 'Để nêu đúng quyền lợi:', a.ask);
+      if (a.ghi_chu_quyen_loi) para(m, 'Về quyền lợi/bồi thường:', a.ghi_chu_quyen_loi);
+    } else {
+      para(m, '', `Tình huống của bạn liên quan đến Điều ${a.article.id}. ${a.article.tieu_de} (${a.article.chuong}), cụ thể Khoản ${a.khoan.so_khoan} — ${a.khoan.dieu_kien}.`);
+      const rights = () => { if (a.quyen_loi) para(m, 'Quyền lợi của bạn (người bị hại):', a.quyen_loi + (a.can_cu ? ` (${a.can_cu})` : ''));
+        else if (a.ghi_chu_quyen_loi) para(m, 'Về quyền lợi/bồi thường:', a.ghi_chu_quyen_loi); };
+      if (a.role === 'nan_nhan') rights();   // người bị hại: nêu quyền lợi trước
+      para(m, 'Mức xử lý với người vi phạm:', a.khoan.noi_dung);
+      if (a.role !== 'nan_nhan') rights();
+    }
+    if (a.alt) { const p = el('p'); p.append('Có thể bạn muốn hỏi: '); const l2 = el('a', '', `Điều ${a.alt.id}. ${a.alt.tieu_de}`); l2.href = 'dieu-luat-chi-tiet.html?id=' + a.alt.id; p.appendChild(l2); m.appendChild(p); }
+    const cite = el('div', 'cite'), l = el('a', '', `Xem chi tiết Điều ${a.article.id}`); l.href = 'dieu-luat-chi-tiet.html?id=' + a.article.id; cite.appendChild(l);
+    const save = el('button', 'btn btn-ghost btn-sm', '+ Lưu vào ghi chú'); save.type = 'button';
+    save.addEventListener('click', async () => {
+      try { await saveLawNote({ title: a.note_title, content: a.note_text, source: { type: 'chat', ref: a.article.id } }); }
+      catch (e) { return toast(e.message, 'err'); }
+      save.disabled = true; save.textContent = '✓ Đã lưu'; toast('Đã lưu vào ghi chú.');
+    });
+    cite.appendChild(save); m.appendChild(cite);
+  }
+
+  let forceNoDataReply = false;
+  function continueQuestion(q) {
+    forceNoDataReply = false;
+    if (!pendingQuestion) return q;
+    const number = q.match(/^\s*(\d+(?:[.,]\d+)?)\s*(%|tri[eệ]u|t(?:ỷ|ỉ|y))?\s*(?:đồng)?\s*$/i);
+    if (number) {
+      const unit = number[2] || pendingUnit;
+      return `${pendingQuestion} ${number[1]}${unit === '%' ? '%' : unit ? ` ${unit} đồng` : ''}`;
+    }
+    const current = Scorer.rank(q, LAW_DATA);
+    // Câu không đủ tín hiệu pháp luật không phải câu trả lời cho câu hỏi làm rõ.
+    // Xóa ngữ cảnh ngay để câu tiếp theo không bị gắn nhầm vào điều luật cũ.
+    if (current.status === 'none' || current.status === 'ambiguous') {
+      pendingQuestion = null; pendingUnit = null; pendingArticleId = null;
+      forceNoDataReply = true;
+      return q;
+    }
+    if (current.status !== 'none' && current.results[0].score >= 0.25 && String(current.results[0].key) !== String(pendingArticleId)) {
+      pendingQuestion = null; pendingUnit = null; pendingArticleId = null;
+      return q; // Một câu hỏi mới về điều khác phải bỏ ngữ cảnh đang chờ.
+    }
+    return `${pendingQuestion}. Thông tin bổ sung: ${q}`;
+  }
+
+  async function saveAskHistory(question, answer) {
+    if (window.location.protocol === 'file:') {
+      throw new Error('Bạn đang mở trang bằng file://. Hãy bật Apache trong XAMPP và mở http://localhost/web-project/html/tu-van.html để gọi API.');
+    }
+    const url = '../backend/api/law.php';
+    const csrfResponse = await fetch(`${url}?action=csrf`, { credentials: 'same-origin' });
+    if (!csrfResponse.ok) throw new Error('Không lấy được mã bảo vệ để lưu lịch sử.');
+    const csrfPayload = await csrfResponse.json();
+    const response = await fetch(`${url}?action=ask`, {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfPayload.data.csrf },
+      body: JSON.stringify({ question, answer: { article_id: answer.article?.id || null,
+        khoan_so: answer.khoan?.so_khoan || null, score: answer.score ?? null } }),
+    });
+    if (!response.ok) throw new Error('API chưa lưu được lịch sử hỏi đáp.');
+  }
+
+  function ask(q) {
+    q = q.trim().slice(0, 500); if (!q) return;
+    addMsg('user', q); input.value = ''; input.disabled = true;
+    const t = el('div', 'typing', 'Đang phân tích tình huống...'); log.appendChild(t); scroll();
+    const fullQuestion = continueQuestion(q);
+    setTimeout(async () => {
+      t.remove();
+      const answer = forceNoDataReply ? { found: false } : Law.answer(fullQuestion);
+      showAnswer(answer);
+      if (answer.found && answer.mode === 'overview' && answer.ask) {
+        pendingQuestion = fullQuestion;
+        pendingArticleId = answer.article.id;
+        pendingUnit = /tỉ lệ|phần trăm|%/i.test(answer.ask) ? '%' : /triệu|giá trị tài sản/i.test(answer.ask) ? 'triệu' : null;
+      } else { pendingQuestion = null; pendingUnit = null; pendingArticleId = null; }
+      if (answer.found) saveAskHistory(fullQuestion, answer).catch((error) => console.warn('Không lưu được lịch sử chatbot:', error));
+      input.disabled = false; scroll(); input.focus();
+    }, 450);
+  }
+  form.addEventListener('submit', (e) => { e.preventDefault(); ask(input.value); });
+  $('#chips').replaceChildren(...SUG.map((s) => { const b = el('button', 'suggestion', s); b.type = 'button'; b.addEventListener('click', () => ask(s)); return b; }));
+  addMsg('bot', 'Xin chào! Hãy mô tả tình huống của bạn, mình sẽ chỉ ra điều luật áp dụng, mức xử lý và quyền lợi của bạn.');
+})();
