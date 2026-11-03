@@ -19,6 +19,27 @@ services:
       db:
         condition: service_healthy
 
+  embedder:
+    build:
+      context: ./docker/embedder
+      target: runtime
+    mem_limit: 1500m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/health', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # Runs the embedder's pytest suite: docker compose run --rm --build embedder-test
+  embedder-test:
+    profiles: ["test"]
+    build:
+      context: ./docker/embedder
+      target: test
+    mem_limit: 1500m
+
   db:
     image: mysql:8.4
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
