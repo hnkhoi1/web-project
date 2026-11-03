@@ -51,9 +51,14 @@ def test_kind_applies_prefix(monkeypatch):
     {"texts": ["x"] * 65, "kind": "query"},
     {"texts": [1, 2], "kind": "query"},
     {"texts": ["x"], "kind": "other"},
+    {"texts": ["x" * 8001], "kind": "query"},
 ])
 def test_invalid_payload_is_422(payload):
     assert client.post("/embed", json=payload).status_code == 422
+
+
+def test_text_at_the_length_limit_is_accepted():
+    assert embed(["x" * 8000]).status_code == 200
 
 
 def test_similar_vietnamese_pair_scores_higher():

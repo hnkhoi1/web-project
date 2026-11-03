@@ -25,11 +25,11 @@ class SearchEmbed extends Command
 
         $model = (string) config('search.embedder_model');
         $existing = LawEmbedding::query()->where('model', $model)->get()
-            ->keyBy(fn (LawEmbedding $r): string => $r->dieu_luat_id.'/'.($r->so_khoan ?? ''));
+            ->keyBy(fn (LawEmbedding $r): string => $r->dieu_luat_id.'/'.$r->so_khoan);
 
         $pending = [];
         foreach ($articles->all() as $article) {
-            $pending[] = [$article['id'], null, $this->join([$article['tieu_de'], $article['tom_tat'], $article['tu_khoa']])];
+            $pending[] = [$article['id'], LawEmbedding::ARTICLE, $this->join([$article['tieu_de'], $article['tom_tat'], $article['tu_khoa']])];
             foreach ($article['khoan'] as $clause) {
                 $pending[] = [$article['id'], $clause['so_khoan'], $this->join([$clause['dieu_kien'], $clause['noi_dung'], $clause['tu_khoa']])];
             }
@@ -37,7 +37,7 @@ class SearchEmbed extends Command
 
         $total = count($pending);
         $todo = array_values(array_filter($pending, function (array $p) use ($existing): bool {
-            $row = $existing->get($p[0].'/'.($p[1] ?? ''));
+            $row = $existing->get($p[0].'/'.$p[1]);
 
             return $row === null || $row->content_hash !== hash('sha256', $p[2]);
         }));

@@ -8,11 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // so_khoan NULL is the article-level vector; otherwise it is that clause's vector.
+        // so_khoan 0 is the article-level vector (clause numbers start at 1). Not NULL, because
+        // MySQL treats NULLs as distinct and the unique key would not cover article rows.
         Schema::create('law_embeddings', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('dieu_luat_id');
-            $table->unsignedInteger('so_khoan')->nullable();
+            $table->unsignedInteger('so_khoan')->default(0);
             $table->string('model', 100);
             $table->char('content_hash', 64);
             $table->json('vector');

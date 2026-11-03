@@ -8,6 +8,7 @@ use App\Models\LawEmbedding;
 use App\Search\ArticleRepository;
 use App\Search\EmbeddingStore;
 use Database\Seeders\LawSeeder;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
@@ -57,11 +58,11 @@ class SearchEmbedTest extends TestCase
 
         $this->artisan('search:embed', ['--wait' => 0])->assertExitCode(0);
 
-        $this->assertSame(Article::count(), LawEmbedding::whereNull('so_khoan')->count());
-        $this->assertSame(Clause::count(), LawEmbedding::whereNotNull('so_khoan')->count());
+        $this->assertSame(Article::count(), LawEmbedding::where('so_khoan', 0)->count());
+        $this->assertSame(Clause::count(), LawEmbedding::where('so_khoan', '>', 0)->count());
 
         $article = Article::query()->orderBy('id')->firstOrFail();
-        $row = LawEmbedding::where('dieu_luat_id', $article->id)->whereNull('so_khoan')->firstOrFail();
+        $row = LawEmbedding::where('dieu_luat_id', $article->id)->where('so_khoan', 0)->firstOrFail();
         $this->assertSame(self::MODEL, $row->model);
         $this->assertEquals([0.0, 0.6, 0.8], $row->vector);
         $this->assertSame(hash('sha256', trim("{$article->tieu_de}\n{$article->tom_tat}\n{$article->tu_khoa}")), $row->content_hash);
@@ -108,6 +109,23 @@ class SearchEmbedTest extends TestCase
             ->assertExitCode(0);
 
         $this->assertSame($count, LawEmbedding::count());
+    }
+
+    public function test_a_duplicate_article_level_row_is_rejected(): void
+    {
+        $this->fakeEmbedder();
+        $this->artisan('search:embed', ['--wait' => 0])->assertExitCode(0);
+        $row = LawEmbedding::where('so_khoan', 0)->firstOrFail();
+
+        $this->expectException(UniqueConstraintViolationException::class);
+
+        LawEmbedding::create([
+            'dieu_luat_id' => $row->dieu_luat_id,
+            'so_khoan' => 0,
+            'model' => $row->model,
+            'content_hash' => str_repeat('a', 64),
+            'vector' => [0.0, 0.6, 0.8],
+        ]);
     }
 
     public function test_store_groups_vectors_by_article(): void

@@ -4,7 +4,7 @@ ENV PIP_NO_CACHE_DIR=1 PYTHONUNBUFFERED=1 HF_HOME=/opt/hf
 WORKDIR /app
 
 # CPU-only torch first so sentence-transformers does not pull the CUDA build.
-RUN pip install --index-url https://download.pytorch.org/whl/cpu torch
+RUN pip install --index-url https://download.pytorch.org/whl/cpu torch==2.15.0
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 

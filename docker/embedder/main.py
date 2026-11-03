@@ -1,20 +1,22 @@
 """Small embedding service for multilingual-e5-small."""
-from typing import Literal
+from typing import Annotated, Literal
 
 import numpy as np
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 from sentence_transformers import SentenceTransformer
 
 MODEL_NAME = "intfloat/multilingual-e5-small"
 MAX_TEXTS = 64
+# Longest stored article/clause text is under 500 characters.
+MAX_TEXT_CHARS = 8000
 
 model = SentenceTransformer(MODEL_NAME, device="cpu")
 app = FastAPI()
 
 
 class EmbedRequest(BaseModel):
-    texts: list[str] = Field(min_length=1, max_length=MAX_TEXTS)
+    texts: list[Annotated[str, StringConstraints(max_length=MAX_TEXT_CHARS)]] = Field(min_length=1, max_length=MAX_TEXTS)
     kind: Literal["query", "passage"]
 
 
