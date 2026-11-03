@@ -69,3 +69,26 @@ export type ChatAnswer =
           note_title: string;
           note_text: string;
       };
+
+export type ArticleClause = {
+    so_khoan: number;
+    dieu_kien: string | null;
+    noi_dung: string;
+    quyen_loi: string | null;
+};
+
+/** An article as returned by the law search / detail pages. */
+export type LawArticle = {
+    id: number;
+    chuong: string;
+    tieu_de: string;
+    tom_tat: string;
+    khung_hinh_phat: string;
+    can_cu_boi_thuong: string | null;
+    ghi_chu_quyen_loi: string | null;
+    score?: number;
+};
+
+export type LawArticleDetail = LawArticle & { khoan: ArticleClause[] };
+
+export type RelatedArticle = { id: number; tieu_de: string };

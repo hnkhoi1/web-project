@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\LawController;
 use App\Http\Controllers\NoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => auth()->check() ? to_route('notes.index') : to_route('login'))->name('home');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('tra-cuu', [LawController::class, 'search'])->name('law.search');
+    Route::get('dieu-luat/{id}', [LawController::class, 'show'])->whereNumber('id')->name('law.show');
     Route::get('ghi-chu', [NoteController::class, 'index'])->name('notes.index');
     Route::post('ghi-chu', [NoteController::class, 'store'])->name('notes.store');
     Route::patch('ghi-chu/{note}', [NoteController::class, 'update'])->name('notes.update');
