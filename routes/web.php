@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LawController;
 use App\Http\Controllers\NoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => auth()->check() ? to_route('notes.index') : to_route('login'))->name('home');
+
+Route::inertia('gioi-thieu', 'about')->name('about');
+Route::get('lien-he', [ContactController::class, 'create'])->name('contact.create');
+Route::post('lien-he', [ContactController::class, 'store'])->name('contact.store');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('tra-cuu', [LawController::class, 'search'])->name('law.search');
