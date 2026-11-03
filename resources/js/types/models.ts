@@ -58,17 +58,41 @@ export type Article = {
     khoan?: Clause[];
 };
 
+export type ChatArticleRef = { id: number; tieu_de: string; chuong: string };
+
+type ChatFound = {
+    found: true;
+    score: number;
+    role: string | null;
+    article: ChatArticleRef;
+    alt: { id: number; tieu_de: string } | null;
+    ghi_chu_quyen_loi: string | null;
+    can_cu: string | null;
+    note_title: string;
+    note_text: string;
+};
+
 export type ChatAnswer =
     | { found: false }
-    | {
-          found: true;
-          mode: 'overview' | 'specific';
-          score: number;
-          article: { id: number; tieu_de: string; chuong: string };
-          alt: { id: number; tieu_de: string } | null;
-          note_title: string;
-          note_text: string;
-      };
+    | (ChatFound & {
+          mode: 'overview';
+          khoan_all: {
+              so_khoan: number;
+              dieu_kien: string | null;
+              noi_dung: string;
+              cau_hoi_lam_ro: string | null;
+          }[];
+          ask: string;
+      })
+    | (ChatFound & {
+          mode: 'specific';
+          khoan: {
+              so_khoan: number;
+              dieu_kien: string | null;
+              noi_dung: string;
+          };
+          quyen_loi: string | null;
+      });
 
 export type ArticleClause = {
     so_khoan: number;
