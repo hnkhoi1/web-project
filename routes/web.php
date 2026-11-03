@@ -26,3 +26,6 @@ Route::middleware(['auth'])->group(function () {
 
 require __DIR__.'/auth.php';
 require __DIR__.'/settings.php';
+
+// Unmatched URLs go through the web middleware group so the 404 page gets shared props and the session.
+Route::fallback(fn () => abort(404));

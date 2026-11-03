@@ -30,16 +30,30 @@ class AccessRulesTest extends TestCase
         $this->actingAs(User::factory()->create())->get('/')->assertRedirect('/ghi-chu');
     }
 
-    public function test_unknown_url_renders_vietnamese_404_page(): void
+    public function test_unmatched_url_renders_404_with_shared_props(): void
     {
-        foreach ([false, true] as $login) {
-            if ($login) {
-                $this->actingAs(User::factory()->create());
-            }
+        $this->get('/khong-ton-tai')
+            ->assertNotFound()
+            ->assertInertia(fn ($page) => $page
+                ->component('errors/not-found')
+                ->where('auth.user', null)
+                ->has('prefs'));
 
-            $this->get('/khong-ton-tai')
-                ->assertNotFound()
-                ->assertInertia(fn ($page) => $page->component('errors/not-found'));
-        }
+        $user = User::factory()->create();
+        $this->actingAs($user)->get('/khong-ton-tai')
+            ->assertNotFound()
+            ->assertInertia(fn ($page) => $page
+                ->component('errors/not-found')
+                ->where('auth.user.id', $user->id));
+    }
+
+    public function test_missing_article_renders_404_with_shared_props(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->get('/dieu-luat/999999')
+            ->assertNotFound()
+            ->assertInertia(fn ($page) => $page
+                ->component('errors/not-found')
+                ->where('auth.user.id', $user->id));
     }
 }
