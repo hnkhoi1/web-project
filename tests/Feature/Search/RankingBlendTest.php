@@ -31,6 +31,7 @@ class RankingBlendTest extends TestCase
         $this->seed(LawSeeder::class);
 
         config([
+            'search.blend.enabled' => true,
             'search.blend.lexical_weight' => 0.6,
             'search.blend.semantic_weight' => 0.4,
             'search.blend.semantic_weight_with_concept' => 0.1,

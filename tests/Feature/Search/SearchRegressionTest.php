@@ -11,9 +11,10 @@ use Database\Seeders\LawSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-/** The original question list (tests/scorer-test.js) must keep passing on the blend, on recorded vectors. */
+/** The original question list (tests/scorer-test.js) must keep passing with the blend on and off; on uses recorded vectors. */
 class SearchRegressionTest extends TestCase
 {
     use RefreshDatabase;
@@ -30,14 +31,28 @@ class SearchRegressionTest extends TestCase
         $this->regression = json_decode((string) file_get_contents(base_path('tests/fixtures/search-regression.json')), true, flags: JSON_THROW_ON_ERROR);
     }
 
-    public function test_every_original_question_finds_its_article_on_the_blend(): void
+    /** @return array<string, array{bool, string}> */
+    public static function engines(): array
     {
+        return ['blend on' => [true, 'blend'], 'blend off' => [false, 'lexical']];
+    }
+
+    /** @return array<string, array{bool}> */
+    public static function blendStates(): array
+    {
+        return ['blend on' => [true], 'blend off' => [false]];
+    }
+
+    #[DataProvider('engines')]
+    public function test_every_original_question_finds_its_article(bool $enabled, string $engine): void
+    {
+        config(['search.blend.enabled' => $enabled]);
         $this->assertCount(47, $this->regression['questions']);
 
         $failures = [];
         foreach ($this->regression['questions'] as [$question, $expected]) {
             $result = app(RankingService::class)->rank($question);
-            $this->assertSame('blend', $result->engine);
+            $this->assertSame($engine, $result->engine);
             if ($result->results[0]->id !== $expected || $result->status === 'none') {
                 $failures[] = "{$question}: expected {$expected}, got {$result->results[0]->id} ({$result->status})";
             }
@@ -46,17 +61,22 @@ class SearchRegressionTest extends TestCase
         $this->assertSame([], $failures);
     }
 
-    public function test_out_of_scope_questions_find_nothing_on_the_blend(): void
+    #[DataProvider('engines')]
+    public function test_out_of_scope_questions_find_nothing(bool $enabled, string $engine): void
     {
+        config(['search.blend.enabled' => $enabled]);
+
         foreach ($this->regression['none'] as $question) {
             $result = app(RankingService::class)->rank($question);
-            $this->assertSame('blend', $result->engine);
+            $this->assertSame($engine, $result->engine);
             $this->assertSame('none', $result->status, $question);
         }
     }
 
-    public function test_follow_up_questions_are_asked_through_the_answerer(): void
+    #[DataProvider('blendStates')]
+    public function test_follow_up_questions_are_asked_through_the_answerer(bool $enabled): void
     {
+        config(['search.blend.enabled' => $enabled]);
         $this->assertCount(10, $this->regression['follow_ups']);
         $articles = collect(app(ArticleRepository::class)->all())->keyBy('id');
 
@@ -75,8 +95,10 @@ class SearchRegressionTest extends TestCase
         }
     }
 
-    public function test_conversations_reach_a_specific_clause_through_the_answerer(): void
+    #[DataProvider('blendStates')]
+    public function test_conversations_reach_a_specific_clause_through_the_answerer(bool $enabled): void
     {
+        config(['search.blend.enabled' => $enabled]);
         $this->assertCount(2, $this->regression['conversations']);
 
         foreach ($this->regression['conversations'] as [$initial, $continued, $id]) {
@@ -92,8 +114,11 @@ class SearchRegressionTest extends TestCase
         }
     }
 
-    public function test_new_topic_detection_works_on_the_blend(): void
+    #[DataProvider('blendStates')]
+    public function test_new_topic_detection_works(bool $enabled): void
     {
+        config(['search.blend.enabled' => $enabled]);
+
         foreach ($this->regression['chat_context'] as [$articleId, $question, $message, $expected]) {
             $pending = ['question' => $question, 'unit' => null, 'article_id' => $articleId];
             $this->assertSame(
@@ -103,8 +128,9 @@ class SearchRegressionTest extends TestCase
         }
     }
 
-    public function test_tuning_never_embeds_a_holdout_question(): void
+    public function test_tuning_never_embeds_a_holdout_question_and_runs_with_the_blend_off(): void
     {
+        config(['search.blend.enabled' => false]);
         $storage = sys_get_temp_dir().'/search-tune-test';
         File::ensureDirectoryExists("{$storage}/app");
         $this->app->useStoragePath($storage);
@@ -120,5 +146,21 @@ class SearchRegressionTest extends TestCase
 
         $embedded = Http::recorded()->flatMap(fn (array $pair) => $pair[0]['texts'])->all();
         $this->assertSame([], array_values(array_intersect($holdoutOnly, $embedded)));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function modelEngines(): array
+    {
+        return ['semantic' => ['semantic'], 'blend' => ['blend']];
+    }
+
+    #[DataProvider('modelEngines')]
+    public function test_evaluating_a_model_engine_works_with_the_blend_off(string $engine): void
+    {
+        config(['search.blend.enabled' => false]);
+
+        $this->artisan('search:eval', ['--engine' => $engine, '--split' => 'tune'])
+            ->expectsOutputToContain("engine={$engine} split=tune")
+            ->assertSuccessful();
     }
 }

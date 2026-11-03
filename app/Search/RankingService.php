@@ -3,8 +3,8 @@
 namespace App\Search;
 
 /**
- * The only entry point for ranking articles against a question: lexical scores blended with semantic
- * scores, or the plain lexical result whenever the vectors or the embedder are not usable.
+ * The only entry point for ranking articles against a question: plain lexical scores unless
+ * search.blend.enabled turns on the optional blend with semantic scores.
  */
 class RankingService
 {
@@ -20,6 +20,19 @@ class RankingService
      * @param  list<array<string, mixed>>|null  $articles  Defaults to every article.
      */
     public function rank(string $query, ?array $articles = null): RankResult
+    {
+        return config('search.blend.enabled')
+            ? $this->rankBlended($query, $articles)
+            : $this->rankLexical($query, $articles);
+    }
+
+    /**
+     * Lexical blended with semantic scores whatever the setting, falling back to the plain lexical
+     * result whenever the vectors or the embedder are not usable.
+     *
+     * @param  list<array<string, mixed>>|null  $articles  Defaults to every article.
+     */
+    public function rankBlended(string $query, ?array $articles = null): RankResult
     {
         $lexical = $this->rankLexical($query, $articles);
         $cosines = $this->cosines($query, array_map(fn (RankedArticle $r): int => $r->id, $lexical->results));

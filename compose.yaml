@@ -19,7 +19,9 @@ services:
       db:
         condition: service_healthy
 
+  # Optional, for SEARCH_BLEND_ENABLED=true: docker compose --profile semantic up -d
   embedder:
+    profiles: ["semantic"]
     build:
       context: ./docker/embedder
       target: runtime

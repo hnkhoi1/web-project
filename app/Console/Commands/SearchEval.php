@@ -31,7 +31,7 @@ class SearchEval extends Command
         $evaluator = new Evaluator([
             'lexical' => fn (string $question): RankResult => $ranking->rankLexical($question),
             'semantic' => fn (string $question): RankResult => $ranking->rankSemantic($question),
-            'blend' => fn (string $question): RankResult => $ranking->rank($question),
+            'blend' => fn (string $question): RankResult => $ranking->rankBlended($question),
         ]);
 
         $engine = (string) $this->option('engine');

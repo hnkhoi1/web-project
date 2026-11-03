@@ -26,6 +26,7 @@ class EmbedderFallbackTest extends TestCase
     {
         parent::setUp();
         $this->seed(LawSeeder::class);
+        config(['search.blend.enabled' => true]);
     }
 
     /** @param  list<int>|null  $only  Article ids to store vectors for (default: every article). */
