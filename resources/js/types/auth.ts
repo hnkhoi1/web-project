@@ -1,14 +1,5 @@
-export type User = {
-    id: number;
-    username: string | null;
-    name: string;
-    email: string;
-    avatar: string | null;
-    is_demo: boolean;
-    created_at: string;
-    updated_at: string;
-};
+import type { User } from '@/types/models';
 
 export type Auth = {
-    user: User;
+    user: User | null;
 };

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\UserPref;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -16,7 +17,11 @@ class HandleAppearance
      */
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('appearance', $request->cookie('appearance') ?? 'system');
+        $prefs = UserPref::payloadFor($request->user());
+
+        View::share('appearance', $prefs['theme']);
+        View::share('font', $prefs['font']);
+        View::share('noteColor', $prefs['noteColor']);
 
         return $next($request);
     }

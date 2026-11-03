@@ -1,16 +1,16 @@
-import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
-import type { BreadcrumbItem } from '@/types';
+import type { ReactNode } from 'react';
+import { AppHeader } from '@/components/app-header';
+import { useSyncPrefs } from '@/hooks/use-appearance';
 
-export default function AppLayout({
-    breadcrumbs = [],
-    children,
-}: {
-    breadcrumbs?: BreadcrumbItem[];
-    children: React.ReactNode;
-}) {
+export default function AppLayout({ children }: { children: ReactNode }) {
+    useSyncPrefs();
+
     return (
-        <AppLayoutTemplate breadcrumbs={breadcrumbs}>
-            {children}
-        </AppLayoutTemplate>
+        <div className="flex min-h-screen flex-col bg-background">
+            <AppHeader />
+            <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
+                {children}
+            </main>
+        </div>
     );
 }

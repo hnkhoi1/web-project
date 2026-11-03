@@ -10,18 +10,13 @@ class ProfileUpdateRequest extends FormRequest
 {
     use ProfileValidationRules;
 
-    protected function prepareForValidation(): void
-    {
-        $this->merge(['email' => mb_strtolower(trim((string) $this->input('email')))]);
-    }
-
     /**
-     * Get the validation rules that apply to the request.
+     * Only the display name is editable; the email is fixed once registered.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return $this->profileRules($this->user()->id);
+        return ['name' => $this->nameRules()];
     }
 }

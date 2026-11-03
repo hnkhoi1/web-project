@@ -1,115 +1,80 @@
-import { useSyncExternalStore } from 'react';
+import { router, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { update } from '@/routes/preferences';
+import type { Prefs, Theme } from '@/types';
 
 export type ResolvedAppearance = 'light' | 'dark';
-export type Appearance = ResolvedAppearance | 'system';
+export type Appearance = Theme;
 
-export type UseAppearanceReturn = {
-    readonly appearance: Appearance;
-    readonly resolvedAppearance: ResolvedAppearance;
-    readonly updateAppearance: (mode: Appearance) => void;
-};
+const prefersDark = (): boolean =>
+    window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-const listeners = new Set<() => void>();
-let currentAppearance: Appearance = 'system';
+/** Apply a theme to <html>. The server renders the same state before first paint. */
+export function applyAppearance(theme: Theme): void {
+    const root = document.documentElement;
+    const isDark = theme === 'dark' || (theme === 'system' && prefersDark());
 
-const prefersDark = (): boolean => {
-    if (typeof window === 'undefined') {
-        return false;
-    }
-
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-};
-
-const setCookie = (name: string, value: string, days = 365): void => {
-    if (typeof document === 'undefined') {
-        return;
-    }
-
-    const maxAge = days * 24 * 60 * 60;
-    document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
-};
-
-const getStoredAppearance = (): Appearance => {
-    if (typeof window === 'undefined') {
-        return 'system';
-    }
-
-    return (localStorage.getItem('appearance') as Appearance) || 'system';
-};
-
-const isDarkMode = (appearance: Appearance): boolean => {
-    return appearance === 'dark' || (appearance === 'system' && prefersDark());
-};
-
-const applyTheme = (appearance: Appearance): void => {
-    if (typeof document === 'undefined') {
-        return;
-    }
-
-    const isDark = isDarkMode(appearance);
-
-    document.documentElement.classList.toggle('dark', isDark);
-    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-};
-
-const subscribe = (callback: () => void) => {
-    listeners.add(callback);
-
-    return () => listeners.delete(callback);
-};
-
-const notify = (): void => listeners.forEach((listener) => listener());
-
-const mediaQuery = (): MediaQueryList | null => {
-    if (typeof window === 'undefined') {
-        return null;
-    }
-
-    return window.matchMedia('(prefers-color-scheme: dark)');
-};
-
-const handleSystemThemeChange = (): void => applyTheme(currentAppearance);
-
-export function initializeTheme(): void {
-    if (typeof window === 'undefined') {
-        return;
-    }
-
-    if (!localStorage.getItem('appearance')) {
-        localStorage.setItem('appearance', 'system');
-        setCookie('appearance', 'system');
-    }
-
-    currentAppearance = getStoredAppearance();
-    applyTheme(currentAppearance);
-
-    // Set up system theme change listener
-    mediaQuery()?.addEventListener('change', handleSystemThemeChange);
+    root.classList.toggle('dark', isDark);
+    root.style.colorScheme = isDark ? 'dark' : 'light';
+    root.dataset.theme = theme;
 }
 
-export function useAppearance(): UseAppearanceReturn {
-    const appearance: Appearance = useSyncExternalStore(
-        subscribe,
-        () => currentAppearance,
-        () => 'system',
-    );
+/** Follow the operating system while the theme is "system". */
+export function initializeTheme(): void {
+    window
+        .matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', () => {
+            if (document.documentElement.dataset.theme === 'system') {
+                applyAppearance('system');
+            }
+        });
+}
 
-    const resolvedAppearance: ResolvedAppearance = isDarkMode(appearance)
-        ? 'dark'
-        : 'light';
+/**
+ * Keep <html> in step with the shared prefs, e.g. after login or logout, when
+ * the document is not reloaded.
+ */
+export function useSyncPrefs(): void {
+    const { prefs } = usePage().props;
 
-    const updateAppearance = (mode: Appearance): void => {
-        currentAppearance = mode;
+    useEffect(() => {
+        applyAppearance(prefs.theme);
+        document.documentElement.dataset.font = prefs.font;
+        document.documentElement.dataset.noteColor = prefs.noteColor;
+    }, [prefs.theme, prefs.font, prefs.noteColor]);
+}
 
-        // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', mode);
+export function usePrefs() {
+    const { prefs, auth } = usePage().props;
 
-        // Store in cookie for SSR...
-        setCookie('appearance', mode);
+    const updatePrefs = (change: Partial<Prefs>): void => {
+        const next: Prefs = { ...prefs, ...change };
 
-        applyTheme(mode);
-        notify();
+        if (change.theme) {
+            applyAppearance(change.theme);
+        }
+
+        if (auth.user) {
+            router.put(update().url, next, {
+                preserveScroll: true,
+                preserveState: true,
+            });
+        }
     };
 
-    return { appearance, resolvedAppearance, updateAppearance } as const;
+    return { prefs, updatePrefs } as const;
+}
+
+export function useAppearance() {
+    const { prefs, updatePrefs } = usePrefs();
+    const resolvedAppearance: ResolvedAppearance =
+        prefs.theme === 'dark' || (prefs.theme === 'system' && prefersDark())
+            ? 'dark'
+            : 'light';
+
+    return {
+        appearance: prefs.theme,
+        resolvedAppearance,
+        updateAppearance: (theme: Theme): void => updatePrefs({ theme }),
+    } as const;
 }

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'system') === 'dark']) data-theme="{{ $appearance ?? 'system' }}" data-font="{{ $font ?? 'md' }}" data-note-color="{{ $noteColor ?? 'yellow' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        {{-- Inline script to detect system dark mode preference and apply it immediately --}}
+        {{-- Dark is rendered server-side from the user's saved prefs; this only resolves "system" before first paint --}}
         <script>
             (function() {
                 const appearance = '{{ $appearance ?? "system" }}';

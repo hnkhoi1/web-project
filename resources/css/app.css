@@ -132,6 +132,77 @@
     --sidebar-ring: oklch(0.439 0 0);
 }
 
+/* Note surfaces (colors follow the original site) and font size, which is
+   scoped to note text via data-font on <html>. */
+:root {
+    --n-yellow: #fff3c4;
+    --n-green: #dff1e1;
+    --n-blue: #ddebfa;
+    --n-rose: #fbe3e6;
+    --n-violet: #ebe3fa;
+    --n-gray: #eaeaea;
+    --n-text: #1f2937;
+    --note-font-size: 0.95rem;
+}
+
+.dark {
+    --n-yellow: #4a4119;
+    --n-green: #1f3b28;
+    --n-blue: #1c3452;
+    --n-rose: #4a232b;
+    --n-violet: #33284f;
+    --n-gray: #2f3441;
+    --n-text: #f1efe8;
+}
+
+:root[data-font='sm'] {
+    --note-font-size: 0.84rem;
+}
+:root[data-font='md'] {
+    --note-font-size: 0.95rem;
+}
+:root[data-font='lg'] {
+    --note-font-size: 1.1rem;
+}
+:root[data-font='xl'] {
+    --note-font-size: 1.3rem;
+}
+
+.note-surface {
+    --nbg: var(--n-yellow);
+    background: var(--nbg);
+    color: var(--n-text);
+}
+:root[data-note-color='yellow'] .note-surface[data-color='auto'],
+.note-surface[data-color='yellow'] {
+    --nbg: var(--n-yellow);
+}
+:root[data-note-color='green'] .note-surface[data-color='auto'],
+.note-surface[data-color='green'] {
+    --nbg: var(--n-green);
+}
+:root[data-note-color='blue'] .note-surface[data-color='auto'],
+.note-surface[data-color='blue'] {
+    --nbg: var(--n-blue);
+}
+:root[data-note-color='rose'] .note-surface[data-color='auto'],
+.note-surface[data-color='rose'] {
+    --nbg: var(--n-rose);
+}
+:root[data-note-color='violet'] .note-surface[data-color='auto'],
+.note-surface[data-color='violet'] {
+    --nbg: var(--n-violet);
+}
+:root[data-note-color='gray'] .note-surface[data-color='auto'],
+.note-surface[data-color='gray'] {
+    --nbg: var(--n-gray);
+}
+
+.note-text {
+    font-size: var(--note-font-size);
+    line-height: 1.6;
+}
+
 @layer base {
     * {
         @apply border-border;

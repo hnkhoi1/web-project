@@ -2,11 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::get('/', fn () => auth()->check() ? to_route('notes.index') : to_route('login'))->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
-
     // Temporary stub; replaced by the notes feature.
     Route::inertia('ghi-chu', 'notes/index')->name('notes.index');
 });

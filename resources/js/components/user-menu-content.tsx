@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { LogOut, Settings } from 'lucide-react';
+import { KeyRound, LogOut, SlidersHorizontal, UserRound } from 'lucide-react';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -9,20 +9,23 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
-import { edit } from '@/routes/profile';
+import { edit as editPreferences } from '@/routes/preferences';
+import { edit as editProfile } from '@/routes/profile';
+import { edit as editSecurity } from '@/routes/security';
 import type { User } from '@/types';
 
-type Props = {
-    user: User;
-};
-
-export function UserMenuContent({ user }: Props) {
+export function UserMenuContent({ user }: { user: User }) {
     const cleanup = useMobileNavigation();
 
-    const handleLogout = () => {
-        cleanup();
-        router.flushAll();
-    };
+    const items = [
+        { title: 'Hồ sơ', href: editProfile(), icon: UserRound },
+        { title: 'Đổi mật khẩu', href: editSecurity(), icon: KeyRound },
+        {
+            title: 'Tùy chỉnh',
+            href: editPreferences(),
+            icon: SlidersHorizontal,
+        },
+    ];
 
     return (
         <>
@@ -33,17 +36,19 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                    <Link
-                        className="block w-full cursor-pointer"
-                        href={edit()}
-                        prefetch
-                        onClick={cleanup}
-                    >
-                        <Settings className="mr-2" />
-                        Settings
-                    </Link>
-                </DropdownMenuItem>
+                {items.map((item) => (
+                    <DropdownMenuItem key={item.title} asChild>
+                        <Link
+                            className="block w-full cursor-pointer"
+                            href={item.href}
+                            prefetch
+                            onClick={cleanup}
+                        >
+                            <item.icon className="mr-2" />
+                            {item.title}
+                        </Link>
+                    </DropdownMenuItem>
+                ))}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -51,11 +56,14 @@ export function UserMenuContent({ user }: Props) {
                     className="block w-full cursor-pointer"
                     href={logout()}
                     as="button"
-                    onClick={handleLogout}
+                    onClick={() => {
+                        cleanup();
+                        router.flushAll();
+                    }}
                     data-test="logout-button"
                 >
                     <LogOut className="mr-2" />
-                    Log out
+                    Đăng xuất
                 </Link>
             </DropdownMenuItem>
         </>

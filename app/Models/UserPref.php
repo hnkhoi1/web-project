@@ -15,6 +15,26 @@ class UserPref extends Model
 
     public const CREATED_AT = null;
 
+    public const THEMES = ['system', 'light', 'dark'];
+
+    public const FONTS = ['sm', 'md', 'lg', 'xl'];
+
+    /**
+     * Preferences as the frontend sees them, falling back to the defaults.
+     *
+     * @return array{theme: string, font: string, noteColor: string}
+     */
+    public static function payloadFor(?User $user): array
+    {
+        $prefs = $user?->prefs;
+
+        return [
+            'theme' => $prefs->theme ?? 'system',
+            'font' => $prefs->font ?? 'md',
+            'noteColor' => $prefs->note_color ?? 'yellow',
+        ];
+    }
+
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {

@@ -46,7 +46,7 @@ class User extends Authenticatable
 
     public function isDemo(): bool
     {
-        return $this->is_demo;
+        return (bool) $this->is_demo;
     }
 
     /** @return HasMany<Note, $this> */

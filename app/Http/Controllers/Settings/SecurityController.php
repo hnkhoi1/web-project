@@ -30,7 +30,7 @@ class SecurityController extends Controller
             'password' => $request->password,
         ]);
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Đã cập nhật mật khẩu.')]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Đã cập nhật mật khẩu.']);
 
         return back();
     }
