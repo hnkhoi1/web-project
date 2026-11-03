@@ -23,7 +23,10 @@ final class VietnameseText
     /** @return list<string> */
     public static function split(string $s): array
     {
-        preg_match_all('/[\p{L}\p{N}%]+/u', $s, $m);
+        // Invalid UTF-8 makes preg fail; treat it as "no tokens".
+        if (preg_match_all('/[\p{L}\p{N}%]+/u', $s, $m) === false) {
+            return [];
+        }
 
         return $m[0];
     }

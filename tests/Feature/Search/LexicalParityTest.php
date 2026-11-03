@@ -102,4 +102,11 @@ class LexicalParityTest extends TestCase
         );
         $this->assertSame($nfc->results[0]->score, $nfd->results[0]->score);
     }
+
+    public function test_invalid_utf8_query_has_no_results(): void
+    {
+        $r = (new LexicalScorer)->rank("\xFF", app(ArticleRepository::class)->all());
+
+        $this->assertSame('none', $r->status);
+    }
 }

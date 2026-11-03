@@ -24,6 +24,11 @@ class VietnameseTextTest extends TestCase
         $this->assertSame(['20%', 'đánh', 'bạc'], VietnameseText::split('20% đánh-bạc!'));
     }
 
+    public function test_split_returns_empty_for_invalid_utf8(): void
+    {
+        $this->assertSame([], VietnameseText::split("\xFF"));
+    }
+
     public function test_has_diacritics(): void
     {
         $this->assertFalse(VietnameseText::hasDiacritics('toi'));
