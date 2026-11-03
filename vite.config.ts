@@ -46,6 +46,9 @@ export default defineConfig({
             'js/**',
             'tests/*.js',
             'tests/*.html',
+            // Generated data and fixtures.
+            'app/Search/data/**',
+            'tests/fixtures/**',
             'vendor/**',
             'node_modules/**',
             'public/**',
@@ -82,6 +85,9 @@ export default defineConfig({
             'compose*.yaml',
             'tests/*.js',
             'tests/*.html',
+            // Generated data and fixtures.
+            'app/Search/data/**',
+            'tests/fixtures/**',
             '.github/**',
             'composer.json',
             'resources/js/components/ui/*',
