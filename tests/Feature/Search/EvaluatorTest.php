@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Search;
 
+use App\Search\EngineUnavailable;
 use App\Search\Evaluator;
 use App\Search\RankedArticle;
 use App\Search\RankResult;
@@ -183,11 +184,23 @@ class EvaluatorTest extends TestCase
     }
 
     #[DataProvider('unavailableEngines')]
-    public function test_command_exits_non_zero_for_engines_that_do_not_exist_yet(string $engine): void
+    public function test_command_exits_non_zero_rather_than_report_a_fallback_as_the_engine(string $engine): void
     {
+        $this->seed(LawSeeder::class);
+
         $this->artisan('search:eval', ['--engine' => $engine])
-            ->expectsOutputToContain("Engine \"{$engine}\" is not available yet")
+            ->expectsOutputToContain('is unavailable')
             ->assertFailed();
+    }
+
+    public function test_a_result_from_another_engine_is_rejected(): void
+    {
+        $evaluator = new Evaluator(
+            ['blend' => fn (string $q): RankResult => $this->ranked('ok', [123])],
+            [$this->makeCase('fell-back', 'everyday', 123, [])],
+        );
+
+        $this->assertThrows(fn () => $evaluator->run('blend', 'all'), EngineUnavailable::class);
     }
 
     public function test_command_rejects_an_unknown_split(): void

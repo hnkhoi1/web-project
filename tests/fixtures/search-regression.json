@@ -1,0 +1,44 @@
+{
+  "_source": "Copied from tests/scorer-test.js (arrays C, added, availability, followUps, conversations). chat_context is from ChatConversationTest.",
+  "questions": [
+    ["tôi bị đánh", 134], ["bị đánh", 134], ["toi bi danh", 134], ["tôi bị người ta đánh nhập viện", 134],
+    ["Tôi bị đánh gây thương tích 20% thì được bồi thường gì?", 134], ["bạn tôi bị hành hung", 134],
+    ["tôi đánh bạc bị công an bắt", 321], ["toi danh bac an tien", 321], ["chơi cá độ bóng đá", 321],
+    ["tôi bị đánh chết", 123], ["người thân bị giết", 123],
+    ["Bị lừa chuyển khoản mất 80 triệu đồng, tôi đòi lại bằng cách nào?", 174], ["toi bi lua tien qua mang", 174],
+    ["Lái xe say rượu gây tai nạn làm chết 1 người thì bị phạt bao nhiêu năm tù?", 260],
+    ["Nhân viên nhà nước lấy 300 triệu tiền công quỹ thì phạm tội gì?", 353],
+    ["Tàng trữ ma túy trong người bị xử lý ra sao?", 249], ["bị giật túi xách trên đường", 168], ["bị cướp dao kề cổ", 168],
+    ["vay tiền bị quịt thì phải làm sao", 175], ["người quen vay tiền rồi bùng nợ", 175],
+    ["mượn tiền xong chặn liên lạc để khỏi trả", 175], ["tôi giao xe cho người quen mượn rồi họ đem bán", 175],
+    ["bị giật mất điện thoại khi đang đi bộ", 171], ["ai đó lén lấy trộm chiếc xe máy của tôi", 173],
+    ["người ta dựng chuyện sai sự thật để hại danh tiếng tôi", 156], ["họ đăng lời lẽ xúc phạm tôi lên mạng xã hội", 155],
+    ["vô ý làm chết người do sơ suất", 128], ["sơ suất làm chết một người", 128],
+    ["đe dọa giết tôi", 133], ["dọa giết người qua tin nhắn", 133],
+    ["cố ý gây thương tích khi bị kích động mạnh", 135], ["đánh người trong trạng thái kích động mạnh", 135],
+    ["vô ý gây thương tích do tai nạn", 138], ["sơ suất làm người khác bị thương", 138],
+    ["bị chửi trên facebook", 155], ["đăng bài xúc phạm danh dự người khác", 155],
+    ["bị vu khống bịa đặt trên mạng", 156], ["người khác loan tin sai sự thật về tôi", 156],
+    ["bị cướp giật điện thoại", 171], ["giật dây chuyền rồi bỏ chạy", 171],
+    ["bị trộm xe máy", 173], ["ăn trộm tài sản của người khác", 173],
+    ["vay tiền không trả", 175], ["mượn tài sản rồi bỏ trốn", 175],
+    ["tổ chức đánh bạc qua mạng", 322], ["mở sới bạc cho người khác chơi", 322],
+    ["bị vu khống", 156]
+  ],
+  "none": ["thời tiết hôm nay thế nào"],
+  "follow_ups": [
+    [128, "vô ý làm chết người", "bao nhiêu người tử vong"], [133, "đe dọa giết người", "nội dung đe dọa cụ thể"],
+    [135, "bị kích động mạnh gây thương tích", "bao nhiêu phần trăm"], [138, "vô ý gây thương tích", "bao nhiêu phần trăm"],
+    [155, "bị chửi trên facebook", "nội dung xúc phạm"], [156, "bị vu khống trên mạng", "thông tin nào"],
+    [171, "bị cướp giật điện thoại", "bao nhiêu triệu đồng"], [173, "bị trộm xe máy", "bao nhiêu triệu đồng"],
+    [175, "vay tiền không trả", "bao nhiêu triệu đồng"], [322, "tổ chức đánh bạc", "bao nhiêu người"]
+  ],
+  "conversations": [
+    ["vay tiền bị quịt thì phải làm sao", "vay tiền bị quịt thì phải làm sao 80 triệu đồng", 175],
+    ["tôi bị đánh gây thương tích, giờ xử lý thế nào", "tôi bị đánh gây thương tích, giờ xử lý thế nào 20%", 134]
+  ],
+  "chat_context": [
+    [175, "vay tiền", "bị trộm xe máy", "new_topic"],
+    [175, "vay tiền", "anh ấy không trả", "continue"]
+  ]
+}

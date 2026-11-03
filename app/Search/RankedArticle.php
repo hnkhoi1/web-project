@@ -6,7 +6,7 @@ final readonly class RankedArticle
 {
     /**
      * @param  array<string, mixed>  $article
-     * @param  array{concept: float, lexical: float, fuzzy: float}  $parts
+     * @param  array{concept: float, lexical: float, fuzzy: float, semantic?: float}  $parts
      * @param  list<string>  $why
      */
     public function __construct(

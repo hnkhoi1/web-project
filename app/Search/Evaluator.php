@@ -37,6 +37,7 @@ class Evaluator
      * @return array{top1: float, top3: float, total: int, failures: list<array<string, mixed>>}
      *
      * @throws InvalidArgumentException For an engine without a ranker or an unknown split.
+     * @throws EngineUnavailable When an engine fell back to another, so its numbers would not be its own.
      */
     public function run(string $engine, string $split): array
     {
@@ -55,6 +56,9 @@ class Evaluator
             }
 
             $result = $ranker($case['question']);
+            if ($result->engine !== $engine) {
+                throw new EngineUnavailable("Engine \"{$engine}\" is unavailable: \"{$case['id']}\" was answered by \"{$result->engine}\".");
+            }
             [$top1Correct, $top3Correct] = $this->score($case, $result);
 
             $total++;

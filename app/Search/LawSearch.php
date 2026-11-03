@@ -35,9 +35,10 @@ class LawSearch
             }
         }
 
-        $min = (float) config('search.search_min_score');
+        $result = $this->ranking->rank($q, $pool);
+        $min = (float) config($result->engine === 'blend' ? 'search.blend.search_min_score' : 'search.search_min_score');
         $ranked = [];
-        foreach ($this->ranking->rank($q, $pool)->results as $r) {
+        foreach ($result->results as $r) {
             if ($r->score > $min) {
                 $ranked[] = $r->article + ['score' => $r->score];
             }

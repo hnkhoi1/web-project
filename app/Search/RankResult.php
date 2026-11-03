@@ -9,7 +9,7 @@ final readonly class RankResult
      * @param  string  $status  ok|ambiguous|none
      * @param  list<RankedArticle>  $results  Sorted by score, descending.
      * @param  list<string>  $concepts
-     * @param  string  $engine  lexical|blend
+     * @param  string  $engine  lexical|blend, or semantic when measuring that engine alone
      */
     public function __construct(
         public string $query,

@@ -26,8 +26,9 @@ class ChatConversation
         }
 
         $current = $this->ranking->rank($message);
+        $newTopicMin = (float) config($current->engine === 'blend' ? 'search.blend.new_topic_min_score' : 'search.new_topic_min_score');
         if ($current->status !== 'none'
-            && $current->results[0]->score >= (float) config('search.new_topic_min_score')
+            && $current->results[0]->score >= $newTopicMin
             && $current->results[0]->id !== $pending['article_id']) {
             return $this->cap($message); // A new question about another article drops the pending context.
         }
