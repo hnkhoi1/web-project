@@ -3,3 +3,4 @@
 backend/config.local.php
 node_modules/
 .vscode/
+.superpowers/
