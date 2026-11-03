@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS hinh_su_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON hinh_su_test.* TO 'hinh_su'@'%';
+FLUSH PRIVILEGES;

@@ -1,0 +1,57 @@
+services:
+  web:
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  app:
+    build:
+      context: .
+      target: dev
+      args:
+        UID: ${UID:-1000}
+    user: "${UID:-1000}"
+    # Dev reads the bind-mounted .env itself. Real container env vars would beat
+    # the forced values in phpunit.xml and point tests at the dev database.
+    env_file: !reset []
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+      - app_key:/run/app-key
+
+  vite:
+    build:
+      context: .
+      target: dev
+      args:
+        UID: ${UID:-1000}
+    user: "${UID:-1000}"
+    entrypoint: []
+    working_dir: /var/www/html
+    # Wayfinder runs `php artisan`, so it needs the vendor volume filled by `app`.
+    command: >
+      sh -c "until [ -f vendor/autoload.php ]; do sleep 1; done;
+      pnpm install && pnpm dev --host 0.0.0.0"
+    env_file: !reset []
+    environment:
+      npm_config_confirm_modules_purge: "false"
+      VITE_HMR_HOST: ${VITE_HMR_HOST:-localhost}
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+    depends_on:
+      - app
+
+  db:
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - ./docker/mysql/create-test-db.sql:/docker-entrypoint-initdb.d/create-test-db.sql:ro
+
+volumes:
+  vendor:
+  node_modules:
