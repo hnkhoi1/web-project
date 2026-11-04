@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import AppLogo from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
 import { useSyncPrefs } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import { login, register } from '@/routes';
@@ -59,6 +60,7 @@ function GuestShell({ children }: { children: ReactNode }) {
             <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
                 {children}
             </main>
+            <Toaster />
         </div>
     );
 }

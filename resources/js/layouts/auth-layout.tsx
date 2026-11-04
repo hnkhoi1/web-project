@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/sonner';
 import { useSyncPrefs } from '@/hooks/use-appearance';
 import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
 
@@ -13,8 +14,11 @@ export default function AuthLayout({
     useSyncPrefs();
 
     return (
-        <AuthLayoutTemplate title={title} description={description}>
-            {children}
-        </AuthLayoutTemplate>
+        <>
+            <AuthLayoutTemplate title={title} description={description}>
+                {children}
+            </AuthLayoutTemplate>
+            <Toaster />
+        </>
     );
 }
