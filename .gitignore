@@ -47,6 +47,5 @@ yarn-error.log
 
 # project
 *.zip
-backend/config.local.php
 .superpowers/
 __pycache__/

@@ -2,7 +2,7 @@
 
 namespace App\Search;
 
-/** Article search (port of Law.search in js/law.js). */
+/** Article search (port of Law.search in legacy-final:js/law.js). */
 class LawSearch
 {
     public function __construct(

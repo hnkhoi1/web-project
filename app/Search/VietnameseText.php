@@ -4,7 +4,7 @@ namespace App\Search;
 
 use Normalizer;
 
-/** Text helpers for the lexical scorer (port of the helpers in js/scorer.js). */
+/** Text helpers for the lexical scorer (port of the helpers in legacy-final:js/scorer.js). */
 final class VietnameseText
 {
     /** NFC + lowercase; with $plain also strips diacritics (and maps đ to d). */

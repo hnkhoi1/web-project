@@ -2,7 +2,7 @@
 
 namespace App\Search;
 
-/** Follow-up handling for the chatbot (port of continueQuestion and the pendingUnit logic in js/chatbot.js). */
+/** Follow-up handling for the chatbot (port of continueQuestion and the pendingUnit logic in legacy-final:js/chatbot.js). */
 class ChatConversation
 {
     public function __construct(private readonly RankingService $ranking) {}

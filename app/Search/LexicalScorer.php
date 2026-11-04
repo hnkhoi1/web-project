@@ -4,7 +4,7 @@ namespace App\Search;
 
 /**
  * Lexical question-to-article scorer: 0.60 concept + 0.30 BM25 keyword + 0.10 fuzzy (typos).
- * Behaviour-identical port of js/scorer.js (golden-tested); the concept dictionary lives in data/concepts.json.
+ * Behaviour-identical port of legacy-final:js/scorer.js (golden-tested); the concept dictionary lives in data/concepts.json.
  */
 final class LexicalScorer
 {

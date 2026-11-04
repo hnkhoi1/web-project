@@ -2,7 +2,7 @@
 
 namespace App\Search;
 
-/** Builds a structured answer for a free-text legal question (port of Law.answer in js/law.js, without debug). */
+/** Builds a structured answer for a free-text legal question (port of Law.answer in legacy-final:js/law.js, without debug). */
 class LawAnswerer
 {
     private const DISCLAIMER = '(Tham khảo từ dữ liệu demo rút gọn, không thay thế tư vấn của luật sư.)';

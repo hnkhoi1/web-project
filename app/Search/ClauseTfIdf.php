@@ -2,7 +2,7 @@
 
 namespace App\Search;
 
-/** Light TF-IDF + cosine similarity over short texts (port of js/nlu.js). */
+/** Light TF-IDF + cosine similarity over short texts (port of legacy-final:js/nlu.js). */
 class ClauseTfIdf
 {
     private const STOPWORDS = [

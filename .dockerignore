@@ -12,12 +12,5 @@ storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/views/*
 docs
-html
-js
-css
-backend
-data
-tests/*.js
-tests/e2e.py
 bootstrap/cache/*.php
 .pnpm-store

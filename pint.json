@@ -1,8 +1,6 @@
 {
     "preset": "laravel",
     "notPath": [
-        "backend/api/law.php",
-        "database/data/dieu_luat_data.php",
-        "tools/export_law.php"
+        "database/data/dieu_luat_data.php"
     ]
 }
