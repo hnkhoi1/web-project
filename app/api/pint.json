@@ -1,6 +1,4 @@
 {
     "preset": "laravel",
-    "notPath": [
-        "database/data/dieu_luat_data.php"
-    ]
+    "notPath": ["database/data/dieu_luat_data.php"]
 }
