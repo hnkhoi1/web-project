@@ -1,6 +1,6 @@
-FROM python:3.12-slim AS runtime
+FROM python:3.14-slim-trixie AS runtime
 
-ENV PIP_NO_CACHE_DIR=1 PYTHONUNBUFFERED=1 HF_HOME=/opt/hf
+ENV PIP_NO_CACHE_DIR=1 PIP_ROOT_USER_ACTION=ignore PYTHONUNBUFFERED=1 HF_HOME=/opt/hf
 WORKDIR /app
 
 # CPU-only torch first so sentence-transformers does not pull the CUDA build.

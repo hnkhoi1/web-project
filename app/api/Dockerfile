@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 
-FROM php:8.4-fpm-bookworm AS base
+FROM php:8.5-fpm-trixie AS base
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git unzip libicu-dev libjpeg62-turbo-dev libwebp-dev libfreetype6-dev \
     && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
-    && docker-php-ext-install -j"$(nproc)" pdo_mysql intl gd opcache \
+    && docker-php-ext-install -j"$(nproc)" pdo_mysql intl gd \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /var/www/html
 
@@ -15,9 +15,9 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction --prefer-dist
 
 FROM base AS assets
-COPY --from=node:22-bookworm-slim /usr/local /usr/local
+COPY --from=node:26-trixie-slim /usr/local /usr/local
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN find /usr/local/bin -xtype l -delete && corepack enable && corepack prepare pnpm@10 --activate
+RUN npm install --global pnpm@12
 COPY --from=vendor /var/www/html/vendor ./vendor
 COPY . .
 ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
@@ -28,12 +28,10 @@ RUN composer dump-autoload --no-dev --no-scripts --optimize \
 
 FROM base AS dev
 ARG UID=1000
-ENV COREPACK_HOME=/usr/local/share/corepack
 ENV npm_config_store_dir=/home/dev/.pnpm-store
-COPY --from=node:22-bookworm-slim /usr/local /usr/local
+COPY --from=node:26-trixie-slim /usr/local /usr/local
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN find /usr/local/bin -xtype l -delete && corepack enable && corepack prepare pnpm@10 --activate \
-    && chmod -R a+rwX /usr/local/share/corepack \
+RUN npm install --global pnpm@12 \
     && useradd -m -u ${UID} dev \
     && mkdir -p /run/app-key /var/www/html/vendor /var/www/html/node_modules \
     && chown -R dev /run/app-key /var/www/html /home/dev
@@ -57,7 +55,7 @@ RUN composer dump-autoload --no-dev --optimize \
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm"]
 
-FROM nginx:1.27-alpine AS web
+FROM nginx:stable-trixie AS web
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY public /var/www/html/public
 COPY --from=assets /var/www/html/public/build /var/www/html/public/build

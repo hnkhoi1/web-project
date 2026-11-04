@@ -1,0 +1,15 @@
+# Top-level pins; pip resolves the rest. Rebuild and run the embedder tests after bumping.
+fastapi==0.162.0
+uvicorn==0.54.0
+starlette==1.10.0
+pydantic==2.14.2
+sentence-transformers==6.2.0
+transformers==5.22.1
+tokenizers==0.23.3
+safetensors==0.8.0
+huggingface_hub==2.4.0
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+joblib==1.6.0
+threadpoolctl==3.7.0

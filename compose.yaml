@@ -1,7 +1,7 @@
 services:
   web:
     build:
-      context: .
+      context: ./app/api
       target: web
     ports:
       - "${WEB_PORT:-8080}:80"
@@ -10,7 +10,7 @@ services:
 
   app:
     build:
-      context: .
+      context: ./app/api
       target: prod
     env_file: .env
     volumes:
@@ -23,7 +23,7 @@ services:
   embedder:
     profiles: ["semantic"]
     build:
-      context: ./docker/embedder
+      context: ./app/embedder
       target: runtime
     mem_limit: 1500m
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
   embedder-test:
     profiles: ["test"]
     build:
-      context: ./docker/embedder
+      context: ./app/embedder
       target: test
     mem_limit: 1500m
 
