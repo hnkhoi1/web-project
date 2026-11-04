@@ -13,11 +13,13 @@ use Tests\TestCase;
 class LexicalParityTest extends TestCase
 {
     use RefreshDatabase;
+    use UsesFrozenDictionary;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->seed(LawSeeder::class);
+        $this->useFrozenDictionary();
     }
 
     /** @return array<string, array{array<string, mixed>}> */
@@ -42,7 +44,7 @@ class LexicalParityTest extends TestCase
     public function test_rank_matches_legacy_js(array $entry): void
     {
         $expected = $entry['rank'];
-        $r = (new LexicalScorer)->rank($entry['question'], app(ArticleRepository::class)->all());
+        $r = app(LexicalScorer::class)->rank($entry['question'], app(ArticleRepository::class)->all());
 
         $this->assertSame($expected['mode'], $r->mode);
         $this->assertSame($expected['status'], $r->status);
@@ -83,13 +85,13 @@ class LexicalParityTest extends TestCase
     public function test_role(string $query, string $role): void
     {
         $this->assertSame($role, LexicalScorer::detectRole($query));
-        $this->assertSame($role, (new LexicalScorer)->rank($query, app(ArticleRepository::class)->all())->role);
+        $this->assertSame($role, app(LexicalScorer::class)->rank($query, app(ArticleRepository::class)->all())->role);
     }
 
     public function test_nfd_query_ranks_like_nfc(): void
     {
         $articles = app(ArticleRepository::class)->all();
-        $scorer = new LexicalScorer;
+        $scorer = app(LexicalScorer::class);
         $nfc = $scorer->rank('tôi bị đánh', $articles);
         $nfd = $scorer->rank(Normalizer::normalize('tôi bị đánh', Normalizer::FORM_D), $articles);
 
@@ -105,7 +107,7 @@ class LexicalParityTest extends TestCase
 
     public function test_invalid_utf8_query_has_no_results(): void
     {
-        $r = (new LexicalScorer)->rank("\xFF", app(ArticleRepository::class)->all());
+        $r = app(LexicalScorer::class)->rank("\xFF", app(ArticleRepository::class)->all());
 
         $this->assertSame('none', $r->status);
     }

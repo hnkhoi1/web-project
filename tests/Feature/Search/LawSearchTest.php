@@ -12,11 +12,13 @@ use Tests\TestCase;
 class LawSearchTest extends TestCase
 {
     use RefreshDatabase;
+    use UsesFrozenDictionary;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->seed(LawSeeder::class);
+        $this->useFrozenDictionary();
     }
 
     private function search(string $q, string $chuong = ''): array

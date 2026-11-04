@@ -11,6 +11,7 @@ use Tests\TestCase;
 class LawAnswererParityTest extends TestCase
 {
     use RefreshDatabase;
+    use UsesFrozenDictionary;
 
     private const KEYS = ['found', 'mode', 'score', 'alt', 'article', 'khoan', 'khoan_all', 'ask', 'quyen_loi',
         'can_cu', 'ghi_chu_quyen_loi', 'note_title', 'note_text'];
@@ -27,6 +28,7 @@ class LawAnswererParityTest extends TestCase
     {
         parent::setUp();
         $this->seed(LawSeeder::class);
+        $this->useFrozenDictionary();
     }
 
     /** @return array<string, array{array<string, mixed>}> */

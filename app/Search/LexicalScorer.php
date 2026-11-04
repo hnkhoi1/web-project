@@ -36,6 +36,8 @@ final class LexicalScorer
     /** @var list<array<string, mixed>>|null */
     private ?array $indexedData = null;
 
+    public function __construct(private readonly string $dictionaryPath = __DIR__.'/data/concepts.json') {}
+
     /**
      * @param  list<array<string, mixed>>  $articles
      */
@@ -219,7 +221,7 @@ final class LexicalScorer
     private function concepts(): array
     {
         if ($this->concepts === null) {
-            $json = file_get_contents(__DIR__.'/data/concepts.json');
+            $json = file_get_contents($this->dictionaryPath);
             $decoded = json_decode($json === false ? '[]' : $json, true, 512, JSON_THROW_ON_ERROR);
             /** @var list<array{id: string, laws: array<int, int|float>, p: list<string>}> $decoded */
             $this->concepts = $decoded;
