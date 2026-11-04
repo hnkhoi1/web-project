@@ -41,11 +41,78 @@ export default function NotesIndex({ notes, popular }: Props) {
         <>
             <Head title="Ghi chú" />
 
-            <div className="mx-auto w-full max-w-6xl space-y-8 px-4 py-6">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h1 className="text-2xl font-semibold">
-                        Xin chào, {auth.user?.name}
-                    </h1>
+            <section className="full-bleed bg-ink [background-image:radial-gradient(900px_300px_at_85%_-10%,rgb(169_121_58/0.18),transparent_60%)] text-on-ink">
+                <div className="mx-auto grid max-w-6xl gap-7 px-5 py-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-12 lg:py-[60px]">
+                    <div>
+                        <p className="mb-2 font-serif text-[#c9aa76] italic">
+                            Trang chủ của bạn
+                        </p>
+                        <h1 className="max-w-[20ch] text-[clamp(1.5rem,4.5vw,2rem)] text-white">
+                            Xin chào, {auth.user?.name}
+                        </h1>
+                        <p className="mt-2 max-w-[56ch] text-on-ink-soft">
+                            Mô tả tình huống bằng lời thường ngày để nhận điều
+                            luật, mức xử lý và quyền lợi bồi thường tương ứng.
+                            Những gì bạn muốn giữ lại sẽ nằm ở mục ghi chú bên
+                            dưới.
+                        </p>
+                        <form
+                            action="/tra-cuu"
+                            method="get"
+                            role="search"
+                            className="mt-5 flex max-w-[560px] gap-2 rounded-lg bg-white p-1.5 shadow-card"
+                        >
+                            <label className="sr-only" htmlFor="home-q">
+                                Tra cứu điều luật
+                            </label>
+                            <input
+                                id="home-q"
+                                type="text"
+                                name="q"
+                                placeholder="VD: trộm cắp, tai nạn giao thông, lừa đảo..."
+                                className="min-h-11 min-w-0 flex-1 bg-transparent px-2.5 text-base text-[#16233a] outline-none"
+                            />
+                            <button
+                                type="submit"
+                                className="min-h-11 rounded-md bg-primary px-5 font-semibold text-white hover:opacity-90"
+                            >
+                                Tra cứu
+                            </button>
+                        </form>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                        {[
+                            {
+                                href: '/tu-van',
+                                title: 'Hỏi chatbot',
+                                text: 'Nhận tư vấn từ tình huống của bạn',
+                            },
+                            {
+                                href: '/tra-cuu',
+                                title: 'Tra cứu điều luật',
+                                text: 'Theo từ khóa, số điều hoặc chương',
+                            },
+                        ].map((c) => (
+                            <Link
+                                key={c.href}
+                                href={c.href}
+                                className="flex flex-col gap-1 rounded-lg border border-[#33415a] bg-white/[0.07] px-[18px] py-4 text-white hover:border-primary hover:no-underline"
+                            >
+                                <strong>{c.title}</strong>
+                                <span className="text-[0.88rem] text-on-ink-soft">
+                                    {c.text}
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <div className="space-y-8 py-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
+                    <h2 className="text-[clamp(1.25rem,3.5vw,1.6rem)]">
+                        Ghi chú của bạn
+                    </h2>
                     <Button type="button" onClick={() => setEditing(null)}>
                         <Plus />
                         Ghi chú mới
@@ -88,16 +155,19 @@ export default function NotesIndex({ notes, popular }: Props) {
                 )}
 
                 <section className="space-y-3" aria-labelledby="popular">
-                    <h2 id="popular" className="text-lg font-semibold">
+                    <h2
+                        id="popular"
+                        className="text-[clamp(1.25rem,3.5vw,1.6rem)]"
+                    >
                         Điều luật nổi bật
                     </h2>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {popular.map((a) => (
                             <div
                                 key={a.id}
-                                className="flex flex-col gap-2 rounded-lg border bg-card p-4 text-card-foreground"
+                                className="flex flex-col gap-2 rounded-lg border bg-card p-5 text-card-foreground"
                             >
-                                <span className="text-xs font-medium text-muted-foreground">
+                                <span className="font-serif text-[0.85rem] text-link">
                                     Điều {a.id}
                                 </span>
                                 <h3 className="font-semibold">
@@ -111,7 +181,7 @@ export default function NotesIndex({ notes, popular }: Props) {
                                 <p className="text-sm text-muted-foreground">
                                     {a.tom_tat}
                                 </p>
-                                <span className="mt-auto w-fit rounded-full bg-muted px-2.5 py-0.5 text-xs">
+                                <span className="mt-auto w-fit rounded-full bg-danger-bg px-2.5 py-0.5 text-[0.8rem] font-semibold text-destructive-foreground">
                                     {a.khung_hinh_phat}
                                 </span>
                             </div>

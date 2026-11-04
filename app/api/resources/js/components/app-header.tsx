@@ -40,8 +40,8 @@ export function AppHeader() {
     const user = auth.user;
 
     return (
-        <header className="border-b bg-background">
-            <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
+        <header className="relative z-30 border-b-[3px] border-primary bg-ink text-on-ink">
+            <div className="mx-auto flex min-h-[68px] max-w-6xl items-center gap-2 px-5">
                 <div className="md:hidden">
                     <Sheet>
                         <SheetTrigger asChild>
@@ -49,6 +49,7 @@ export function AppHeader() {
                                 variant="ghost"
                                 size="icon"
                                 aria-label="Mở menu"
+                                className="border border-[#3c4a63] text-white hover:bg-white/10 hover:text-white"
                             >
                                 <Menu className="size-5" />
                             </Button>
@@ -76,12 +77,15 @@ export function AppHeader() {
                     </Sheet>
                 </div>
 
-                <Link href={notesIndex()} className="flex items-center gap-2">
+                <Link
+                    href={notesIndex()}
+                    className="flex items-center gap-3 text-on-ink hover:no-underline"
+                >
                     <AppLogo />
                 </Link>
 
                 <nav
-                    className="ml-4 hidden items-center gap-1 md:flex"
+                    className="ml-auto hidden items-center gap-[22px] md:flex"
                     aria-label="Điều hướng chính"
                 >
                     {navLinks.map((item) => (
@@ -89,9 +93,9 @@ export function AppHeader() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                'rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
+                                'border-b-2 border-transparent px-0.5 py-2 text-[0.93rem] font-medium text-[#d8dce4] transition-colors hover:border-primary hover:text-white',
                                 isCurrentUrl(item.href) &&
-                                    'bg-accent text-foreground',
+                                    'border-primary text-white',
                             )}
                         >
                             {item.title}
@@ -99,13 +103,13 @@ export function AppHeader() {
                     ))}
                 </nav>
 
-                <div className="ml-auto flex items-center gap-2">
+                <div className="ml-auto flex items-center gap-2 md:ml-6">
                     {user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    className="size-10 rounded-full p-1"
+                                    className="size-11 rounded-full border border-[#3c4a63] p-1 text-white hover:border-primary hover:bg-transparent hover:text-white"
                                     aria-label="Menu người dùng"
                                 >
                                     <Avatar className="size-8 overflow-hidden rounded-full">
@@ -125,7 +129,12 @@ export function AppHeader() {
                         </DropdownMenu>
                     ) : (
                         <>
-                            <Button variant="ghost" size="sm" asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-white hover:bg-white/10 hover:text-white"
+                                asChild
+                            >
                                 <Link href={login()}>Đăng nhập</Link>
                             </Button>
                             <Button size="sm" asChild>

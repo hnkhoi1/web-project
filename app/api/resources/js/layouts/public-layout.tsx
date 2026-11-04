@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import AppLogo from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
+import { SiteFooter } from '@/components/site-footer';
 import { Toaster } from '@/components/ui/sonner';
 import { useSyncPrefs } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
@@ -28,27 +29,35 @@ function GuestShell({ children }: { children: ReactNode }) {
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
-            <header className="border-b bg-background">
-                <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
-                    <Link href="/login" className="flex items-center gap-2">
+            <header className="relative z-30 border-b-[3px] border-primary bg-ink text-on-ink">
+                <div className="mx-auto flex min-h-[68px] max-w-6xl items-center gap-2 px-5">
+                    <Link
+                        href="/login"
+                        className="flex items-center gap-3 text-on-ink hover:no-underline"
+                    >
                         <AppLogo />
                     </Link>
                     <nav
-                        className="ml-4 flex items-center gap-1"
+                        className="ml-auto flex items-center gap-[22px]"
                         aria-label="Điều hướng chính"
                     >
                         {links.map((item) => (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                                className="border-b-2 border-transparent px-0.5 py-2 text-[0.93rem] font-medium text-[#d8dce4] transition-colors hover:border-primary hover:text-white"
                             >
                                 {item.title}
                             </Link>
                         ))}
                     </nav>
-                    <div className="ml-auto flex items-center gap-2">
-                        <Button variant="ghost" size="sm" asChild>
+                    <div className="ml-6 flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-white hover:bg-white/10 hover:text-white"
+                            asChild
+                        >
                             <Link href={login()}>Đăng nhập</Link>
                         </Button>
                         <Button size="sm" asChild>
@@ -57,9 +66,10 @@ function GuestShell({ children }: { children: ReactNode }) {
                     </div>
                 </div>
             </header>
-            <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
+            <main className="grid w-full flex-1 grid-cols-[minmax(1.25rem,1fr)_minmax(0,69.5rem)_minmax(1.25rem,1fr)] content-start py-6 *:col-start-2">
                 {children}
             </main>
+            <SiteFooter />
             <Toaster />
         </div>
     );
