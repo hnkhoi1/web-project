@@ -49,3 +49,4 @@ yarn-error.log
 *.zip
 backend/config.local.php
 .superpowers/
+__pycache__/

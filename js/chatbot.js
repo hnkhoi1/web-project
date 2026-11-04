@@ -15,8 +15,7 @@
   function showAnswer(a) {
     const m = addMsg('bot');
     if (!a.found) {
-      para(m, '', 'Mình chưa tìm được điều luật phù hợp với mô tả này. Bạn thử nêu rõ hành vi (ví dụ: trộm xe máy, lừa đảo qua mạng, đánh người gây thương tích) hoặc dùng trang Tra cứu nhé.');
-      const l = el('a', '', 'Mở trang Tra cứu'); l.href = 'tra-cuu.html'; m.appendChild(l); return;
+      para(m, '', 'Câu hỏi không có trong dữ liệu.'); return;
     }
     if (a.mode === 'overview') {
       para(m, '', `Tình huống của bạn có thể liên quan đến Điều ${a.article.id}. ${a.article.tieu_de} (${a.article.chuong}). Mức xử lý phụ thuộc mức độ hậu quả:`);
@@ -42,7 +41,9 @@
     cite.appendChild(save); m.appendChild(cite);
   }
 
+  let forceNoDataReply = false;
   function continueQuestion(q) {
+    forceNoDataReply = false;
     if (!pendingQuestion) return q;
     const number = q.match(/^\s*(\d+(?:[.,]\d+)?)\s*(%|tri[eệ]u|t(?:ỷ|ỉ|y))?\s*(?:đồng)?\s*$/i);
     if (number) {
@@ -50,6 +51,13 @@
       return `${pendingQuestion} ${number[1]}${unit === '%' ? '%' : unit ? ` ${unit} đồng` : ''}`;
     }
     const current = Scorer.rank(q, LAW_DATA);
+    // Câu không đủ tín hiệu pháp luật không phải câu trả lời cho câu hỏi làm rõ.
+    // Xóa ngữ cảnh ngay để câu tiếp theo không bị gắn nhầm vào điều luật cũ.
+    if (current.status === 'none' || current.status === 'ambiguous') {
+      pendingQuestion = null; pendingUnit = null; pendingArticleId = null;
+      forceNoDataReply = true;
+      return q;
+    }
     if (current.status !== 'none' && current.results[0].score >= 0.25 && String(current.results[0].key) !== String(pendingArticleId)) {
       pendingQuestion = null; pendingUnit = null; pendingArticleId = null;
       return q; // Một câu hỏi mới về điều khác phải bỏ ngữ cảnh đang chờ.
@@ -81,7 +89,7 @@
     const fullQuestion = continueQuestion(q);
     setTimeout(async () => {
       t.remove();
-      const answer = Law.answer(fullQuestion);
+      const answer = forceNoDataReply ? { found: false } : Law.answer(fullQuestion);
       showAnswer(answer);
       if (answer.found && answer.mode === 'overview' && answer.ask) {
         pendingQuestion = fullQuestion;

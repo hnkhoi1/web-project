@@ -27,10 +27,10 @@ Mỗi người chỉ sửa file thuộc phần mình (xem FILE_OWNERSHIP.md). B�
 | ID | Lỗi | Người làm | Cỡ | Trạng thái |
 |---|---|---|---|---|
 | F01 | README còn dấu xung đột merge và mô tả sai (B1) | caychay0512-dev | M | ✅ |
-| F02 | `tests/e2e.py` trỏ sai thư mục nên toàn bộ e2e hỏng (B2) | caychay0512-dev | M | ⬜ |
+| F02 | `tests/e2e.py` trỏ sai thư mục nên toàn bộ e2e hỏng (B2) | caychay0512-dev | M | ✅ 6ef5862 (e2e 67/67) |
 | F03 | Thiếu `.gitignore`; thư mục gốc không có trang vào (B6, B8) | Khôi | S | ✅ |
-| F04 | Chatbot trả sai điều luật với tình huống ngoài dữ liệu (B5) + chạy test không cần Node | Khôi | M | ⬜ |
-| F05 | Dữ liệu điều luật nằm ở 2 nơi JS/PHP (B3) | Khôi | M | ⬜ |
+| F04 | Chatbot trả sai điều luật với tình huống ngoài dữ liệu (B5) + chạy test không cần Node | Khôi | M | ✅ |
+| F05 | Dữ liệu điều luật nằm ở 2 nơi JS/PHP (B3) | Khôi | M | ✅ |
 | F06 | `data/DataStore.php` không được dùng (B4) | kajima | gộp vào T13 | ✅ |
 | — | Đăng nhập/khóa có thể vượt qua bằng DevTools (B7) | kajima | sửa trong T11 | ⬜ |
 
@@ -80,12 +80,12 @@ Mỗi người chỉ sửa file thuộc phần mình (xem FILE_OWNERSHIP.md). B�
 | T11 | BackEnd lõi: `lib/*`, session, CSRF, `auth.php` | kajima | P0 | L | T10, T13 | ⬜ |
 | T12 | `notes.php`, `contacts.php`, `prefs.php` + adapter api | kajima | P1 | M | T11 | ⬜ |
 | T14 | `admin.php` + vai trò admin | kajima | P1 | M | T11 | ⬜ |
-| T21 | Mở rộng dữ liệu lên ~18 điều luật | Khôi | P1 | L | F04, F05 | ⬜ |
-| T23 | `law.php` + ghi log lịch sử hỏi đáp | Khôi | P1 | M | T11, F05 | ⬜ |
-| T24 | Tra cứu/chi tiết/chatbot chuyển sang `DB` async, đồng bộ bộ lọc lên URL | Khôi | P2 | M | T10 | ⬜ |
+| T21 | Mở rộng dữ liệu lên ~18 điều luật | Khôi | P1 | L | F04, F05 | ✅ |
+| T23 | `law.php` + ghi log lịch sử hỏi đáp | Khôi | P1 | M | T11, F05 | 🔄 chờ T11 |
+| T24 | Tra cứu/chi tiết/chatbot chuyển sang `DB` async, đồng bộ bộ lọc lên URL | Khôi | P2 | M | T10 | 🔄chờ T10 |
 | T30 | Ghi chú chuyển sang `DB` async (+ xem lưới/danh sách nếu nhóm muốn) | caychay0512-dev | P1 | M | T10 | ⬜ |
 | T31 | Tài khoản/liên hệ/màn hình xác thực chuyển sang `DB` async | caychay0512-dev | P1 | M | T10 | ⬜ |
-| T32 | Trang quản trị (menu chức năng BackEnd) | caychay0512-dev | P1 | L | T10 (stub), T14 | ⬜ |
+| T32 | Trang quản trị (menu chức năng BackEnd) | caychay0512-dev | P1 | L | T10 (stub), T14 | 🔄 cd4ef2c bản stub, chờ T14 |
 | T34 | Responsive/a11y, chụp màn hình làm PDF nộp | caychay0512-dev | P2 | S | các task khác | ⬜ |
 | T40 | Đóng gói và nộp bài | Cả nhóm | cuối | — | tất cả | ⬜ |
 
@@ -170,6 +170,8 @@ Mỗi người chỉ sửa file thuộc phần mình (xem FILE_OWNERSHIP.md). B�
 ### T32 — Trang quản trị (caychay0512-dev, L, P1)
 - **Mục tiêu:** đáp ứng yêu cầu "BackEnd có menu chức năng". Gồm `html/admin/index.html` (Tổng quan), `nguoi-dung.html`, `lien-he.html`, `lich-su.html` và `js/admin.js`.
 - **Cách làm:** làm trước với stub `DB.admin.*`, chuyển sang API thật khi T14 xong.
+- **Đã làm (02/11):** 4 trang đặt phẳng trong `html/` là `admin.html`, `admin-nguoi-dung.html`, `admin-lien-he.html`, `admin-lich-su.html`. Không dùng thư mục con `html/admin/` vì `app.js` chuyển hướng bằng đường dẫn tương đối (`login.html`, `index.html`) nên sẽ hỏng khi trang nằm trong thư mục con. Stub nằm trong `js/admin.js`; khi `DB.admin` có trong `db.js` thì trang tự dùng nó. Kiểu dữ liệu UI cần ghi ở đầu `js/admin.js` (kajima xem để làm T14). Trong lúc dùng stub, tài khoản `demo` đóng vai admin. Test: `tests/e2e/test_admin.py`.
+- **Cần kajima:** thêm `role` vào `User` trả về cho UI, và thêm mục "Quản trị" vào menu người dùng trong `app.js` cho admin (sửa file dùng chung, ≤20 dòng).
 - **Hoàn thành khi:** user thường bị chặn ở cả UI và API; admin dùng được đủ mục trong menu.
 
 ### T34 — Hoàn thiện giao diện và PDF (caychay0512-dev, S, P2)
