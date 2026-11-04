@@ -19,6 +19,13 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ./app/web
+      target: prod
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+
   # Optional, for SEARCH_BLEND_ENABLED=true: docker compose --profile semantic up -d
   embedder:
     profiles: ["semantic"]
