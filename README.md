@@ -10,8 +10,7 @@ Dự án là monorepo chạy hoàn toàn bằng **Docker Compose**, không cần
 .
 ├── app/
 │   ├── api/        Laravel 13 + Inertia + React 19 (giao diện chính, API, CSDL)
-│   ├── embedder/   dịch vụ Python (FastAPI) tạo vector cho tìm kiếm ngữ nghĩa (tùy chọn)
-│   └── web/        khung Vite + React + TypeScript strict (chưa gọi API)
+│   └── embedder/   dịch vụ Python (FastAPI) tạo vector cho tìm kiếm ngữ nghĩa (tùy chọn)
 ├── docker/mysql/   script tạo CSDL test
 ├── docs/           tài liệu (CSDL, thiết kế, kế hoạch)
 ├── compose.yaml            cấu hình chạy thật (production)
@@ -36,10 +35,9 @@ Compose **không tự chạy migration**, nên lệnh `migrate --seed` ở trên
 |---|---|
 | http://localhost:8080 | Ứng dụng chính (nginx → Laravel) |
 | http://localhost:5173 | Vite dev server cho `app/api` (HMR, không có trang gốc) |
-| http://localhost:3000 | `app/web` (khung React riêng) |
 | `127.0.0.1:3306` | MySQL (chỉ mở ở chế độ dev) |
 
-Đổi cổng bằng `WEB_PORT`, `FRONTEND_PORT` trong `.env`.
+Đổi cổng web bằng `WEB_PORT` trong `.env`.
 
 ### Tài khoản demo
 Tài khoản `demo` do `DemoUserSeeder` tạo (mật khẩu xem trong file seeder). Đây là tài khoản dùng chung, bị khóa: không sửa hồ sơ, ảnh, mật khẩu. Tài khoản tự đăng ký dùng đầy đủ chức năng.
