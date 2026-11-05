@@ -105,7 +105,8 @@ export default function AnswerMessage({ answer }: Props) {
                     <Para>
                         Tình huống của bạn liên quan đến Điều {article.id}.{' '}
                         {article.tieu_de} ({article.chuong}), cụ thể Khoản{' '}
-                        {answer.khoan.so_khoan} — {answer.khoan.dieu_kien}.
+                        {answer.khoan.so_khoan} —{' '}
+                        {answer.khoan.dieu_kien?.replace(/[.\s]+$/, '')}.
                     </Para>
                     {answer.role === 'nan_nhan' && rights()}
                     <Para label="Mức xử lý với người vi phạm:">

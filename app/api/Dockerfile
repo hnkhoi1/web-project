@@ -20,6 +20,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN npm install --global pnpm@12
 COPY --from=vendor /var/www/html/vendor ./vendor
 COPY . .
+# The project .env is outside the build context, so Vite needs the name as a build arg.
+ARG VITE_APP_NAME="Tra cứu Luật Hình sự"
+ENV VITE_APP_NAME=$VITE_APP_NAME
 ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 RUN composer dump-autoload --no-dev --no-scripts --optimize \
     && php artisan package:discover --ansi \
