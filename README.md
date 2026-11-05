@@ -1,119 +1,103 @@
 # Hình Sự Tra Cứu
 
-Ứng dụng web tra cứu và tư vấn **Luật Hình sự Việt Nam** bằng ngôn ngữ đời thường: người dùng mô tả tình huống, hệ thống trả về điều luật, mức xử lý và quyền lợi bồi thường của người bị hại. Có thêm quản lý ghi chú cá nhân, tài khoản và tùy chỉnh giao diện.
+Ứng dụng web tra cứu và tư vấn **Luật Hình sự Việt Nam** bằng ngôn ngữ đời thường: người dùng mô tả tình huống, hệ thống trả về điều luật, mức xử lý và quyền lợi bồi thường của người bị hại. Có thêm ghi chú cá nhân, tài khoản và tùy chỉnh giao diện (sáng/tối, cỡ chữ, màu ghi chú).
 
-> **Trạng thái hiện tại:** bản chạy được là **bản tĩnh** (HTML + CSS + JavaScript, dữ liệu lưu ở `localStorage` của trình duyệt). Nhóm đang chuyển sang **PHP + MySQL** (XAMPP). CSDL đã thiết kế xong (`database/`), phần BackEnd PHP đang được làm. Tiến độ xem [docs/TASK_BOARD.md](docs/TASK_BOARD.md).
+Dự án là monorepo chạy hoàn toàn bằng **Docker Compose**, không cần cài PHP, Node hay MySQL trên máy.
 
-## 1. Chạy bản tĩnh
+## 1. Cấu trúc
 
-Không cần cài PHP, MySQL hay Node. Dùng một trong ba cách:
+```
+.
+├── app/
+│   ├── api/        Laravel 13 + Inertia + React 19 (giao diện chính, API, CSDL)
+│   ├── embedder/   dịch vụ Python (FastAPI) tạo vector cho tìm kiếm ngữ nghĩa (tùy chọn)
+│   └── web/        khung Vite + React + TypeScript strict (chưa gọi API)
+├── docker/mysql/   script tạo CSDL test
+├── docs/           tài liệu (CSDL, thiết kế, kế hoạch)
+├── compose.yaml            cấu hình chạy thật (production)
+└── compose.override.yaml   cấu hình dev, tự được nạp khi chạy từ thư mục gốc
+```
 
-| Cách | Làm thế nào |
+Stack: PHP 8.5 (FPM) · MySQL 8.4 · nginx · Node 26 + pnpm 12 · Python 3.14. Tất cả image dựa trên Debian 13 (trixie).
+
+## 2. Chạy lần đầu (dev)
+
+Yêu cầu: Docker Desktop (hoặc Docker Engine + Compose), khoảng 10 GB trống.
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+docker compose exec app php artisan migrate --seed
+```
+
+Compose **không tự chạy migration**, nên lệnh `migrate --seed` ở trên là bắt buộc ở lần đầu. Lệnh nạp 18 điều luật và tạo tài khoản demo. `APP_KEY` được tự sinh và lưu trong volume `app_key`.
+
+| Địa chỉ | Là gì |
 |---|---|
-| **Python** (khuyên dùng) | Mở terminal tại thư mục gốc của repo, chạy `python3 -m http.server 8000` (Windows: `python -m http.server 8000`), rồi vào http://localhost:8000/html/login.html |
-| **VS Code** | Cài extension **Live Server**, chuột phải `html/login.html` → *Open with Live Server* |
-| **Mở trực tiếp** | Mở file `html/login.html` bằng trình duyệt (đường dẫn dạng `file://`) |
+| http://localhost:8080 | Ứng dụng chính (nginx → Laravel) |
+| http://localhost:5173 | Vite dev server cho `app/api` (HMR, không có trang gốc) |
+| http://localhost:3000 | `app/web` (khung React riêng) |
+| `127.0.0.1:3306` | MySQL (chỉ mở ở chế độ dev) |
 
-> `index.html` ở thư mục gốc tự chuyển sang `html/login.html`, nên vào http://localhost:8000/ cũng được.
+Đổi cổng bằng `WEB_PORT`, `FRONTEND_PORT` trong `.env`.
 
 ### Tài khoản demo
-| Tên đăng nhập | Mật khẩu |
-|---|---|
-| `demo` | `12345` |
+Tài khoản `demo` do `DemoUserSeeder` tạo (mật khẩu xem trong file seeder). Đây là tài khoản dùng chung, bị khóa: không sửa hồ sơ, ảnh, mật khẩu. Tài khoản tự đăng ký dùng đầy đủ chức năng.
 
-Tài khoản demo nằm cứng trong `js/db.js` (`DEMO_USER`), bị khóa: không sửa tên/ảnh, không đổi mật khẩu, không xóa được. Tài khoản tự đăng ký thì dùng đầy đủ chức năng; dữ liệu lưu trong `localStorage` của trình duyệt đó. Xóa dữ liệu đã tạo: trang **Dữ liệu demo** (`html/database.html`) hoặc DevTools → Application → Clear storage.
+## 3. Chức năng
 
-## 2. Các trang
+Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới thiệu và liên hệ.
 
-Chưa đăng nhập mà mở bất kỳ trang nào ngoài ba trang xác thực thì bị chuyển về `login.html`.
-
-| Nhóm | Trang (trong `html/`) | Chức năng |
+| Trang | Đường dẫn | Chức năng |
 |---|---|---|
-| Xác thực | `login.html`, `register.html`, `forgot-password.html` | Đăng nhập (tên đăng nhập hoặc email, khóa tạm sau 5 lần sai), đăng ký (tự đăng nhập, có thanh nhắc kích hoạt email), quên mật khẩu bằng OTP giả lập trên màn hình |
-| Trang chủ | `index.html` | Ghi chú cá nhân: thêm, sửa, xóa có xác nhận, ghim, tìm theo thời gian thực, chọn màu |
-| Luật | `tra-cuu.html`, `dieu-luat-chi-tiet.html`, `tu-van.html` | Tra cứu điều luật, chi tiết từng điều (các khoản, quyền lợi người bị hại), chatbot tư vấn |
-| Tài khoản | `ho-so.html`, `doi-mat-khau.html`, `tuy-chinh.html` | Hồ sơ và ảnh đại diện, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
-| Khác | `gioi-thieu.html`, `lien-he.html`, `database.html` | Giới thiệu, gửi liên hệ, xem dữ liệu demo trong `localStorage` |
-| Quản trị | `admin.html`, `admin-nguoi-dung.html`, `admin-lien-he.html`, `admin-lich-su.html` | Menu BackEnd: tổng quan, quản lý người dùng, xử lý liên hệ, lịch sử hỏi đáp chatbot. Chỉ admin vào được; bản tĩnh chưa có vai trò nên tạm cho tài khoản `demo` đóng vai admin (vào từ trang **Dữ liệu demo**) |
+| Đăng nhập / đăng ký | `/login`, `/register` | Đăng nhập bằng tên đăng nhập hoặc email; khóa tạm sau 5 lần sai |
+| Ghi chú (trang chủ) | `/ghi-chu` | Thêm, sửa, xóa có xác nhận, ghim, tìm tức thời, chọn màu; điều luật nổi bật |
+| Tra cứu | `/tra-cuu` | Tìm theo từ khóa, số điều, chương (`?q=&chuong=`) |
+| Chi tiết điều luật | `/dieu-luat/{id}` | Các khoản, quyền lợi người bị hại, lưu vào ghi chú |
+| Tư vấn | `/tu-van` | Chatbot chấm điểm tình huống; mỗi câu hỏi ghi vào `lich_su_hoi_dap` |
+| Tài khoản | `/ho-so`, `/doi-mat-khau`, `/tuy-chinh` | Hồ sơ và ảnh, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
+| Khác | `/gioi-thieu`, `/lien-he` | Giới thiệu, gửi liên hệ |
 
-## 3. Cấu trúc thư mục
+Không có: quên mật khẩu, xác thực email, trang quản trị (đã loại khỏi phạm vi, xem `docs/superpowers/specs/`).
 
-```
-web-project/
-├── html/        17 trang. Header/footer do js/app.js chèn vào[cite: 1]
-├── css/app.css  giao diện dùng chung (có chế độ sáng/tối, responsive)[cite: 1]
-├── js/
-│   ├── account.js  logic trang tài khoản[cite: 1, 2]
-│   ├── admin.js    trang quản trị (đang dùng stub, chờ API admin.php)[cite: 1, 2]
-│   ├── app.js      khung chung: chặn chưa đăng nhập, header/footer, tiện ích HS.*[cite: 1, 2]
-│   ├── auth.js     đăng nhập / đăng ký / quên mật khẩu[cite: 1, 2]
-│   ├── chatbot.js  tra cứu, chatbot[cite: 1, 2]
-│   ├── contact.js  logic trang liên hệ[cite: 1, 2]
-│   ├── data.js     dữ liệu điều luật[cite: 1, 2]
-│   ├── db.js       lớp dữ liệu, tài khoản demo, localStorage[cite: 1, 2]
-│   ├── detail.js   chi tiết[cite: 1, 2]
-│   ├── law.js      dữ liệu điều luật[cite: 1, 2]
-│   ├── nlu.js      xử lý ngôn ngữ tự nhiên / điều luật[cite: 1, 2]
-│   ├── notes.js    logic trang ghi chú[cite: 1, 2]
-│   ├── scorer.js   chấm điểm câu hỏi[cite: 1, 2]
-│   └── search.js   tra cứu[cite: 1, 2]
-├── data/        dieu_luat_data.php (dữ liệu điều luật phía PHP)[cite: 1]
-├── database/    schema.sql, seed.sql, migrations/ (MySQL, xem mục 5)[cite: 1]
-├── tests/       db-test.js, scorer-test.js, run-in-browser.html, e2e/ (Playwright)[cite: 1]
-└── docs/        tài liệu thiết kế và kế hoạch (mục 6)[cite: 1]
+### Tìm kiếm ngữ nghĩa (tùy chọn)
+Mặc định tìm kiếm dùng thuật toán từ khóa. Để trộn thêm vector ngữ nghĩa, đặt `SEARCH_BLEND_ENABLED=true` trong `.env` rồi chạy:
+
+```bash
+docker compose --profile semantic up -d --build
 ```
 
-**Thứ tự nạp script trong mỗi trang:** `db.js` → `app.js` (trong `<head>`) → `data.js` → `nlu.js` → `scorer.js` → `law.js` (chỉ trang luật) → script của trang (`account.js` / `admin.js` / `auth.js` / `chatbot.js` / `contact.js` / `detail.js` / `notes.js` / `search.js`) (cuối `<body>`).
+Dịch vụ `embedder` cần khoảng 1,5 GB RAM và tải model lúc build image.
 
-## 4. Chạy test
+## 4. Kiểm thử
 
-| Lệnh | Cần | Kết quả hiện tại |
-|---|---|---|
-| `node tests/db-test.js` | Node.js | 13 mục đạt |
-| `node tests/scorer-test.js` | Node.js | 19/19 đạt |
-| `python tests/e2e/run_all.py` | Python 3 + Playwright | 67/67 đạt (5 module) |
+```bash
+# API (Pest/PHPUnit)
+docker compose exec app php artisan test
 
-Không có Node thì mở `tests/run-in-browser.html` để chạy hai test JS ngay trong trình duyệt.
+# Giao diện: kiểu và lint
+docker compose exec vite pnpm types:check
+docker compose exec vite pnpm check
 
-**E2E:** cài một lần bằng `pip install playwright` rồi `python -m playwright install chromium`. Chạy tại thư mục gốc repo:
-
-- Toàn bộ: `python tests/e2e/run_all.py`. Một module: `python tests/e2e/test_notes.py` (gồm `test_auth`, `test_notes`, `test_law`, `test_account`, `test_admin`).
-- Biến `HS_BASE` chọn nơi chạy: bỏ trống hoặc `file` = mở thẳng `file://` (mặc định); `http` = tự bật server tĩnh của Python; hoặc một địa chỉ cụ thể, ví dụ `HS_BASE=http://localhost/web-project/html/` khi chạy qua XAMPP. PowerShell: `$env:HS_BASE='http'; python tests/e2e/run_all.py`.
-- Mỗi module chạy trong trình duyệt sạch (localStorage trống). Lệnh trả mã thoát 1 nếu có case FAIL; đặt `HS_DEBUG=1` để in traceback khi một module dừng giữa chừng.
-- Thêm case: mỗi người viết vào file module của mình, dùng các hàm `t.login()`, `t.logout()`, `t.register()`, `t.ok()` trong `tests/e2e/common.py`.
-
-Danh sách kiểm tay trước mỗi lần push: [docs/TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md) (mục 1, "Smoke test").
-
-## 5. Cơ sở dữ liệu MySQL
-
-CSDL `hinh_su_db` gồm 10 bảng (người dùng, ghi chú, liên hệ, điều luật…). Mô tả cột và sơ đồ ERD: [docs/DATABASE.md](docs/DATABASE.md).
-
-**Cài mới** (cần XAMPP hoặc MySQL 8 / MariaDB 10.4 trở lên), chạy tại thư mục gốc của repo:
-
-```
-mysql -u root -p < database/schema.sql
-mysql -u root -p < database/seed.sql
+# Dịch vụ embedder
+docker compose run --rm --build embedder-test
 ```
 
-Hoặc import hai file trên theo thứ tự trong phpMyAdmin. Sau này sẽ có thêm `database/seed_law.sql` (sinh tự động từ dữ liệu điều luật), import sau `seed.sql`.
+Test API dùng CSDL riêng (tạo bởi `docker/mysql/create-test-db.sql`), không đụng dữ liệu dev.
 
-> ⚠ `schema.sql` bắt đầu bằng `DROP TABLE`, chạy lại sẽ **xóa toàn bộ dữ liệu**. CSDL đã có dữ liệu thì chỉ chạy các file mới trong `database/migrations/`.
+## 5. Chạy thật (production)
 
-Hiện giao diện **chưa** đọc ghi MySQL; việc nối BackEnd PHP nằm ở các task T10–T14.
+```bash
+cp .env.example .env     # sửa APP_ENV=production, APP_DEBUG=false, APP_URL, mật khẩu DB
+docker compose -f compose.yaml up -d --build
+docker compose -f compose.yaml exec app php artisan migrate --force --seed
+```
 
-## 6. Tài liệu trong `docs/`
+Dùng `-f compose.yaml` để bỏ qua file override dev. nginx phục vụ HTTP thuần ở `WEB_PORT`; HTTPS đặt proxy phía trước và chỉnh `TRUSTED_PROXIES`, `APP_URL` trong `.env`.
 
-| File | Nội dung |
-|---|---|
-| `TASK_BOARD.md` | Phân công, trạng thái và tiêu chí hoàn thành từng task, quy tắc làm việc trên `main` |
-| `TIMELINE.md` | Lịch 14 ngày (26/10 – 08/11/2026) cho từng người |
-| `FILE_OWNERSHIP.md` | File nào của ai, cách sửa file dùng chung |
-| `ARCHITECTURE.md`, `API_CONTRACT.md` | Kiến trúc hiện tại và kiến trúc đích, hợp đồng API |
-| `DATABASE.md`, `DATABASE.pdf` | Thiết kế CSDL |
-| `TESTING_CHECKLIST.md`, `PROJECT_AUDIT.md` | Danh sách kiểm thử, báo cáo rà soát lỗi |
+## 6. Lưu ý khi phát triển
 
-## 7. Lưu ý
-
-**Bảo mật của bản tĩnh:** việc kiểm tra đăng nhập chạy ngay trong trình duyệt nên **không an toàn thật**. Ai mở DevTools cũng đọc được dữ liệu `localStorage`, và mật khẩu của tài khoản tự đăng ký chỉ được băm SHA-256 + salt để minh họa. Bản PHP sẽ băm bcrypt, có phiên đăng nhập và CSRF ở máy chủ.
-
-**Nội dung pháp luật:** điều luật trong ứng dụng là dữ liệu biên soạn rút gọn cho mục đích học tập, không phải trích dẫn nguyên văn Bộ luật Hình sự và không thay thế tư vấn pháp lý chính thức.
+- Trên Windows, file bind-mount có thể không báo thay đổi cho Vite. Nếu giao diện không cập nhật: `docker compose restart vite`.
+- Luôn chạy `docker compose` từ thư mục gốc. Dùng `-f` sẽ bỏ qua `compose.override.yaml`.
+- Dữ liệu luật nằm ở `app/api/database/data/dieu_luat_data.php` và được nạp bằng `LawSeeder`.
+- Thiết kế CSDL: [docs/DATABASE.md](docs/DATABASE.md).
