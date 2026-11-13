@@ -102,4 +102,5 @@ export default function Login({ status }: Props) {
 Login.layout = {
     title: 'Đăng nhập vào tài khoản',
     description: 'Nhập tên đăng nhập hoặc email và mật khẩu của bạn',
+    animated: true,
 };
