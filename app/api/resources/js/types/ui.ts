@@ -9,4 +9,6 @@ export type AuthLayoutProps = {
     name?: string;
     title?: string;
     description?: string;
+    /** Gentle entrance animation (login page only). */
+    animated?: boolean;
 };

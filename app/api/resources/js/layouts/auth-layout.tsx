@@ -5,17 +5,23 @@ import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
 export default function AuthLayout({
     title = '',
     description = '',
+    animated = false,
     children,
 }: {
     title?: string;
     description?: string;
+    animated?: boolean;
     children: React.ReactNode;
 }) {
     useSyncPrefs();
 
     return (
         <>
-            <AuthLayoutTemplate title={title} description={description}>
+            <AuthLayoutTemplate
+                title={title}
+                description={description}
+                animated={animated}
+            >
                 {children}
             </AuthLayoutTemplate>
             <Toaster />
