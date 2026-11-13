@@ -115,12 +115,13 @@ Admin xem được câu hỏi người dùng đã gõ vào chatbot, nên hãy d�
 ## 5. Chạy thật (production)
 
 ```bash
-cp .env.example .env     # sửa APP_ENV=production, APP_DEBUG=false, APP_URL, mật khẩu DB
+cp .env.example .env     # sửa APP_ENV=production, APP_DEBUG=false, APP_URL, mật khẩu DB, MAIL_*
 docker compose -f compose.yaml up -d --build
-docker compose -f compose.yaml exec app php artisan migrate --force --seed
 ```
 
-Dùng `-f compose.yaml` để bỏ qua file override dev. nginx phục vụ HTTP thuần ở `WEB_PORT`; HTTPS đặt proxy phía trước và chỉnh `TRUSTED_PROXIES`, `APP_URL` trong `.env`.
+Dùng `-f compose.yaml` để bỏ qua file override dev. Bản chạy thật **tự migrate khi khởi động** và nạp dữ liệu luật cùng tài khoản demo một lần khi CSDL còn trống, nên không cần chạy `migrate` hay `seed` tay. Các container tự khởi động lại cùng Docker và có kiểm tra sức khỏe. nginx phục vụ HTTP thuần ở `WEB_PORT`; HTTPS đặt proxy phía trước và chỉnh `TRUSTED_PROXIES`, `APP_URL` trong `.env`.
+
+Sao lưu CSDL, khôi phục, nâng cấp và các việc cần làm trước khi mở ra ngoài: xem [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 ## 6. Lưu ý khi phát triển
 
