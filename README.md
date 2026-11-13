@@ -61,14 +61,14 @@ Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới t
 
 Không có: xác thực email.
 
-### Tìm kiếm ngữ nghĩa (tùy chọn)
-Mặc định tìm kiếm dùng thuật toán từ khóa. Để trộn thêm vector ngữ nghĩa, đặt `SEARCH_BLEND_ENABLED=true` trong `.env` rồi chạy:
+### Chatbot
+Chatbot chạy ngay sau `migrate --seed`, không cần khóa API hay dịch vụ ngoài. Kiểm tra bằng:
 
 ```bash
-docker compose --profile semantic up -d --build
+docker compose exec app php artisan search:status
 ```
 
-Dịch vụ `embedder` cần khoảng 1,5 GB RAM và tải model lúc build image.
+Có thêm chế độ trộn ngữ nghĩa (tùy chọn, tốn thêm RAM và dung lượng, cải thiện không lớn): xem [docs/CHATBOT.md](docs/CHATBOT.md) để biết khi nào nên bật, các bước cài và cách xử lý sự cố.
 
 ## 4. Kiểm thử
 
@@ -80,7 +80,7 @@ docker compose exec app php artisan test
 docker compose exec vite pnpm types:check
 docker compose exec vite pnpm check
 
-# Dịch vụ embedder
+# Dịch vụ embedder (chỉ khi bật chế độ ngữ nghĩa)
 docker compose run --rm --build embedder-test
 ```
 

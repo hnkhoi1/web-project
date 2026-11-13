@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\LawEmbedding;
 use App\Search\ArticleRepository;
 use App\Search\EmbeddingClient;
+use App\Search\LawPassages;
 use Illuminate\Console\Command;
 
 class SearchEmbed extends Command
@@ -27,13 +28,7 @@ class SearchEmbed extends Command
         $existing = LawEmbedding::query()->where('model', $model)->get()
             ->keyBy(fn (LawEmbedding $r): string => $r->dieu_luat_id.'/'.$r->so_khoan);
 
-        $pending = [];
-        foreach ($articles->all() as $article) {
-            $pending[] = [$article['id'], LawEmbedding::ARTICLE, $this->join([$article['tieu_de'], $article['tom_tat'], $article['tu_khoa']])];
-            foreach ($article['khoan'] as $clause) {
-                $pending[] = [$article['id'], $clause['so_khoan'], $this->join([$clause['dieu_kien'], $clause['noi_dung'], $clause['tu_khoa']])];
-            }
-        }
+        $pending = LawPassages::all($articles);
 
         $total = count($pending);
         $todo = array_values(array_filter($pending, function (array $p) use ($existing): bool {
@@ -75,11 +70,5 @@ class SearchEmbed extends Command
         }
 
         return true;
-    }
-
-    /** @param  list<string|null>  $parts */
-    private function join(array $parts): string
-    {
-        return trim(implode("\n", array_map(fn (?string $p): string => (string) $p, $parts)));
     }
 }
