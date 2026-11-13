@@ -35,6 +35,7 @@ Compose **không tự chạy migration**, nên lệnh `migrate --seed` ở trên
 |---|---|
 | http://localhost:8080 | Ứng dụng chính (nginx → Laravel) |
 | http://localhost:5173 | Vite dev server cho `app/api` (HMR, không có trang gốc) |
+| http://localhost:8025 | Mailpit: hộp thư giả của chế độ dev, xem thư đặt lại mật khẩu ở đây |
 | `127.0.0.1:3306` | MySQL (chỉ mở ở chế độ dev) |
 
 Đổi cổng web bằng `WEB_PORT` trong `.env`.
@@ -49,6 +50,7 @@ Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới t
 | Trang | Đường dẫn | Chức năng |
 |---|---|---|
 | Đăng nhập / đăng ký | `/login`, `/register` | Đăng nhập bằng tên đăng nhập hoặc email; khóa tạm sau 5 lần sai |
+| Quên mật khẩu | `/quen-mat-khau`, `/dat-lai-mat-khau/{token}` | Gửi liên kết đặt lại qua email (hiệu lực 60 phút, dùng một lần); tài khoản demo không đặt lại được |
 | Ghi chú (trang chủ) | `/ghi-chu` | Thêm, sửa, xóa có xác nhận, ghim, tìm tức thời, chọn màu; điều luật nổi bật |
 | Tra cứu | `/tra-cuu` | Tìm theo từ khóa, số điều, chương (`?q=&chuong=`) |
 | Chi tiết điều luật | `/dieu-luat/{id}` | Các khoản, quyền lợi người bị hại, lưu vào ghi chú |
@@ -56,7 +58,7 @@ Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới t
 | Tài khoản | `/ho-so`, `/doi-mat-khau`, `/tuy-chinh` | Hồ sơ và ảnh, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
 | Khác | `/gioi-thieu`, `/lien-he` | Giới thiệu, gửi liên hệ |
 
-Không có: quên mật khẩu, xác thực email, trang quản trị (đã loại khỏi phạm vi, xem `docs/superpowers/specs/`).
+Không có: xác thực email.
 
 ### Tìm kiếm ngữ nghĩa (tùy chọn)
 Mặc định tìm kiếm dùng thuật toán từ khóa. Để trộn thêm vector ngữ nghĩa, đặt `SEARCH_BLEND_ENABLED=true` trong `.env` rồi chạy:
@@ -82,6 +84,19 @@ docker compose run --rm --build embedder-test
 ```
 
 Test API dùng CSDL riêng (tạo bởi `docker/mysql/create-test-db.sql`), không đụng dữ liệu dev.
+
+### Gửi email (quên mật khẩu)
+- **Dev:** thư không gửi đi đâu cả, mọi thư nằm trong Mailpit (http://localhost:8025). Không cần cấu hình.
+- **Chạy thật:** điền tài khoản SMTP vào `.env`. Ví dụ Gmail (bật xác minh 2 bước, tạo "Mật khẩu ứng dụng" 16 ký tự, **không** dùng mật khẩu đăng nhập Gmail):
+  ```
+  MAIL_MAILER=smtp
+  MAIL_HOST=smtp.gmail.com
+  MAIL_PORT=587
+  MAIL_USERNAME=<địa chỉ gmail>
+  MAIL_PASSWORD=<mật khẩu ứng dụng>
+  MAIL_FROM_ADDRESS=<địa chỉ gmail>
+  ```
+  `.env` không được commit. Gmail giới hạn khoảng 500 thư mỗi ngày và thư có thể vào mục Spam.
 
 ## 5. Chạy thật (production)
 

@@ -6,6 +6,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
+/**
+ * Features that stay out of the app. Password reset by emailed link is a feature now
+ * (see PasswordResetTest); email verification, password confirmation, 2FA and passkeys are not.
+ */
 class RecoveryRemovedTest extends TestCase
 {
     use RefreshDatabase;

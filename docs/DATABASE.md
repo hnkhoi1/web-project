@@ -10,7 +10,7 @@ CSDL gồm 3 phân hệ, 9 bảng nghiệp vụ và vài bảng hạ tầng củ
 
 | Phân hệ | Bảng | Vai trò |
 |---|---|---|
-| Người dùng | `users`, `user_prefs`, `sessions` | Tài khoản, tùy chỉnh giao diện, phiên đăng nhập |
+| Người dùng | `users`, `user_prefs`, `sessions`, `password_reset_tokens` | Tài khoản, tùy chỉnh giao diện, phiên đăng nhập, token đặt lại mật khẩu |
 | Tương tác | `notes`, `contacts`, `lich_su_hoi_dap` | Ghi chú cá nhân, thư liên hệ, nhật ký hỏi đáp chatbot |
 | Tri thức pháp luật | `chuong`, `dieu_luat`, `khoan`, `law_embeddings` | Bộ luật theo chương, điều, khoản và vector ngữ nghĩa |
 | Hạ tầng Laravel | `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`, `migrations` | Cache, hàng đợi, lịch sử migration |
@@ -135,6 +135,15 @@ erDiagram
 ### 3.2 `sessions`
 Phiên đăng nhập lưu ở CSDL (`SESSION_DRIVER=database`): `id` PK, `user_id` (index), `ip_address`, `user_agent`, `payload`, `last_activity` (index).
 
+### 3.2b `password_reset_tokens`
+Token đặt lại mật khẩu gửi qua email. Mỗi email có tối đa một token (ghi đè khi yêu cầu lại), token bị xóa sau khi dùng và hết hạn sau 60 phút.
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `email` | varchar(254) PK | Email của tài khoản |
+| `token` | varchar(255) | Băm của token (token gốc chỉ nằm trong email) |
+| `created_at` | timestamp, null | Dùng để tính hết hạn |
+
 ### 3.3 `user_prefs`
 Quan hệ 1:1 với `users` (khóa chính cũng là khóa ngoại, xóa user thì xóa theo).
 
@@ -254,7 +263,7 @@ Bản thiết kế đầu tiên có thêm vài bảng và cột đã bị loại
 | Đã bỏ | Lý do |
 |---|---|
 | `login_attempts` | Khóa sau 5 lần sai nay dùng `RateLimiter` của Laravel (cache), không cần bảng riêng |
-| `password_resets`, cột `verified` | Bỏ chức năng quên mật khẩu và xác thực email |
+| `password_resets` (nay là `password_reset_tokens`, theo chuẩn Laravel), cột `verified` | Quên mật khẩu được làm lại bằng liên kết qua email. Xác thực email vẫn không có |
 | cột `users.role`, `users.is_builtin` | Bỏ trang quản trị; cờ khóa tài khoản demo là `is_demo` |
 
 Tên bảng và cột của phần luật, ghi chú, liên hệ, hỏi đáp được giữ nguyên.

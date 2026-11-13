@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { register } from '@/routes';
+import { request } from '@/routes/password';
 import { store } from '@/routes/login';
 
 type Props = {
@@ -18,6 +19,16 @@ export default function Login({ status }: Props) {
     return (
         <>
             <Head title="Đăng nhập" />
+
+            {status && (
+                <div
+                    className="mb-6 rounded-lg border border-success bg-success-bg p-3 text-center text-sm text-success"
+                    role="status"
+                    data-test="login-status"
+                >
+                    {status}
+                </div>
+            )}
 
             <Form
                 {...store.form()}
@@ -45,7 +56,16 @@ export default function Login({ status }: Props) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Mật khẩu</Label>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password">Mật khẩu</Label>
+                                    <TextLink
+                                        href={request()}
+                                        className="text-sm"
+                                        tabIndex={6}
+                                    >
+                                        Quên mật khẩu?
+                                    </TextLink>
+                                </div>
                                 <PasswordInput
                                     id="password"
                                     name="password"
@@ -89,12 +109,6 @@ export default function Login({ status }: Props) {
                     </>
                 )}
             </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
         </>
     );
 }

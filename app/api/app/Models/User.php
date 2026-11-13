@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,6 +43,16 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_demo' => 'boolean',
         ];
+    }
+
+    /** The shared demo account cannot be taken over by an emailed reset link. */
+    public function sendPasswordResetNotification(#[\SensitiveParameter] $token): void
+    {
+        if ($this->isDemo()) {
+            return;
+        }
+
+        $this->notify(new ResetPassword($token));
     }
 
     public function isDemo(): bool

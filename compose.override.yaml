@@ -48,6 +48,12 @@ services:
     depends_on:
       - app
 
+  # Catches outgoing mail in dev (password reset links). Web UI: http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "127.0.0.1:8025:8025"
+
   db:
     ports:
       - "127.0.0.1:3306:3306"
