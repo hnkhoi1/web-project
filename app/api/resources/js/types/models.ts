@@ -1,3 +1,4 @@
+export type NotesView = 'grid' | 'list';
 export type Theme = 'system' | 'light' | 'dark';
 export type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 export type NoteColor =
@@ -23,6 +24,7 @@ export type Prefs = {
     theme: Theme;
     font: FontSize;
     noteColor: NoteColor;
+    notesView: NotesView;
 };
 
 export type Note = {

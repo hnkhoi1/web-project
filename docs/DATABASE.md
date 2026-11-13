@@ -46,6 +46,7 @@ erDiagram
         varchar theme
         varchar font
         varchar note_color
+        varchar notes_view
         timestamp updated_at
     }
     notes {
@@ -157,6 +158,7 @@ Quan hệ 1:1 với `users` (khóa chính cũng là khóa ngoại, xóa user th�
 | `theme` | varchar(20) | `system` (`light` / `dark` / `system`) |
 | `font` | varchar(10) | `md` (`sm` / `md` / `lg` / `xl`, cỡ chữ ghi chú) |
 | `note_color` | varchar(20) | `yellow` |
+| `notes_view` | varchar(10) | `grid` (`grid` hoặc `list`, kiểu hiển thị trang ghi chú) |
 | `updated_at` | timestamp | |
 
 ### 3.4 `notes`

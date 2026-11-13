@@ -1,13 +1,27 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Plus, Search } from 'lucide-react';
+import {
+    Download,
+    LayoutGrid,
+    List,
+    Plus,
+    Printer,
+    Search,
+} from 'lucide-react';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { pin } from '@/actions/App/Http/Controllers/NoteController';
 import { DeleteNoteDialog, NoteDialog } from '@/components/notes/note-dialog';
 import { NoteCard } from '@/components/notes/note-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { filterNotes } from '@/lib/notes';
-import type { Note } from '@/types';
+import { usePrefs } from '@/hooks/use-appearance';
+import {
+    downloadText,
+    filterNotes,
+    notesFileName,
+    notesToText,
+} from '@/lib/notes';
+import { cn } from '@/lib/utils';
+import type { Note, NoteColor, NotesView } from '@/types';
 
 type PopularArticle = {
     id: number;
@@ -18,8 +32,21 @@ type PopularArticle = {
 
 type Props = { notes: Note[]; popular: PopularArticle[] };
 
+const COLOR_FILTERS: { value: NoteColor; label: string; dot: string }[] = [
+    { value: 'yellow', label: 'Vàng', dot: 'bg-[var(--n-yellow)]' },
+    { value: 'green', label: 'Xanh lá', dot: 'bg-[var(--n-green)]' },
+    { value: 'blue', label: 'Xanh dương', dot: 'bg-[var(--n-blue)]' },
+    { value: 'rose', label: 'Hồng', dot: 'bg-[var(--n-rose)]' },
+    { value: 'violet', label: 'Tím', dot: 'bg-[var(--n-violet)]' },
+    { value: 'gray', label: 'Xám', dot: 'bg-[var(--n-gray)]' },
+];
+
 export default function NotesIndex({ notes, popular }: Props) {
-    const { auth } = usePage().props;
+    const { auth, name } = usePage().props;
+    const { prefs, updatePrefs } = usePrefs();
+    const view: NotesView = prefs.notesView;
+    const [pinnedOnly, setPinnedOnly] = useState(false);
+    const [color, setColor] = useState<NoteColor | null>(null);
     const [query, setQuery] = useState('');
     const deferred = useDeferredValue(query);
     // undefined = closed, null = new note, Note = editing.
@@ -27,9 +54,14 @@ export default function NotesIndex({ notes, popular }: Props) {
     const [deleting, setDeleting] = useState<Note | null>(null);
 
     const visible = useMemo(
-        () => filterNotes(notes, deferred),
-        [notes, deferred],
+        () => filterNotes(notes, deferred, { pinned: pinnedOnly, color }),
+        [notes, deferred, pinnedOnly, color],
     );
+
+    const filtered = pinnedOnly || color !== null || deferred.trim() !== '';
+
+    const exportText = () =>
+        downloadText(notesFileName(), notesToText(visible, String(name)));
 
     const togglePin = (note: Note) =>
         router.visit(pin(note), {
@@ -41,7 +73,7 @@ export default function NotesIndex({ notes, popular }: Props) {
         <>
             <Head title="Ghi chú" />
 
-            <section className="full-bleed bg-ink [background-image:radial-gradient(900px_300px_at_85%_-10%,rgb(169_121_58/0.18),transparent_60%)] text-on-ink">
+            <section className="full-bleed bg-ink [background-image:radial-gradient(900px_300px_at_85%_-10%,rgb(169_121_58/0.18),transparent_60%)] text-on-ink print:hidden">
                 <div className="mx-auto grid max-w-6xl gap-7 px-5 py-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-12 lg:py-[60px]">
                     <div>
                         <p className="mb-2 font-serif text-[#c9aa76] italic">
@@ -109,17 +141,23 @@ export default function NotesIndex({ notes, popular }: Props) {
             </section>
 
             <div className="space-y-8 py-6">
+                <h1 className="hidden print:block">Ghi chú - {name}</h1>
+
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
                     <h2 className="text-[clamp(1.25rem,3.5vw,1.6rem)]">
                         Ghi chú của bạn
                     </h2>
-                    <Button type="button" onClick={() => setEditing(null)}>
+                    <Button
+                        type="button"
+                        className="print:hidden"
+                        onClick={() => setEditing(null)}
+                    >
                         <Plus />
                         Ghi chú mới
                     </Button>
                 </div>
 
-                <div className="relative">
+                <div className="relative print:hidden">
                     <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         type="search"
@@ -131,12 +169,145 @@ export default function NotesIndex({ notes, popular }: Props) {
                     />
                 </div>
 
+                <div
+                    className="flex flex-wrap items-center justify-between gap-3 print:hidden"
+                    data-test="notes-toolbar"
+                >
+                    <div
+                        className="flex flex-wrap items-center gap-2"
+                        role="group"
+                        aria-label="Lọc ghi chú"
+                    >
+                        <button
+                            type="button"
+                            aria-pressed={!pinnedOnly && color === null}
+                            onClick={() => {
+                                setPinnedOnly(false);
+                                setColor(null);
+                            }}
+                            className={cn(
+                                'rounded-full border px-3 py-1 text-sm',
+                                !pinnedOnly && color === null
+                                    ? 'border-primary bg-primary text-primary-foreground'
+                                    : 'hover:bg-accent',
+                            )}
+                        >
+                            Tất cả
+                        </button>
+                        <button
+                            type="button"
+                            aria-pressed={pinnedOnly}
+                            onClick={() => setPinnedOnly((v) => !v)}
+                            className={cn(
+                                'rounded-full border px-3 py-1 text-sm',
+                                pinnedOnly
+                                    ? 'border-primary bg-primary text-primary-foreground'
+                                    : 'hover:bg-accent',
+                            )}
+                        >
+                            Đã ghim
+                        </button>
+                        {COLOR_FILTERS.map((c) => (
+                            <button
+                                key={c.value}
+                                type="button"
+                                aria-pressed={color === c.value}
+                                aria-label={`Màu ${c.label}`}
+                                title={c.label}
+                                onClick={() =>
+                                    setColor((cur) =>
+                                        cur === c.value ? null : c.value,
+                                    )
+                                }
+                                className={cn(
+                                    'size-6 rounded-full border-2',
+                                    c.dot,
+                                    color === c.value
+                                        ? 'border-primary ring-2 ring-primary/40'
+                                        : 'border-border',
+                                )}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div
+                            className="flex overflow-hidden rounded-md border"
+                            role="group"
+                            aria-label="Kiểu hiển thị"
+                        >
+                            <button
+                                type="button"
+                                aria-pressed={view === 'grid'}
+                                aria-label="Hiển thị dạng lưới"
+                                title="Dạng lưới"
+                                onClick={() =>
+                                    updatePrefs({ notesView: 'grid' })
+                                }
+                                className={cn(
+                                    'p-2',
+                                    view === 'grid'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'hover:bg-accent',
+                                )}
+                            >
+                                <LayoutGrid className="size-4" />
+                            </button>
+                            <button
+                                type="button"
+                                aria-pressed={view === 'list'}
+                                aria-label="Hiển thị dạng danh sách"
+                                title="Dạng danh sách"
+                                onClick={() =>
+                                    updatePrefs({ notesView: 'list' })
+                                }
+                                className={cn(
+                                    'border-l p-2',
+                                    view === 'list'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'hover:bg-accent',
+                                )}
+                            >
+                                <List className="size-4" />
+                            </button>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={visible.length === 0}
+                            onClick={exportText}
+                            data-test="export-notes"
+                        >
+                            <Download />
+                            {filtered ? 'Tải ghi chú đang lọc' : 'Tải .txt'}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={visible.length === 0}
+                            onClick={() => window.print()}
+                        >
+                            <Printer />
+                            In
+                        </Button>
+                    </div>
+                </div>
+
                 {visible.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div
+                        className={cn(
+                            'grid grid-cols-1 gap-4',
+                            view === 'grid' && 'sm:grid-cols-2 lg:grid-cols-3',
+                        )}
+                        data-view={view}
+                    >
                         {visible.map((note) => (
                             <NoteCard
                                 key={note.id}
                                 note={note}
+                                layout={view}
                                 onTogglePin={togglePin}
                                 onEdit={setEditing}
                                 onDelete={setDeleting}
@@ -149,12 +320,15 @@ export default function NotesIndex({ notes, popular }: Props) {
                         data-test="notes-empty"
                     >
                         {notes.length > 0
-                            ? `Không có ghi chú nào khớp "${deferred.trim()}".`
+                            ? 'Không có ghi chú nào khớp bộ lọc hiện tại.'
                             : 'Chưa có ghi chú nào.'}
                     </p>
                 )}
 
-                <section className="space-y-3" aria-labelledby="popular">
+                <section
+                    className="space-y-3 print:hidden"
+                    aria-labelledby="popular"
+                >
                     <h2
                         id="popular"
                         className="text-[clamp(1.25rem,3.5vw,1.6rem)]"

@@ -22,7 +22,7 @@ const columns = [
 
 export function SiteFooter() {
     return (
-        <footer className="mt-10 bg-ink py-8 text-[0.85rem] text-[#aeb6c2]">
+        <footer className="mt-10 bg-ink py-8 text-[0.85rem] text-[#aeb6c2] print:hidden">
             <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 sm:flex-row sm:justify-between">
                 <div className="max-w-[340px]">
                     <strong className="text-white">Hình Sự Tra Cứu</strong>

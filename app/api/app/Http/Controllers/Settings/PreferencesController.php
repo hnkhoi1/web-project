@@ -24,6 +24,8 @@ class PreferencesController extends Controller
                 'theme' => $request->validated('theme'),
                 'font' => $request->validated('font'),
                 'note_color' => $request->validated('noteColor'),
+                // Left alone when the request does not mention it (older clients).
+                ...($request->has('notesView') ? ['notes_view' => $request->validated('notesView')] : []),
             ],
         );
 

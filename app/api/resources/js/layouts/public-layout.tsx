@@ -29,7 +29,7 @@ function GuestShell({ children }: { children: ReactNode }) {
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
-            <header className="relative z-30 border-b-[3px] border-primary bg-ink text-on-ink">
+            <header className="relative z-30 border-b-[3px] border-primary bg-ink text-on-ink print:hidden">
                 <div className="mx-auto flex min-h-[68px] max-w-6xl items-center gap-2 px-5">
                     <Link
                         href="/login"

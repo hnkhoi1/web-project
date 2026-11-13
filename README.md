@@ -51,9 +51,9 @@ Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới t
 |---|---|---|
 | Đăng nhập / đăng ký | `/login`, `/register` | Đăng nhập bằng tên đăng nhập hoặc email; khóa tạm sau 5 lần sai |
 | Quên mật khẩu | `/quen-mat-khau`, `/dat-lai-mat-khau/{token}` | Gửi liên kết đặt lại qua email (hiệu lực 60 phút, dùng một lần); tài khoản demo không đặt lại được |
-| Ghi chú (trang chủ) | `/ghi-chu` | Thêm, sửa, xóa có xác nhận, ghim, tìm tức thời, chọn màu; điều luật nổi bật |
+| Ghi chú (trang chủ) | `/ghi-chu` | Thêm, sửa, xóa có xác nhận, ghim, tìm tức thời, chọn màu; lọc theo ghim và màu; chuyển dạng lưới hoặc danh sách (được nhớ theo tài khoản); tải ghi chú ra `.txt`; in; điều luật nổi bật |
 | Tra cứu | `/tra-cuu` | Tìm theo từ khóa, số điều, chương (`?q=&chuong=`) |
-| Chi tiết điều luật | `/dieu-luat/{id}` | Các khoản, quyền lợi người bị hại, lưu vào ghi chú |
+| Chi tiết điều luật | `/dieu-luat/{id}` | Các khoản, quyền lợi người bị hại, lưu vào ghi chú, in điều luật |
 | Tư vấn | `/tu-van` | Chatbot chấm điểm tình huống; mỗi câu hỏi ghi vào `lich_su_hoi_dap`; có nút "Đúng / Chưa đúng" để đánh giá câu trả lời |
 | Lịch sử câu hỏi | `/lich-su` | Xem lại, tìm, mở lại câu trả lời, đánh giá và xóa các câu mình đã hỏi (chỉ thấy của mình) |
 | Tài khoản | `/ho-so`, `/doi-mat-khau`, `/tuy-chinh` | Hồ sơ và ảnh, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |

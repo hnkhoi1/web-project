@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { postJson } from '@/lib/api';
 import { articleNoteText } from '@/lib/law';
@@ -59,15 +60,27 @@ export default function LawShow({ article, related }: Props) {
                             {article.khung_hinh_phat}
                         </span>
                     </div>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={saved || saving}
-                        onClick={() => void save()}
-                    >
-                        {saved ? '✓ Đã lưu vào ghi chú' : '+ Lưu vào ghi chú'}
-                    </Button>
+                    <div className="flex flex-wrap gap-2 print:hidden">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={saved || saving}
+                            onClick={() => void save()}
+                        >
+                            {saved
+                                ? '✓ Đã lưu vào ghi chú'
+                                : '+ Lưu vào ghi chú'}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.print()}
+                        >
+                            <Printer /> In điều luật
+                        </Button>
+                    </div>
                 </header>
 
                 <div className="grid gap-6 md:grid-cols-[1fr_18rem]">

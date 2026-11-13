@@ -19,6 +19,7 @@ class PreferencesRequest extends FormRequest
             'theme' => ['required', Rule::in(UserPref::THEMES)],
             'font' => ['required', Rule::in(UserPref::FONTS)],
             'noteColor' => ['required', Rule::in(Note::COLORS)],
+            'notesView' => ['sometimes', Rule::in(UserPref::NOTE_VIEWS)],
         ];
     }
 
@@ -31,6 +32,7 @@ class PreferencesRequest extends FormRequest
             'theme.*' => 'Giao diện không hợp lệ.',
             'font.*' => 'Cỡ chữ không hợp lệ.',
             'noteColor.*' => 'Màu ghi chú không hợp lệ.',
+            'notesView.*' => 'Kiểu hiển thị ghi chú không hợp lệ.',
         ];
     }
 }

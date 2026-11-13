@@ -29,12 +29,46 @@ class PreferencesTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('settings/preferences')
-                ->where('prefs', ['theme' => 'dark', 'font' => 'lg', 'noteColor' => 'rose'])
+                ->where('prefs', ['theme' => 'dark', 'font' => 'lg', 'noteColor' => 'rose', 'notesView' => 'grid'])
                 ->where('auth.user.id', $user->id)
                 ->where('auth.user.isDemo', false)
                 ->has('auth.user.username')
                 ->has('auth.user.avatar')
                 ->missing('auth.user.password'));
+    }
+
+    public function test_the_notes_view_defaults_to_grid_and_can_be_saved_as_list(): void
+    {
+        $user = User::factory()->create();
+        $base = ['theme' => 'dark', 'font' => 'lg', 'noteColor' => 'rose'];
+
+        $this->actingAs($user)->put(route('preferences.update'), $base + ['notesView' => 'list'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('list', $user->fresh()->prefs->notes_view);
+        $this->actingAs($user->fresh())->get(route('notes.index'))
+            ->assertInertia(fn (Assert $page) => $page->where('prefs.notesView', 'list'));
+    }
+
+    public function test_saving_without_the_notes_view_keeps_the_saved_one(): void
+    {
+        $user = User::factory()->create();
+        $base = ['theme' => 'dark', 'font' => 'lg', 'noteColor' => 'rose'];
+        $this->actingAs($user)->put(route('preferences.update'), $base + ['notesView' => 'list']);
+
+        $this->actingAs($user)->put(route('preferences.update'), ['theme' => 'light'] + $base)
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('list', $user->fresh()->prefs->notes_view);
+    }
+
+    public function test_an_unknown_notes_view_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->put(route('preferences.update'), ['theme' => 'dark', 'font' => 'lg', 'noteColor' => 'rose', 'notesView' => 'carousel'])
+            ->assertSessionHasErrors('notesView');
     }
 
     public function test_second_save_updates_the_same_row(): void
@@ -78,14 +112,14 @@ class PreferencesTest extends TestCase
 
         $this->actingAs($user)->get(route('preferences.edit'))
             ->assertInertia(fn (Assert $page) => $page
-                ->where('prefs', ['theme' => 'system', 'font' => 'md', 'noteColor' => 'yellow']));
+                ->where('prefs', ['theme' => 'system', 'font' => 'md', 'noteColor' => 'yellow', 'notesView' => 'grid']));
     }
 
     public function test_guest_gets_defaults(): void
     {
         $this->get(route('login'))
             ->assertInertia(fn (Assert $page) => $page
-                ->where('prefs', ['theme' => 'system', 'font' => 'md', 'noteColor' => 'yellow'])
+                ->where('prefs', ['theme' => 'system', 'font' => 'md', 'noteColor' => 'yellow', 'notesView' => 'grid'])
                 ->where('auth.user', null));
     }
 

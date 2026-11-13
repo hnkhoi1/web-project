@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'theme', 'font', 'note_color'])]
+#[Fillable(['user_id', 'theme', 'font', 'note_color', 'notes_view'])]
 class UserPref extends Model
 {
     protected $primaryKey = 'user_id';
@@ -18,6 +18,8 @@ class UserPref extends Model
     public const THEMES = ['system', 'light', 'dark'];
 
     public const FONTS = ['sm', 'md', 'lg', 'xl'];
+
+    public const NOTE_VIEWS = ['grid', 'list'];
 
     /**
      * Preferences as the frontend sees them, falling back to the defaults.
@@ -32,6 +34,7 @@ class UserPref extends Model
             'theme' => $prefs->theme ?? 'system',
             'font' => $prefs->font ?? 'md',
             'noteColor' => $prefs->note_color ?? 'yellow',
+            'notesView' => $prefs->notes_view ?? 'grid',
         ];
     }
 

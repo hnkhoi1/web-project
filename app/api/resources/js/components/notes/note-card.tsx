@@ -3,10 +3,11 @@ import { Pencil, Pin, PinOff, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { Note } from '@/types';
+import type { Note, NotesView } from '@/types';
 
 type Props = {
     note: Note;
+    layout?: NotesView;
     onTogglePin: (note: Note) => void;
     onEdit: (note: Note) => void;
     onDelete: (note: Note) => void;
@@ -23,52 +24,68 @@ function formatTime(iso: string): string {
           });
 }
 
-export function NoteCard({ note, onTogglePin, onEdit, onDelete }: Props) {
+export function NoteCard({
+    note,
+    layout = 'grid',
+    onTogglePin,
+    onEdit,
+    onDelete,
+}: Props) {
     const [open, setOpen] = useState(false);
 
     return (
         <article
-            className="note-surface flex flex-col gap-2 rounded-lg border p-4 shadow-xs"
-            data-color={note.color}
-        >
-            <h3 className="flex items-start gap-1.5 font-semibold break-words">
-                {note.pinned && (
-                    <Pin
-                        className="mt-1 size-4 shrink-0"
-                        aria-label="Đã ghim"
-                    />
-                )}
-                {note.title}
-            </h3>
-
-            {note.content && (
-                <button
-                    type="button"
-                    onClick={() => setOpen((v) => !v)}
-                    aria-expanded={open}
-                    className={cn(
-                        'note-text text-left break-words whitespace-pre-wrap',
-                        !open && 'line-clamp-4',
-                    )}
-                >
-                    {note.content}
-                </button>
+            className={cn(
+                'note-surface flex flex-col gap-2 rounded-lg border p-4 shadow-xs',
+                layout === 'list' &&
+                    'sm:flex-row sm:items-start sm:justify-between sm:gap-4',
             )}
+            data-color={note.color}
+            data-layout={layout}
+        >
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <h3 className="flex items-start gap-1.5 font-semibold break-words">
+                    {note.pinned && (
+                        <Pin
+                            className="mt-1 size-4 shrink-0"
+                            aria-label="Đã ghim"
+                        />
+                    )}
+                    {note.title}
+                </h3>
 
-            <div className="mt-auto flex flex-wrap items-center gap-x-3 pt-1 text-xs opacity-75">
-                <span>{formatTime(note.updated_at)}</span>
-                {note.source_type === 'article' && note.source_ref && (
-                    <Link
-                        href={`/dieu-luat/${note.source_ref}`}
-                        className="underline underline-offset-2"
+                {note.content && (
+                    <button
+                        type="button"
+                        onClick={() => setOpen((v) => !v)}
+                        aria-expanded={open}
+                        className={cn(
+                            'note-text text-left break-words whitespace-pre-wrap',
+                            !open &&
+                                (layout === 'list'
+                                    ? 'line-clamp-2'
+                                    : 'line-clamp-4'),
+                        )}
                     >
-                        Điều {note.source_ref}
-                    </Link>
+                        {note.content}
+                    </button>
                 )}
-                {note.source_type === 'chat' && <span>Từ chatbot</span>}
+
+                <div className="mt-auto flex flex-wrap items-center gap-x-3 pt-1 text-xs opacity-75">
+                    <span>{formatTime(note.updated_at)}</span>
+                    {note.source_type === 'article' && note.source_ref && (
+                        <Link
+                            href={`/dieu-luat/${note.source_ref}`}
+                            className="underline underline-offset-2"
+                        >
+                            Điều {note.source_ref}
+                        </Link>
+                    )}
+                    {note.source_type === 'chat' && <span>Từ chatbot</span>}
+                </div>
             </div>
 
-            <div className="flex gap-1">
+            <div className="flex shrink-0 gap-1 print:hidden">
                 <Button
                     type="button"
                     variant="ghost"
