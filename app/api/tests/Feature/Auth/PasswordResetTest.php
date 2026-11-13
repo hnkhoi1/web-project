@@ -70,6 +70,26 @@ class PasswordResetTest extends TestCase
         Notification::assertCount(1);
     }
 
+    public function test_a_broken_mail_server_is_not_shown_and_not_a_way_to_find_accounts(): void
+    {
+        config([
+            'mail.default' => 'smtp',
+            'mail.mailers.smtp.host' => '127.0.0.1',
+            'mail.mailers.smtp.port' => 1,
+        ]);
+        $known = User::factory()->create();
+
+        $found = $this->post(route('password.email'), ['email' => $known->email])
+            ->assertSessionHasNoErrors()
+            ->getSession()->get('status');
+        $missing = $this->post(route('password.email'), ['email' => 'khong.co@example.com'])
+            ->assertSessionHasNoErrors()
+            ->getSession()->get('status');
+
+        $this->assertNotNull($found);
+        $this->assertSame($found, $missing);
+    }
+
     public function test_the_demo_account_never_receives_a_reset_link(): void
     {
         Notification::fake();

@@ -15,6 +15,7 @@ use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 /**
  * Forgot-password flow: the user asks for an emailed link, then sets a new password with it.
@@ -37,8 +38,14 @@ class PasswordResetController extends Controller
     {
         $data = $request->validate(['email' => ['required', 'string', 'email', 'max:254']]);
 
-        // Broker errors (unknown email, throttled) are deliberately not shown.
-        Password::sendResetLink(['email' => $this->normalize($data['email'])]);
+        // Broker errors (unknown email, throttled) are deliberately not shown. A mail transport failure
+        // (SMTP down or not configured) is logged but answered the same way: showing it would reveal
+        // which emails have an account, since only those trigger a send.
+        try {
+            Password::sendResetLink(['email' => $this->normalize($data['email'])]);
+        } catch (Throwable $e) {
+            report($e);
+        }
 
         return back()->with('status', self::SENT_MESSAGE);
     }
