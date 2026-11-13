@@ -11,6 +11,8 @@ type Stats = {
     questionsToday: number;
     missed: number;
     missedRate: number;
+    rated: number;
+    ratedWrong: number;
     newContacts: number;
 };
 
@@ -79,6 +81,12 @@ export default function AdminIndex({ stats, chart, topArticles }: Props) {
                     value={stats.missed}
                     hint={`${stats.missedRate}% số câu hỏi`}
                     href={questions({ query: { loai: 'khong-khop' } }).url}
+                />
+                <StatCard
+                    label="Đánh giá sai"
+                    value={stats.ratedWrong}
+                    hint={`${stats.rated} câu đã được đánh giá`}
+                    href={questions({ query: { loai: 'sai' } }).url}
                 />
                 <StatCard
                     label="Thư liên hệ mới"

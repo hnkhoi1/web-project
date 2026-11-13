@@ -16,9 +16,22 @@ export class ApiError extends Error {
 type ErrorBody = { message?: string; errors?: Record<string, string[]> };
 
 /** POST JSON with the XSRF cookie token; resolves with the parsed JSON body. */
-export async function postJson<T>(url: string, body: unknown): Promise<T> {
+export function postJson<T>(url: string, body: unknown): Promise<T> {
+    return sendJson<T>('POST', url, body);
+}
+
+/** PATCH JSON, same contract as postJson. */
+export function patchJson<T>(url: string, body: unknown): Promise<T> {
+    return sendJson<T>('PATCH', url, body);
+}
+
+async function sendJson<T>(
+    method: 'POST' | 'PATCH',
+    url: string,
+    body: unknown,
+): Promise<T> {
     const response = await fetch(url, {
-        method: 'POST',
+        method,
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',

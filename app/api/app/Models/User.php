@@ -76,6 +76,12 @@ class User extends Authenticatable
         return $this->hasMany(Note::class);
     }
 
+    /** @return HasMany<ChatHistory, $this> */
+    public function chatHistories(): HasMany
+    {
+        return $this->hasMany(ChatHistory::class);
+    }
+
     /** @return HasOne<UserPref, $this> */
     public function prefs(): HasOne
     {

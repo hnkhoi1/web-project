@@ -104,9 +104,11 @@ erDiagram
         bigint id PK
         bigint user_id FK
         text cau_hoi
+        text tin_nhan
         int dieu_luat_id FK
         int khoan_so
         decimal diem
+        varchar danh_gia
         timestamp created_at
     }
     law_embeddings {
@@ -221,10 +223,12 @@ Nhật ký mỗi câu hỏi của chatbot.
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
 | `user_id` | FK null, SET NULL | Xóa user vẫn giữ nhật ký |
-| `cau_hoi` | text | |
+| `cau_hoi` | text | Câu hỏi đã ghép với các lượt trước (ngữ cảnh), dùng để tính lại câu trả lời |
+| `tin_nhan` | text, null | Đúng câu người dùng đã gõ, dùng để hiển thị. Dòng cũ có thể null |
 | `dieu_luat_id` | FK null → `dieu_luat.id`, SET NULL | Điều được chọn (null nếu không khớp) |
 | `khoan_so` | int unsigned, null | |
 | `diem` | decimal(5,4), null | Điểm khớp |
+| `danh_gia` | varchar(10), null | Đánh giá của người hỏi: `dung`, `sai` hoặc null (chưa đánh giá) |
 | `created_at` | timestamp, mặc định hiện tại | Index `idx_lich_su_time` |
 
 ### 3.10 `law_embeddings`

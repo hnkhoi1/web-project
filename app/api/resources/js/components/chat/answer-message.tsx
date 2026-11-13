@@ -2,11 +2,12 @@ import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { RatingButtons } from '@/components/chat/rating-buttons';
 import { Button } from '@/components/ui/button';
 import { postJson } from '@/lib/api';
-import type { ChatAnswer } from '@/types';
+import type { ChatAnswer, ChatRating } from '@/types';
 
-type Props = { answer: ChatAnswer };
+type Props = { answer: ChatAnswer; rating?: ChatRating };
 
 function Para({ label, children }: { label?: string; children: ReactNode }) {
     return (
@@ -17,7 +18,7 @@ function Para({ label, children }: { label?: string; children: ReactNode }) {
     );
 }
 
-export default function AnswerMessage({ answer }: Props) {
+export default function AnswerMessage({ answer, rating = null }: Props) {
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
 
@@ -32,6 +33,12 @@ export default function AnswerMessage({ answer }: Props) {
                 <Link href="/tra-cuu" className="underline underline-offset-4">
                     Mở trang Tra cứu
                 </Link>
+                {answer.history_id && (
+                    <RatingButtons
+                        historyId={answer.history_id}
+                        initial={rating}
+                    />
+                )}
             </div>
         );
     }
@@ -145,6 +152,10 @@ export default function AnswerMessage({ answer }: Props) {
                     {saved ? '✓ Đã lưu' : '+ Lưu vào ghi chú'}
                 </Button>
             </div>
+
+            {answer.history_id && (
+                <RatingButtons historyId={answer.history_id} initial={rating} />
+            )}
 
             <p className="text-xs text-muted-foreground">
                 (Tham khảo từ dữ liệu demo rút gọn, không thay thế tư vấn của

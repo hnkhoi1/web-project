@@ -58,6 +58,8 @@ class AdminController extends Controller
                 'questionsToday' => ChatHistory::where('created_at', '>=', now()->startOfDay())->count(),
                 'missed' => $missed,
                 'missedRate' => $questions > 0 ? round($missed / $questions * 100) : 0,
+                'rated' => ChatHistory::whereNotNull('danh_gia')->count(),
+                'ratedWrong' => ChatHistory::where('danh_gia', ChatHistory::RATING_WRONG)->count(),
                 'newContacts' => Contact::where('trang_thai', 'moi')->count(),
             ],
             'chart' => $chart,
@@ -119,11 +121,16 @@ class AdminController extends Controller
     public function questions(Request $request): Response
     {
         $q = mb_substr(trim((string) $request->query('q', '')), 0, 100);
-        $onlyMissed = $request->query('loai') === 'khong-khop';
+        $loai = match ($request->query('loai')) {
+            'khong-khop' => 'khong-khop',
+            'sai' => 'sai',
+            default => 'tat-ca',
+        };
 
         $rows = ChatHistory::query()
             ->with(['user:id,name,email', 'article:id,tieu_de'])
-            ->when($onlyMissed, fn ($query) => $query->whereNull('dieu_luat_id'))
+            ->when($loai === 'khong-khop', fn ($query) => $query->whereNull('dieu_luat_id'))
+            ->when($loai === 'sai', fn ($query) => $query->where('danh_gia', ChatHistory::RATING_WRONG))
             ->when($q !== '', fn ($query) => $query->where('cau_hoi', 'like', '%'.addcslashes($q, '%_\\').'%'))
             ->latest('created_at')
             ->latest('id')
@@ -137,12 +144,13 @@ class AdminController extends Controller
                 'tieu_de' => $h->article?->tieu_de,
                 'khoan_so' => $h->khoan_so,
                 'diem' => $h->diem,
+                'danh_gia' => $h->danh_gia,
                 'created_at' => $h->created_at?->toIso8601String(),
             ]);
 
         return Inertia::render('admin/questions', [
             'questions' => $rows,
-            'filters' => ['q' => $q, 'loai' => $onlyMissed ? 'khong-khop' : 'tat-ca'],
+            'filters' => ['q' => $q, 'loai' => $loai],
         ]);
     }
 

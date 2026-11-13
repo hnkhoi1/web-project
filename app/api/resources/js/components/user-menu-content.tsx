@@ -1,5 +1,11 @@
 import { Link, router } from '@inertiajs/react';
-import { KeyRound, LogOut, SlidersHorizontal, UserRound } from 'lucide-react';
+import {
+    History,
+    KeyRound,
+    LogOut,
+    SlidersHorizontal,
+    UserRound,
+} from 'lucide-react';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -9,6 +15,7 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
+import { index as historyIndex } from '@/routes/history';
 import { edit as editPreferences } from '@/routes/preferences';
 import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
@@ -19,6 +26,7 @@ export function UserMenuContent({ user }: { user: User }) {
 
     const items = [
         { title: 'Hồ sơ', href: editProfile(), icon: UserRound },
+        { title: 'Lịch sử câu hỏi', href: historyIndex(), icon: History },
         { title: 'Đổi mật khẩu', href: editSecurity(), icon: KeyRound },
         {
             title: 'Tùy chỉnh',

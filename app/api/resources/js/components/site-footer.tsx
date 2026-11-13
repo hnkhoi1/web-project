@@ -13,6 +13,7 @@ const columns = [
         title: 'Tài khoản',
         links: [
             { title: 'Hồ sơ', href: '/ho-so' },
+            { title: 'Lịch sử câu hỏi', href: '/lich-su' },
             { title: 'Tùy chỉnh', href: '/tuy-chinh' },
             { title: 'Liên hệ', href: '/lien-he' },
         ],

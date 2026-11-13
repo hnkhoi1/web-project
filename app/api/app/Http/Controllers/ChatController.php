@@ -41,14 +41,16 @@ class ChatController extends Controller
         }
 
         $found = $answer['found'] === true;
-        ChatHistory::create([
+        $history = ChatHistory::create([
             'user_id' => $request->user()->id,
             'cau_hoi' => $full,
+            'tin_nhan' => $message,
             'dieu_luat_id' => $found ? $answer['article']['id'] : null,
             'khoan_so' => $found ? ($answer['khoan']['so_khoan'] ?? null) : null,
             'diem' => $found ? $answer['score'] : null,
         ]);
 
-        return response()->json($answer);
+        // The id lets the page attach a rating to this exact question.
+        return response()->json([...$answer, 'history_id' => $history->id]);
     }
 }

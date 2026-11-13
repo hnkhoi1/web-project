@@ -73,7 +73,12 @@ type ChatFound = {
     note_text: string;
 };
 
-export type ChatAnswer =
+/** The id of the saved history row, present on answers from the chatbot. */
+export type ChatRating = 'dung' | 'sai' | null;
+
+export type ChatAnswer = ChatAnswerBody & { history_id?: number };
+
+type ChatAnswerBody =
     | { found: false }
     | (ChatFound & {
           mode: 'overview';

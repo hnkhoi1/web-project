@@ -54,10 +54,11 @@ Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới t
 | Ghi chú (trang chủ) | `/ghi-chu` | Thêm, sửa, xóa có xác nhận, ghim, tìm tức thời, chọn màu; điều luật nổi bật |
 | Tra cứu | `/tra-cuu` | Tìm theo từ khóa, số điều, chương (`?q=&chuong=`) |
 | Chi tiết điều luật | `/dieu-luat/{id}` | Các khoản, quyền lợi người bị hại, lưu vào ghi chú |
-| Tư vấn | `/tu-van` | Chatbot chấm điểm tình huống; mỗi câu hỏi ghi vào `lich_su_hoi_dap` |
+| Tư vấn | `/tu-van` | Chatbot chấm điểm tình huống; mỗi câu hỏi ghi vào `lich_su_hoi_dap`; có nút "Đúng / Chưa đúng" để đánh giá câu trả lời |
+| Lịch sử câu hỏi | `/lich-su` | Xem lại, tìm, mở lại câu trả lời, đánh giá và xóa các câu mình đã hỏi (chỉ thấy của mình) |
 | Tài khoản | `/ho-so`, `/doi-mat-khau`, `/tuy-chinh` | Hồ sơ và ảnh, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
 | Khác | `/gioi-thieu`, `/lien-he` | Giới thiệu, gửi liên hệ |
-| Quản trị (chỉ admin) | `/quan-tri` | Tổng quan và biểu đồ câu hỏi, xử lý thư liên hệ, câu hỏi chatbot (lọc câu không khớp), danh sách người dùng (chỉ xem) |
+| Quản trị (chỉ admin) | `/quan-tri` | Tổng quan và biểu đồ câu hỏi, xử lý thư liên hệ, câu hỏi chatbot (lọc câu không khớp và câu bị đánh giá sai), danh sách người dùng (chỉ xem) |
 
 Không có: xác thực email.
 

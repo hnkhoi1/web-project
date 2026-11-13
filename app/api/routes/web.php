@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ChatHistoryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LawController;
 use App\Http\Controllers\NoteController;
@@ -18,6 +19,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dieu-luat/{id}', [LawController::class, 'show'])->whereNumber('id')->name('law.show');
     Route::get('tu-van', [ChatController::class, 'index'])->name('chat.index');
     Route::post('tu-van/hoi', [ChatController::class, 'ask'])->name('chat.ask');
+    Route::get('lich-su', [ChatHistoryController::class, 'index'])->name('history.index');
+    Route::delete('lich-su', [ChatHistoryController::class, 'clear'])->name('history.clear');
+    Route::get('lich-su/{history}', [ChatHistoryController::class, 'show'])->whereNumber('history')->name('history.show');
+    Route::patch('lich-su/{history}/danh-gia', [ChatHistoryController::class, 'rate'])->whereNumber('history')->name('history.rate');
+    Route::delete('lich-su/{history}', [ChatHistoryController::class, 'destroy'])->whereNumber('history')->name('history.destroy');
     Route::get('ghi-chu', [NoteController::class, 'index'])->name('notes.index');
     Route::post('ghi-chu', [NoteController::class, 'store'])->name('notes.store');
     Route::patch('ghi-chu/{note}', [NoteController::class, 'update'])->name('notes.update');

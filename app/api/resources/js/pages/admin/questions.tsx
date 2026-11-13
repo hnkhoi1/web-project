@@ -16,18 +16,20 @@ type QuestionRow = {
     tieu_de: string | null;
     khoan_so: number | null;
     diem: number | null;
+    danh_gia: 'dung' | 'sai' | null;
     created_at: string | null;
 };
 
 type Props = {
     questions: Paginated<QuestionRow>;
-    filters: { q: string; loai: 'tat-ca' | 'khong-khop' };
+    filters: { q: string; loai: 'tat-ca' | 'khong-khop' | 'sai' };
 };
 
 export default function AdminQuestions({ questions, filters }: Props) {
     const tabs = [
         { label: 'Tất cả', loai: 'tat-ca' as const },
         { label: 'Không khớp điều luật', loai: 'khong-khop' as const },
+        { label: 'Đánh giá sai', loai: 'sai' as const },
     ];
 
     return (
@@ -46,8 +48,8 @@ export default function AdminQuestions({ questions, filters }: Props) {
                             href={index({
                                 query: {
                                     ...(filters.q ? { q: filters.q } : {}),
-                                    ...(t.loai === 'khong-khop'
-                                        ? { loai: 'khong-khop' }
+                                    ...(t.loai !== 'tat-ca'
+                                        ? { loai: t.loai }
                                         : {}),
                                 },
                             })}
@@ -71,8 +73,8 @@ export default function AdminQuestions({ questions, filters }: Props) {
                     className="flex gap-2"
                     key={filters.loai}
                 >
-                    {filters.loai === 'khong-khop' && (
-                        <input type="hidden" name="loai" value="khong-khop" />
+                    {filters.loai !== 'tat-ca' && (
+                        <input type="hidden" name="loai" value={filters.loai} />
                     )}
                     <div className="relative">
                         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -115,6 +117,9 @@ export default function AdminQuestions({ questions, filters }: Props) {
                                 <th className="px-3 py-2 font-medium">
                                     Kết quả
                                 </th>
+                                <th className="px-3 py-2 font-medium">
+                                    Đánh giá
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
@@ -151,6 +156,23 @@ export default function AdminQuestions({ questions, filters }: Props) {
                                         ) : (
                                             <span className="rounded-full bg-danger-bg px-2.5 py-0.5 text-xs font-semibold text-destructive-foreground">
                                                 Không khớp
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-3 py-2">
+                                        {q.danh_gia === 'sai' && (
+                                            <span className="rounded-full bg-danger-bg px-2.5 py-0.5 text-xs font-semibold text-destructive-foreground">
+                                                Sai
+                                            </span>
+                                        )}
+                                        {q.danh_gia === 'dung' && (
+                                            <span className="rounded-full bg-success-bg px-2.5 py-0.5 text-xs font-semibold text-success">
+                                                Đúng
+                                            </span>
+                                        )}
+                                        {q.danh_gia === null && (
+                                            <span className="text-muted-foreground">
+                                                –
                                             </span>
                                         )}
                                     </td>

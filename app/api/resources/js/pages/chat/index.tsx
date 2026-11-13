@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import AnswerMessage from '@/components/chat/answer-message';
@@ -98,7 +98,15 @@ export default function ChatIndex() {
             <Head title="Tư vấn" />
 
             <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-6">
-                <h1 className="text-2xl font-semibold">Tư vấn pháp luật</h1>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h1 className="text-2xl font-semibold">Tư vấn pháp luật</h1>
+                    <Link
+                        href="/lich-su"
+                        className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                    >
+                        Lịch sử câu hỏi
+                    </Link>
+                </div>
 
                 <div
                     ref={logRef}
