@@ -37,6 +37,7 @@ erDiagram
         varchar password
         mediumtext avatar
         boolean is_demo
+        varchar role
         timestamp created_at
         timestamp updated_at
     }
@@ -130,6 +131,7 @@ erDiagram
 | `password` | varchar(255) | Băm bcrypt (`BCRYPT_ROUNDS=12`) |
 | `avatar` | mediumtext, null | Ảnh đại diện dạng data URL |
 | `is_demo` | boolean, mặc định 0 | Tài khoản demo dùng chung, bị khóa sửa/xóa |
+| `role` | varchar(20), mặc định `user` | `user` hoặc `admin`. Không nằm trong `fillable`, chỉ đổi bằng `admin:promote` hoặc `AdminSeeder` |
 | `remember_token`, `created_at`, `updated_at` | | Chuẩn Laravel |
 
 ### 3.2 `sessions`
@@ -264,6 +266,6 @@ Bản thiết kế đầu tiên có thêm vài bảng và cột đã bị loại
 |---|---|
 | `login_attempts` | Khóa sau 5 lần sai nay dùng `RateLimiter` của Laravel (cache), không cần bảng riêng |
 | `password_resets` (nay là `password_reset_tokens`, theo chuẩn Laravel), cột `verified` | Quên mật khẩu được làm lại bằng liên kết qua email. Xác thực email vẫn không có |
-| cột `users.role`, `users.is_builtin` | Bỏ trang quản trị; cờ khóa tài khoản demo là `is_demo` |
+| cột `users.is_builtin` | Cờ khóa tài khoản demo là `is_demo`. Cột `users.role` được thêm lại khi làm trang quản trị |
 
 Tên bảng và cột của phần luật, ghi chú, liên hệ, hỏi đáp được giữ nguyên.

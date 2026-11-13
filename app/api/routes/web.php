@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LawController;
@@ -22,6 +23,14 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('ghi-chu/{note}', [NoteController::class, 'update'])->name('notes.update');
     Route::patch('ghi-chu/{note}/ghim', [NoteController::class, 'pin'])->name('notes.pin');
     Route::delete('ghi-chu/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('quan-tri')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+    Route::get('lien-he', [AdminController::class, 'contacts'])->name('contacts.index');
+    Route::patch('lien-he/{contact}', [AdminController::class, 'updateContact'])->name('contacts.update');
+    Route::get('hoi-dap', [AdminController::class, 'questions'])->name('questions.index');
+    Route::get('nguoi-dung', [AdminController::class, 'users'])->name('users.index');
 });
 
 require __DIR__.'/auth.php';

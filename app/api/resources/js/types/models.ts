@@ -14,6 +14,7 @@ export type User = {
     name: string;
     email: string;
     username: string | null;
+    isAdmin: boolean;
     avatar: string | null;
     isDemo: boolean;
 };
@@ -116,3 +117,15 @@ export type LawArticle = {
 export type LawArticleDetail = LawArticle & { khoan: ArticleClause[] };
 
 export type RelatedArticle = { id: number; tieu_de: string };
+
+/** A Laravel paginator as serialized by Inertia. */
+export type Paginated<T> = {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+    prev_page_url: string | null;
+    next_page_url: string | null;
+};

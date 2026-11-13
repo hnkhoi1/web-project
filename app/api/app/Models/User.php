@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string $password
  * @property string|null $avatar
  * @property bool $is_demo
+ * @property string $role
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -53,6 +54,15 @@ class User extends Authenticatable
         }
 
         $this->notify(new ResetPassword($token));
+    }
+
+    public const ROLE_USER = 'user';
+
+    public const ROLE_ADMIN = 'admin';
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
     }
 
     public function isDemo(): bool

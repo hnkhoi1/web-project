@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                     'username' => $user->username,
                     'avatar' => $user->avatar,
                     'isDemo' => $user->isDemo(),
+                    'isAdmin' => $user->isAdmin(),
                 ],
             ],
             'prefs' => UserPref::payloadFor($user),

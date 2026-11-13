@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\BlockDemoAccount;
+use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -20,7 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: env('TRUSTED_PROXIES') === '*' ? '*' : array_filter(explode(',', (string) env('TRUSTED_PROXIES'))));
 
-        $middleware->alias(['not-demo' => BlockDemoAccount::class]);
+        $middleware->alias([
+            'not-demo' => BlockDemoAccount::class,
+            'admin' => EnsureAdmin::class,
+        ]);
 
         $middleware->web(append: [
             HandleAppearance::class,

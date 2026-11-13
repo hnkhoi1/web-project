@@ -57,6 +57,7 @@ Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới t
 | Tư vấn | `/tu-van` | Chatbot chấm điểm tình huống; mỗi câu hỏi ghi vào `lich_su_hoi_dap` |
 | Tài khoản | `/ho-so`, `/doi-mat-khau`, `/tuy-chinh` | Hồ sơ và ảnh, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
 | Khác | `/gioi-thieu`, `/lien-he` | Giới thiệu, gửi liên hệ |
+| Quản trị (chỉ admin) | `/quan-tri` | Tổng quan và biểu đồ câu hỏi, xử lý thư liên hệ, câu hỏi chatbot (lọc câu không khớp), danh sách người dùng (chỉ xem) |
 
 Không có: xác thực email.
 
@@ -84,6 +85,18 @@ docker compose run --rm --build embedder-test
 ```
 
 Test API dùng CSDL riêng (tạo bởi `docker/mysql/create-test-db.sql`), không đụng dữ liệu dev.
+
+### Tạo tài khoản admin
+Trang quản trị chỉ mở cho tài khoản có vai trò admin; người khác nhận trang 404. Không có trang nào cho người dùng tự thành admin. Cách làm:
+1. Đăng ký một tài khoản bình thường ở `/register`.
+2. Cấp quyền bằng lệnh (email hoặc tên đăng nhập):
+   ```bash
+   docker compose exec app php artisan admin:promote email@cua-ban.com
+   ```
+   Thu hồi: thêm `--revoke`. Tài khoản demo không thể làm admin.
+3. Hoặc đặt `ADMIN_EMAIL=email@cua-ban.com` trong `.env` rồi chạy `docker compose exec app php artisan db:seed --class=AdminSeeder`.
+
+Admin xem được câu hỏi người dùng đã gõ vào chatbot, nên hãy dùng dữ liệu này chỉ để cải thiện dịch vụ.
 
 ### Gửi email (quên mật khẩu)
 - **Dev:** thư không gửi đi đâu cả, mọi thư nằm trong Mailpit (http://localhost:8025). Không cần cấu hình.

@@ -38,6 +38,9 @@ export function AppHeader() {
     const getInitials = useInitials();
     const { isCurrentUrl } = useCurrentUrl();
     const user = auth.user;
+    const links = user?.isAdmin
+        ? [...navLinks, { title: 'Quản trị', href: '/quan-tri' }]
+        : navLinks;
 
     return (
         <header className="relative z-30 border-b-[3px] border-primary bg-ink text-on-ink">
@@ -59,7 +62,7 @@ export function AppHeader() {
                                 <SheetTitle>Menu</SheetTitle>
                             </SheetHeader>
                             <nav className="flex flex-col gap-1 px-4">
-                                {navLinks.map((item) => (
+                                {links.map((item) => (
                                     <Link
                                         key={item.href}
                                         href={item.href}
@@ -88,7 +91,7 @@ export function AppHeader() {
                     className="ml-auto hidden items-center gap-[22px] md:flex"
                     aria-label="Điều hướng chính"
                 >
-                    {navLinks.map((item) => (
+                    {links.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
