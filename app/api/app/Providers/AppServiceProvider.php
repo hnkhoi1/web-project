@@ -5,9 +5,12 @@ namespace App\Providers;
 use App\Search\ArticleRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -28,6 +31,16 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureResetMail();
+        $this->configureRateLimits();
+    }
+
+    /**
+     * The chatbot runs a search on every question, so each user gets a bounded rate.
+     */
+    protected function configureRateLimits(): void
+    {
+        RateLimiter::for('chat', fn (Request $request) => Limit::perMinute(20)
+            ->by($request->user()?->id ?? $request->ip()));
     }
 
     /**

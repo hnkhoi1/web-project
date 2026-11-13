@@ -11,6 +11,8 @@ services:
       args:
         UID: ${UID:-1000}
     user: "${UID:-1000}"
+    environment:
+      AUTO_MIGRATE: "false"
     # Dev reads the bind-mounted .env itself. Real container env vars would beat
     # the forced values in phpunit.xml and point tests at the dev database.
     env_file: !reset []

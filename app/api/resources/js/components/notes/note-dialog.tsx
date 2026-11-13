@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
     destroy,
     store,
@@ -55,6 +55,15 @@ export function NoteDialog({ note, onClose }: EditProps) {
     const { setData, clearErrors, errors } = form;
     const isOpen = note !== undefined;
     const noteId = note?.id;
+    // Keep showing the last note while the dialog fades out, instead of flashing "Ghi chú mới".
+    const [lastNote, setLastNote] = useState<Note | null>(null);
+    const shown = note === undefined ? lastNote : note;
+
+    useEffect(() => {
+        if (note !== undefined) {
+            setLastNote(note);
+        }
+    }, [note]);
 
     useEffect(() => {
         if (note === undefined) {
@@ -92,7 +101,7 @@ export function NoteDialog({ note, onClose }: EditProps) {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {note ? 'Sửa ghi chú' : 'Ghi chú mới'}
+                        {shown ? 'Sửa ghi chú' : 'Ghi chú mới'}
                     </DialogTitle>
                     <DialogDescription>
                         Nhập tiêu đề hoặc nội dung (không cần cả hai).

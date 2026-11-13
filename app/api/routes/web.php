@@ -18,7 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('tra-cuu', [LawController::class, 'search'])->name('law.search');
     Route::get('dieu-luat/{id}', [LawController::class, 'show'])->whereNumber('id')->name('law.show');
     Route::get('tu-van', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('tu-van/hoi', [ChatController::class, 'ask'])->name('chat.ask');
+    Route::post('tu-van/hoi', [ChatController::class, 'ask'])->middleware('throttle:chat')->name('chat.ask');
     Route::get('lich-su', [ChatHistoryController::class, 'index'])->name('history.index');
     Route::delete('lich-su', [ChatHistoryController::class, 'clear'])->name('history.clear');
     Route::get('lich-su/{history}', [ChatHistoryController::class, 'show'])->whereNumber('history')->name('history.show');
