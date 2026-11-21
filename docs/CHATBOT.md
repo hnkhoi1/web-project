@@ -93,6 +93,6 @@ Chạy `php artisan` trong container `app`: `docker compose exec app php artisan
 
 ## 5. Nội dung luật
 
-Chatbot chỉ biết 18 điều luật đã nạp từ `app/api/database/data/dieu_luat_data.php`. Câu hỏi ngoài phạm vi sẽ được trả lời là chưa có dữ liệu, và được ghi lại ở trang quản trị (Câu hỏi chatbot, bộ lọc "Không khớp điều luật") để biết cần bổ sung điều nào. Thêm điều luật mới là việc cần người có chuyên môn pháp lý duyệt nội dung, rồi chạy lại seeder và `search:embed`.
+Chatbot chỉ biết 18 điều luật đã nạp từ `app/api/database/data/dieu_luat_data.php`. Câu hỏi ngoài phạm vi sẽ được trả lời là chưa có dữ liệu, và được ghi lại ở trang quản trị (Câu hỏi chatbot, bộ lọc "Không khớp điều luật") để biết cần bổ sung điều nào. Thêm điều luật mới là việc cần người có chuyên môn pháp lý duyệt nội dung, rồi thêm ở trang quản trị (Điều luật) hoặc vào file dữ liệu và chạy lại seeder; sau đó chạy `search:embed` nếu bật chế độ ngữ nghĩa, và bổ sung cụm từ vào `app/api/app/Search/data/concepts.json`.
 
 Dữ liệu chỉ để tham khảo, không thay thế tư vấn của luật sư.

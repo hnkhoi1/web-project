@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\LawAdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ChatHistoryController;
 use App\Http\Controllers\ContactController;
@@ -37,6 +38,12 @@ Route::middleware(['auth', 'admin'])->prefix('quan-tri')->name('admin.')->group(
     Route::patch('lien-he/{contact}', [AdminController::class, 'updateContact'])->name('contacts.update');
     Route::get('hoi-dap', [AdminController::class, 'questions'])->name('questions.index');
     Route::get('nguoi-dung', [AdminController::class, 'users'])->name('users.index');
+    Route::get('dieu-luat', [LawAdminController::class, 'index'])->name('laws.index');
+    Route::get('dieu-luat/them', [LawAdminController::class, 'create'])->name('laws.create');
+    Route::post('dieu-luat', [LawAdminController::class, 'store'])->name('laws.store');
+    Route::get('dieu-luat/{article}/sua', [LawAdminController::class, 'edit'])->whereNumber('article')->name('laws.edit');
+    Route::put('dieu-luat/{article}', [LawAdminController::class, 'update'])->whereNumber('article')->name('laws.update');
+    Route::delete('dieu-luat/{article}', [LawAdminController::class, 'destroy'])->whereNumber('article')->name('laws.destroy');
 });
 
 require __DIR__.'/auth.php';

@@ -5,6 +5,7 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { index as overview } from '@/routes/admin';
 import { index as contacts } from '@/routes/admin/contacts';
+import { index as laws } from '@/routes/admin/laws';
 import { index as questions } from '@/routes/admin/questions';
 import { index as users } from '@/routes/admin/users';
 
@@ -12,6 +13,7 @@ const tabs = [
     { title: 'Tổng quan', href: overview(), exact: true },
     { title: 'Liên hệ', href: contacts() },
     { title: 'Câu hỏi chatbot', href: questions() },
+    { title: 'Điều luật', href: laws() },
     { title: 'Người dùng', href: users() },
 ];
 
@@ -22,7 +24,7 @@ export default function AdminLayout({ children }: PropsWithChildren) {
         <div>
             <Heading
                 title="Quản trị"
-                description="Theo dõi hoạt động và xử lý thư liên hệ. Dữ liệu người dùng chỉ để cải thiện dịch vụ."
+                description="Theo dõi hoạt động, xử lý thư liên hệ và cập nhật điều luật. Dữ liệu người dùng chỉ để cải thiện dịch vụ."
             />
 
             <nav

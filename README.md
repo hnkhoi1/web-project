@@ -58,7 +58,7 @@ Chưa đăng nhập thì chỉ vào được đăng nhập, đăng ký, giới t
 | Lịch sử câu hỏi | `/lich-su` | Xem lại, tìm, mở lại câu trả lời, đánh giá và xóa các câu mình đã hỏi (chỉ thấy của mình) |
 | Tài khoản | `/ho-so`, `/doi-mat-khau`, `/tuy-chinh` | Hồ sơ và ảnh, đổi mật khẩu, sáng/tối, cỡ chữ, màu ghi chú |
 | Khác | `/gioi-thieu`, `/lien-he` | Giới thiệu, gửi liên hệ |
-| Quản trị (chỉ admin) | `/quan-tri` | Tổng quan và biểu đồ câu hỏi, xử lý thư liên hệ, câu hỏi chatbot (lọc câu không khớp và câu bị đánh giá sai), danh sách người dùng (chỉ xem) |
+| Quản trị (chỉ admin) | `/quan-tri` | Tổng quan và biểu đồ câu hỏi, xử lý thư liên hệ, câu hỏi chatbot (lọc câu không khớp và câu bị đánh giá sai), danh sách người dùng (chỉ xem), thêm, sửa, xóa điều luật |
 
 Không có: xác thực email.
 
@@ -127,5 +127,5 @@ Sao lưu CSDL, khôi phục, nâng cấp và các việc cần làm trước khi
 
 - Trên Windows, file bind-mount có thể không báo thay đổi cho Vite. Nếu giao diện không cập nhật: `docker compose restart vite`.
 - Luôn chạy `docker compose` từ thư mục gốc. Dùng `-f` sẽ bỏ qua `compose.override.yaml`.
-- Dữ liệu luật nằm ở `app/api/database/data/dieu_luat_data.php` và được nạp bằng `LawSeeder`.
+- Dữ liệu luật ban đầu nằm ở `app/api/database/data/dieu_luat_data.php` và được nạp bằng `LawSeeder`. Sau đó admin sửa trực tiếp ở `/quan-tri/dieu-luat`; chạy lại `LawSeeder` sẽ ghi đè các điều có trong file.
 - Thiết kế CSDL: [docs/DATABASE.md](docs/DATABASE.md).

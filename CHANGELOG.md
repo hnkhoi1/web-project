@@ -1,5 +1,15 @@
 # Nhật ký thay đổi
 
+## Chưa phát hành
+
+### Tính năng mới
+- **Quản lý điều luật** trong trang quản trị (`/quan-tri/dieu-luat`): thêm, sửa, xóa điều luật cùng các khoản (điều kiện, mức % thương tật, giá trị tài sản, số người chết, quyền lợi, câu hỏi làm rõ). Thay đổi có hiệu lực ngay với trang tra cứu và chatbot. Gõ tên chương mới thì chương được tạo; chương không còn điều nào thì tự xóa.
+- Số điều không đổi được sau khi tạo. Không xóa được điều mà chatbot đã dùng để trả lời (để lịch sử và thống kê không bị sai); hãy sửa nội dung thay vì xóa.
+
+### Lưu ý
+- Từ bản này, **CSDL là nguồn dữ liệu luật chính**. Chạy lại `db:seed --class=LawSeeder` sẽ đưa các điều có trong `dieu_luat_data.php` về đúng nội dung của file, ghi đè chỉnh sửa trên web. Điều thêm trên web (không có trong file) thì giữ nguyên.
+- Nếu bật tìm kiếm ngữ nghĩa, chạy `php artisan search:embed` sau khi sửa để cập nhật vector.
+
 ## v1.1 (2026-11-14)
 
 ### Tính năng mới

@@ -261,7 +261,7 @@ docker compose exec app php artisan migrate --seed      # tạo bảng + nạp d
 docker compose exec app php artisan migrate:fresh --seed # xóa sạch, tạo lại (mất dữ liệu!)
 ```
 
-- `LawSeeder` nạp chương, điều, khoản từ `app/api/database/data/dieu_luat_data.php` (hiện 9 chương, 18 điều, 61 khoản). Đây là nguồn dữ liệu luật duy nhất.
+- `LawSeeder` nạp chương, điều, khoản từ `app/api/database/data/dieu_luat_data.php` (hiện 9 chương, 18 điều, 61 khoản). Đây là dữ liệu ban đầu; sau đó admin thêm, sửa, xóa ở trang quản trị và CSDL là nguồn chính. Chạy lại seeder sẽ ghi đè các điều có trong file.
 - `DemoUserSeeder` tạo tài khoản `demo` (`is_demo = 1`), chạy lại không tạo trùng.
 
 ## 6. So với thiết kế cũ (bản PHP + XAMPP)
